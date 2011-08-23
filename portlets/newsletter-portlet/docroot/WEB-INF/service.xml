@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_0_0.dtd">
+
+<service-builder package-path="com.liferay.newsletter">
+	<namespace>Newsletter</namespace>
+	<entity name="NewsletterCampaign" uuid="true" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="campaignId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="contentId" type="long" />
+		<column name="emailSubject" type="String" />
+		<column name="senderEmail" type="String" />
+		<column name="senderName" type="String" />
+		<column name="sent" type="boolean" />
+		<column name="sendDate" type="Date" />
+
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="sendDate" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="ContentId" return-type="Collection">
+			<finder-column name="contentId" />
+		</finder>
+		<finder name="SD_S" return-type="Collection">
+			<finder-column name="sendDate" comparator="&lt;=" />
+			<finder-column name="sent" />
+		</finder>
+	</entity>
+	<entity name="NewsletterContent" uuid="true" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="contentId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="title" type="String" />
+		<column name="content" type="String" />
+		<column name="articleId" type="long" />
+	</entity>	
+	<entity name="NewsletterContact" local-service="true" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="contactId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="email" type="String" />
+		<column name="name" type="String" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="email" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Email" return-type="Contact">
+			<finder-column name="email" />
+		</finder>
+	</entity>
+	<entity name="NewsletterLog" local-service="true" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="logId" type="long" primary="true" />
+
+		<!-- Other fields -->
+
+		<column name="campaignId" type="long" />
+		<column name="contactId" type="long" />
+		<column name="sent" type="boolean" />
+
+		<!-- Finder methods -->
+
+		<finder name="CampaignId" return-type="Collection">
+			<finder-column name="campaignId" />
+		</finder>
+		<finder name="ContactId" return-type="Collection">
+			<finder-column name="contactId" />
+		</finder>
+		<finder name="C_C" return-type="NewsletterLog">
+			<finder-column name="campaignId" />
+			<finder-column name="contactId" />
+		</finder>
+		<finder name="C_S" return-type="Collection">
+			<finder-column name="campaignId" />
+			<finder-column name="sent" />
+		</finder>
+	</entity>
+	<exceptions>
+		<exception>Contact</exception>
+		<exception>Content</exception>
+		<exception>Email</exception>
+		<exception>Name</exception>
+		<exception>Subject</exception>
+		<exception>SendEmail</exception>
+		<exception>Title</exception>
+	</exceptions>
+</service-builder>
