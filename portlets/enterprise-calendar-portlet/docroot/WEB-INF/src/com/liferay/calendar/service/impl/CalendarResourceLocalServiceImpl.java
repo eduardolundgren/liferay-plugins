@@ -21,4 +21,7 @@ import com.liferay.calendar.service.base.CalendarResourceLocalServiceBaseImpl;
  */
 public class CalendarResourceLocalServiceImpl
 	extends CalendarResourceLocalServiceBaseImpl {
+
+	// start
+
 }
