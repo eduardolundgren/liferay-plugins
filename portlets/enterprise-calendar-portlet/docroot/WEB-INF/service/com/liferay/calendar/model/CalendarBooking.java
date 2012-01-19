@@ -31,4 +31,8 @@ public interface CalendarBooking extends CalendarBookingModel, PersistedModel {
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.calendar.model.impl.CalendarBookingImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public com.liferay.portal.kernel.cal.TZSRecurrence getRecurrenceObj();
+
+	public void setRecurrenceObj(
+		com.liferay.portal.kernel.cal.TZSRecurrence recurrenceObj);
 }

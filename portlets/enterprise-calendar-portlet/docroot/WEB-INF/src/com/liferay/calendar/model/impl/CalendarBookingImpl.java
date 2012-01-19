@@ -14,6 +14,10 @@
 
 package com.liferay.calendar.model.impl;
 
+import com.liferay.portal.kernel.cal.TZSRecurrence;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.util.Validator;
+
 /**
  * @author Eduardo Lundgren
  */
@@ -21,5 +25,26 @@ public class CalendarBookingImpl extends CalendarBookingBaseImpl {
 
 	public CalendarBookingImpl() {
 	}
+
+	public TZSRecurrence getRecurrenceObj() {
+		if (_recurrenceObj == null) {
+			String recurrence = getRecurrence();
+
+			if (Validator.isNotNull(recurrence)) {
+				_recurrenceObj = (TZSRecurrence)JSONFactoryUtil.deserialize(
+					recurrence);
+			}
+		}
+
+		return _recurrenceObj;
+	}
+
+	public void setRecurrenceObj(TZSRecurrence recurrenceObj) {
+		_recurrenceObj = recurrenceObj;
+
+		super.setRecurrence(JSONFactoryUtil.serialize(recurrenceObj));
+	}
+
+	private TZSRecurrence _recurrenceObj = null;
 
 }
