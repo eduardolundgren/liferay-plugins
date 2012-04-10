@@ -14,8 +14,13 @@
 
 package com.liferay.calendar.model;
 
-import com.liferay.calendar.service.CalendarLocalServiceUtil;
+import java.io.Serializable;
+import java.lang.reflect.Proxy;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
+import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -26,14 +31,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
-
-import java.io.Serializable;
-
-import java.lang.reflect.Proxy;
-
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author Eduardo Lundgren

@@ -14,16 +14,14 @@
 
 package com.liferay.calendar.service.http;
 
-import com.liferay.calendar.service.CalendarResourceServiceUtil;
+import java.rmi.RemoteException;
+import java.util.Locale;
+import java.util.Map;
 
+import com.liferay.calendar.service.CalendarResourceServiceUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
-
-import java.rmi.RemoteException;
-
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * <p>

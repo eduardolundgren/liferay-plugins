@@ -14,15 +14,13 @@
 
 package com.liferay.calendar.model.impl;
 
-import com.liferay.calendar.model.Calendar;
+import java.io.Serializable;
+import java.util.Date;
 
+import com.liferay.calendar.model.Calendar;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
-
-import java.io.Serializable;
-
-import java.util.Date;
 
 /**
  * The cache model class for representing Calendar in entity cache.
