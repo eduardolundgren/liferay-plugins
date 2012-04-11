@@ -27,14 +27,13 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.calendar.EventEndDateException;
-import com.liferay.portlet.calendar.EventStartDateException;
 
 import java.util.Date;
 import java.util.List;
@@ -52,13 +51,8 @@ public class CalendarBookingLocalServiceImpl
 	public CalendarBooking addCalendarBooking(
 			long userId, long calendarId, long parentCalendarBookingId,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			Map<Locale, String> locationMap, String type, int startDateMonth,
-			int startDateDay, int startDateYear, int startDateHour,
-			int startDateMinute, int endDateMonth, int endDateDay,
-			int endDateYear, int endDateHour, int endDateMinute, boolean allDay,
-			String recurrence, Integer priority, boolean outOfOffice,
-			int firstReminder, int secondReminder, boolean required,
-			String requestMessage, String responseMessage,
+			String location, Date startDate, Date endDate, boolean allDay,
+			String recurrence, int firstReminder, int secondReminder,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -68,25 +62,18 @@ public class CalendarBookingLocalServiceImpl
 		Calendar calendar = calendarPersistence.findByPrimaryKey(calendarId);
 		Date now = new Date();
 
-		if (allDay) {
-			startDateHour = 0;
-			startDateMinute = 0;
+		java.util.Calendar startDateJCalendar = getJCalendar(startDate);
+		java.util.Calendar endDateJCalendar = getJCalendar(endDate);
 
-			endDateHour = 23;
-			endDateMinute = 59;
+		if (allDay) {
+			startDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
+			startDateJCalendar.set(java.util.Calendar.MINUTE, 0);
+
+			endDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 23);
+			endDateJCalendar.set(java.util.Calendar.MINUTE, 59);
 		}
 
-		java.util.Calendar startDateJCalendar = getJCalendar(
-			startDateMonth, startDateDay, startDateYear, startDateHour,
-			startDateMinute);
-		java.util.Calendar endDateJCalendar = getJCalendar(
-			endDateMonth, endDateDay, endDateYear, endDateHour, endDateMinute);
-
-		validate(
-			titleMap, startDateMonth, startDateDay, startDateYear,
-			startDateHour, startDateMinute, startDateJCalendar, endDateMonth,
-			endDateDay, endDateYear, endDateHour, endDateMinute,
-			endDateJCalendar, recurrence);
+		validate(titleMap, startDateJCalendar, endDateJCalendar);
 
 		if (firstReminder < secondReminder) {
 			int originalSecondReminder = secondReminder;
@@ -112,19 +99,13 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setParentCalendarBookingId(parentCalendarBookingId);
 		calendarBooking.setTitleMap(titleMap);
 		calendarBooking.setDescriptionMap(descriptionMap);
-		calendarBooking.setLocationMap(locationMap);
-		calendarBooking.setType(type);
+		calendarBooking.setLocation(location);
 		calendarBooking.setStartDate(startDateJCalendar.getTime());
 		calendarBooking.setEndDate(endDateJCalendar.getTime());
 		calendarBooking.setAllDay(allDay);
 		calendarBooking.setRecurrence(recurrence);
-		calendarBooking.setPriority(priority);
-		calendarBooking.setOutOfOffice(outOfOffice);
 		calendarBooking.setFirstReminder(firstReminder);
 		calendarBooking.setSecondReminder(secondReminder);
-		calendarBooking.setRequired(required);
-		calendarBooking.setRequestMessage(requestMessage);
-		calendarBooking.setResponseMessage(responseMessage);
 		calendarBooking.setStatus(WorkflowConstants.STATUS_DRAFT);
 		calendarBooking.setStatusDate(serviceContext.getModifiedDate(now));
 
@@ -262,39 +243,27 @@ public class CalendarBookingLocalServiceImpl
 	public CalendarBooking updateCalendarBooking(
 			long userId, long calendarBookingId, long calendarId,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			Map<Locale, String> locationMap, String type, int status,
-			int startDateMonth, int startDateDay, int startDateYear,
-			int startDateHour, int startDateMinute, int endDateMonth,
-			int endDateDay, int endDateYear, int endDateHour, int endDateMinute,
-			boolean allDay, String recurrence, Integer priority,
-			boolean outOfOffice, int firstReminder, int secondReminder,
-			boolean required, String requestMessage, String responseMessage,
-			ServiceContext serviceContext)
+			String location, int status, Date startDate, Date endDate,
+			boolean allDay, String recurrence, int firstReminder,
+			int secondReminder, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Calendar booking
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
-		if (allDay) {
-			startDateHour = 0;
-			startDateMinute = 0;
+		java.util.Calendar startDateJCalendar = getJCalendar(startDate);
+		java.util.Calendar endDateJCalendar = getJCalendar(endDate);
 
-			endDateHour = 23;
-			endDateMinute = 59;
+		if (allDay) {
+			startDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
+			startDateJCalendar.set(java.util.Calendar.MINUTE, 0);
+
+			endDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 23);
+			endDateJCalendar.set(java.util.Calendar.MINUTE, 59);
 		}
 
-		java.util.Calendar startDateJCalendar = getJCalendar(
-			startDateMonth, startDateDay, startDateYear, startDateHour,
-			startDateMinute);
-		java.util.Calendar endDateJCalendar = getJCalendar(
-			endDateMonth, endDateDay, endDateYear, endDateHour, endDateMinute);
-
-		validate(
-			titleMap, startDateMonth, startDateDay, startDateYear,
-			startDateHour, startDateMinute, startDateJCalendar, endDateMonth,
-			endDateDay, endDateYear, endDateHour, endDateMinute,
-			endDateJCalendar, recurrence);
+		validate(titleMap, startDateJCalendar, endDateJCalendar);
 
 		if (firstReminder < secondReminder) {
 			int originalSecondReminder = secondReminder;
@@ -313,19 +282,13 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setCalendarId(calendarId);
 		calendarBooking.setTitleMap(titleMap);
 		calendarBooking.setDescriptionMap(descriptionMap);
-		calendarBooking.setLocationMap(locationMap);
-		calendarBooking.setType(type);
+		calendarBooking.setLocation(location);
 		calendarBooking.setStartDate(startDateJCalendar.getTime());
 		calendarBooking.setEndDate(endDateJCalendar.getTime());
 		calendarBooking.setAllDay(allDay);
 		calendarBooking.setRecurrence(recurrence);
-		calendarBooking.setPriority(priority);
-		calendarBooking.setOutOfOffice(outOfOffice);
 		calendarBooking.setFirstReminder(firstReminder);
 		calendarBooking.setSecondReminder(secondReminder);
-		calendarBooking.setRequired(required);
-		calendarBooking.setRequestMessage(requestMessage);
-		calendarBooking.setResponseMessage(responseMessage);
 
 		calendarBookingPersistence.update(calendarBooking, false);
 
@@ -365,44 +328,26 @@ public class CalendarBookingLocalServiceImpl
 		return calendarBooking;
 	}
 
-	protected java.util.Calendar getJCalendar(
-		int month, int day, int year, int hour, int minute) {
+	protected java.util.Calendar getJCalendar(Date date) {
 
-		TimeZone timeZone = TimeZoneUtil.getDefault();
+		TimeZone timeZone = TimeZoneUtil.getTimeZone(StringPool.UTC);
 		Locale locale = LocaleUtil.getDefault();
 
 		java.util.Calendar jCalendar = CalendarFactoryUtil.getCalendar(
 			timeZone, locale);
 
-		jCalendar.set(java.util.Calendar.MONTH, month);
-		jCalendar.set(java.util.Calendar.DATE, day);
-		jCalendar.set(java.util.Calendar.YEAR, year);
-		jCalendar.set(java.util.Calendar.HOUR_OF_DAY, hour);
-		jCalendar.set(java.util.Calendar.MINUTE, minute);
-		jCalendar.set(java.util.Calendar.SECOND, 0);
-		jCalendar.set(java.util.Calendar.MILLISECOND, 0);
+		jCalendar.setTime(date);
 
 		return jCalendar;
 	}
 
 	protected void validate(
-			Map<Locale, String> titleMap, int startDateMonth, int startDateDay,
-			int startDateYear, int startDateHour, int startDateMinute,
-			java.util.Calendar startDateJCalendar, int endDateMonth,
-			int endDateDay, int endDateYear, int endDateHour, int endDateMinute,
-			java.util.Calendar endDateJCalendar, String recurrence)
+			Map<Locale, String> titleMap, java.util.Calendar startDateJCalendar,
+			java.util.Calendar endDateJCalendar)
 		throws PortalException {
 
 		if (Validator.isNull(titleMap) || titleMap.isEmpty()) {
 			throw new CalendarBookingTitleException();
-		}
-
-		if (!Validator.isDate(startDateMonth, startDateDay, startDateYear)) {
-			throw new EventStartDateException();
-		}
-
-		if (!Validator.isDate(endDateMonth, endDateDay, endDateYear)) {
-			throw new EventEndDateException();
 		}
 
 		if (startDateJCalendar.after(endDateJCalendar)) {
