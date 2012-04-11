@@ -369,117 +369,75 @@ public class ClpSerializer {
 
 				method13.invoke(newModel, value13);
 
-				Method method14 = newModelClass.getMethod("setType",
-						new Class[] { String.class });
+				Method method14 = newModelClass.getMethod("setStartDate",
+						new Class[] { Date.class });
 
-				String value14 = oldCplModel.getType();
+				Date value14 = oldCplModel.getStartDate();
 
 				method14.invoke(newModel, value14);
 
-				Method method15 = newModelClass.getMethod("setStartDate",
+				Method method15 = newModelClass.getMethod("setEndDate",
 						new Class[] { Date.class });
 
-				Date value15 = oldCplModel.getStartDate();
+				Date value15 = oldCplModel.getEndDate();
 
 				method15.invoke(newModel, value15);
 
-				Method method16 = newModelClass.getMethod("setEndDate",
-						new Class[] { Date.class });
+				Method method16 = newModelClass.getMethod("setAllDay",
+						new Class[] { Boolean.TYPE });
 
-				Date value16 = oldCplModel.getEndDate();
+				Boolean value16 = new Boolean(oldCplModel.getAllDay());
 
 				method16.invoke(newModel, value16);
 
-				Method method17 = newModelClass.getMethod("setAllDay",
-						new Class[] { Boolean.TYPE });
+				Method method17 = newModelClass.getMethod("setRecurrence",
+						new Class[] { String.class });
 
-				Boolean value17 = new Boolean(oldCplModel.getAllDay());
+				String value17 = oldCplModel.getRecurrence();
 
 				method17.invoke(newModel, value17);
 
-				Method method18 = newModelClass.getMethod("setRecurrence",
-						new Class[] { String.class });
+				Method method18 = newModelClass.getMethod("setFirstReminder",
+						new Class[] { Integer.TYPE });
 
-				String value18 = oldCplModel.getRecurrence();
+				Integer value18 = new Integer(oldCplModel.getFirstReminder());
 
 				method18.invoke(newModel, value18);
 
-				Method method19 = newModelClass.getMethod("setPriority",
+				Method method19 = newModelClass.getMethod("setSecondReminder",
 						new Class[] { Integer.TYPE });
 
-				Integer value19 = new Integer(oldCplModel.getPriority());
+				Integer value19 = new Integer(oldCplModel.getSecondReminder());
 
 				method19.invoke(newModel, value19);
 
-				Method method20 = newModelClass.getMethod("setOutOfOffice",
-						new Class[] { Boolean.TYPE });
+				Method method20 = newModelClass.getMethod("setStatus",
+						new Class[] { Integer.TYPE });
 
-				Boolean value20 = new Boolean(oldCplModel.getOutOfOffice());
+				Integer value20 = new Integer(oldCplModel.getStatus());
 
 				method20.invoke(newModel, value20);
 
-				Method method21 = newModelClass.getMethod("setFirstReminder",
-						new Class[] { Integer.TYPE });
+				Method method21 = newModelClass.getMethod("setStatusByUserId",
+						new Class[] { Long.TYPE });
 
-				Integer value21 = new Integer(oldCplModel.getFirstReminder());
+				Long value21 = new Long(oldCplModel.getStatusByUserId());
 
 				method21.invoke(newModel, value21);
 
-				Method method22 = newModelClass.getMethod("setSecondReminder",
-						new Class[] { Integer.TYPE });
+				Method method22 = newModelClass.getMethod("setStatusByUserName",
+						new Class[] { String.class });
 
-				Integer value22 = new Integer(oldCplModel.getSecondReminder());
+				String value22 = oldCplModel.getStatusByUserName();
 
 				method22.invoke(newModel, value22);
 
-				Method method23 = newModelClass.getMethod("setRequired",
-						new Class[] { Boolean.TYPE });
-
-				Boolean value23 = new Boolean(oldCplModel.getRequired());
-
-				method23.invoke(newModel, value23);
-
-				Method method24 = newModelClass.getMethod("setRequestMessage",
-						new Class[] { String.class });
-
-				String value24 = oldCplModel.getRequestMessage();
-
-				method24.invoke(newModel, value24);
-
-				Method method25 = newModelClass.getMethod("setResponseMessage",
-						new Class[] { String.class });
-
-				String value25 = oldCplModel.getResponseMessage();
-
-				method25.invoke(newModel, value25);
-
-				Method method26 = newModelClass.getMethod("setStatus",
-						new Class[] { Integer.TYPE });
-
-				Integer value26 = new Integer(oldCplModel.getStatus());
-
-				method26.invoke(newModel, value26);
-
-				Method method27 = newModelClass.getMethod("setStatusByUserId",
-						new Class[] { Long.TYPE });
-
-				Long value27 = new Long(oldCplModel.getStatusByUserId());
-
-				method27.invoke(newModel, value27);
-
-				Method method28 = newModelClass.getMethod("setStatusByUserName",
-						new Class[] { String.class });
-
-				String value28 = oldCplModel.getStatusByUserName();
-
-				method28.invoke(newModel, value28);
-
-				Method method29 = newModelClass.getMethod("setStatusDate",
+				Method method23 = newModelClass.getMethod("setStatusDate",
 						new Class[] { Date.class });
 
-				Date value29 = oldCplModel.getStatusDate();
+				Date value23 = oldCplModel.getStatusDate();
 
-				method29.invoke(newModel, value29);
+				method23.invoke(newModel, value23);
 
 				return newModel;
 			}
@@ -957,121 +915,71 @@ public class ClpSerializer {
 
 				newModel.setLocation(value13);
 
-				Method method13CurrentLanguageId = oldModelClass.getMethod(
-						"getLocationCurrentLanguageId");
+				Method method14 = oldModelClass.getMethod("getStartDate");
 
-				String value13CurrentLanguageId = (String)method13CurrentLanguageId.invoke(oldModel,
-						(Object[])null);
+				Date value14 = (Date)method14.invoke(oldModel, (Object[])null);
 
-				newModel.setLocationCurrentLanguageId(value13CurrentLanguageId);
+				newModel.setStartDate(value14);
 
-				Method method14 = oldModelClass.getMethod("getType");
-
-				String value14 = (String)method14.invoke(oldModel,
-						(Object[])null);
-
-				newModel.setType(value14);
-
-				Method method15 = oldModelClass.getMethod("getStartDate");
+				Method method15 = oldModelClass.getMethod("getEndDate");
 
 				Date value15 = (Date)method15.invoke(oldModel, (Object[])null);
 
-				newModel.setStartDate(value15);
+				newModel.setEndDate(value15);
 
-				Method method16 = oldModelClass.getMethod("getEndDate");
+				Method method16 = oldModelClass.getMethod("getAllDay");
 
-				Date value16 = (Date)method16.invoke(oldModel, (Object[])null);
-
-				newModel.setEndDate(value16);
-
-				Method method17 = oldModelClass.getMethod("getAllDay");
-
-				Boolean value17 = (Boolean)method17.invoke(oldModel,
+				Boolean value16 = (Boolean)method16.invoke(oldModel,
 						(Object[])null);
 
-				newModel.setAllDay(value17);
+				newModel.setAllDay(value16);
 
-				Method method18 = oldModelClass.getMethod("getRecurrence");
+				Method method17 = oldModelClass.getMethod("getRecurrence");
 
-				String value18 = (String)method18.invoke(oldModel,
+				String value17 = (String)method17.invoke(oldModel,
 						(Object[])null);
 
-				newModel.setRecurrence(value18);
+				newModel.setRecurrence(value17);
 
-				Method method19 = oldModelClass.getMethod("getPriority");
+				Method method18 = oldModelClass.getMethod("getFirstReminder");
+
+				Integer value18 = (Integer)method18.invoke(oldModel,
+						(Object[])null);
+
+				newModel.setFirstReminder(value18);
+
+				Method method19 = oldModelClass.getMethod("getSecondReminder");
 
 				Integer value19 = (Integer)method19.invoke(oldModel,
 						(Object[])null);
 
-				newModel.setPriority(value19);
+				newModel.setSecondReminder(value19);
 
-				Method method20 = oldModelClass.getMethod("getOutOfOffice");
+				Method method20 = oldModelClass.getMethod("getStatus");
 
-				Boolean value20 = (Boolean)method20.invoke(oldModel,
+				Integer value20 = (Integer)method20.invoke(oldModel,
 						(Object[])null);
 
-				newModel.setOutOfOffice(value20);
+				newModel.setStatus(value20);
 
-				Method method21 = oldModelClass.getMethod("getFirstReminder");
+				Method method21 = oldModelClass.getMethod("getStatusByUserId");
 
-				Integer value21 = (Integer)method21.invoke(oldModel,
+				Long value21 = (Long)method21.invoke(oldModel, (Object[])null);
+
+				newModel.setStatusByUserId(value21);
+
+				Method method22 = oldModelClass.getMethod("getStatusByUserName");
+
+				String value22 = (String)method22.invoke(oldModel,
 						(Object[])null);
 
-				newModel.setFirstReminder(value21);
+				newModel.setStatusByUserName(value22);
 
-				Method method22 = oldModelClass.getMethod("getSecondReminder");
+				Method method23 = oldModelClass.getMethod("getStatusDate");
 
-				Integer value22 = (Integer)method22.invoke(oldModel,
-						(Object[])null);
+				Date value23 = (Date)method23.invoke(oldModel, (Object[])null);
 
-				newModel.setSecondReminder(value22);
-
-				Method method23 = oldModelClass.getMethod("getRequired");
-
-				Boolean value23 = (Boolean)method23.invoke(oldModel,
-						(Object[])null);
-
-				newModel.setRequired(value23);
-
-				Method method24 = oldModelClass.getMethod("getRequestMessage");
-
-				String value24 = (String)method24.invoke(oldModel,
-						(Object[])null);
-
-				newModel.setRequestMessage(value24);
-
-				Method method25 = oldModelClass.getMethod("getResponseMessage");
-
-				String value25 = (String)method25.invoke(oldModel,
-						(Object[])null);
-
-				newModel.setResponseMessage(value25);
-
-				Method method26 = oldModelClass.getMethod("getStatus");
-
-				Integer value26 = (Integer)method26.invoke(oldModel,
-						(Object[])null);
-
-				newModel.setStatus(value26);
-
-				Method method27 = oldModelClass.getMethod("getStatusByUserId");
-
-				Long value27 = (Long)method27.invoke(oldModel, (Object[])null);
-
-				newModel.setStatusByUserId(value27);
-
-				Method method28 = oldModelClass.getMethod("getStatusByUserName");
-
-				String value28 = (String)method28.invoke(oldModel,
-						(Object[])null);
-
-				newModel.setStatusByUserName(value28);
-
-				Method method29 = oldModelClass.getMethod("getStatusDate");
-
-				Date value29 = (Date)method29.invoke(oldModel, (Object[])null);
-
-				newModel.setStatusDate(value29);
+				newModel.setStatusDate(value23);
 
 				return newModel;
 			}
