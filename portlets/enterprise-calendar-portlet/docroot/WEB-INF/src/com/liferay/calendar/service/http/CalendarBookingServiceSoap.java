@@ -70,20 +70,13 @@ import java.util.Map;
  */
 public class CalendarBookingServiceSoap {
 	public static com.liferay.calendar.model.CalendarBookingSoap addCalendarBooking(
-		long calendarId, long parentCalendarBookingId,
+		long userId, long calendarId, long parentCalendarBookingId,
 		java.lang.String[] titleMapLanguageIds,
 		java.lang.String[] titleMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
-		java.lang.String[] descriptionMapValues,
-		java.lang.String[] locationMapLanguageIds,
-		java.lang.String[] locationMapValues, java.lang.String type,
-		int startDateMonth, int startDateDay, int startDateYear,
-		int startDateHour, int startDateMinute, int endDateMonth,
-		int endDateDay, int endDateYear, int endDateHour, int endDateMinute,
-		boolean allDay, java.lang.String recurrence,
-		java.lang.Integer priority, boolean outOfOffice, int firstReminder,
-		int secondReminder, boolean required, java.lang.String requestMessage,
-		java.lang.String responseMessage,
+		java.lang.String[] descriptionMapValues, java.lang.String location,
+		java.util.Date startDate, java.util.Date endDate, boolean allDay,
+		java.lang.String recurrence, int firstReminder, int secondReminder,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -91,17 +84,11 @@ public class CalendarBookingServiceSoap {
 					titleMapValues);
 			Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(descriptionMapLanguageIds,
 					descriptionMapValues);
-			Map<Locale, String> locationMap = LocalizationUtil.getLocalizationMap(locationMapLanguageIds,
-					locationMapValues);
 
-			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.addCalendarBooking(calendarId,
-					parentCalendarBookingId, titleMap, descriptionMap,
-					locationMap, type, startDateMonth, startDateDay,
-					startDateYear, startDateHour, startDateMinute,
-					endDateMonth, endDateDay, endDateYear, endDateHour,
-					endDateMinute, allDay, recurrence, priority, outOfOffice,
-					firstReminder, secondReminder, required, requestMessage,
-					responseMessage, serviceContext);
+			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.addCalendarBooking(userId,
+					calendarId, parentCalendarBookingId, titleMap,
+					descriptionMap, location, startDate, endDate, allDay,
+					recurrence, firstReminder, secondReminder, serviceContext);
 
 			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModel(returnValue);
 		}
@@ -250,20 +237,14 @@ public class CalendarBookingServiceSoap {
 	}
 
 	public static com.liferay.calendar.model.CalendarBookingSoap updateCalendarBooking(
-		long calendarBookingId, long calendarId,
+		long userId, long calendarBookingId, long calendarId,
 		java.lang.String[] titleMapLanguageIds,
 		java.lang.String[] titleMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
-		java.lang.String[] descriptionMapValues,
-		java.lang.String[] locationMapLanguageIds,
-		java.lang.String[] locationMapValues, java.lang.String type,
-		int status, int startDateMonth, int startDateDay, int startDateYear,
-		int startDateHour, int startDateMinute, int endDateMonth,
-		int endDateDay, int endDateYear, int endDateHour, int endDateMinute,
-		boolean allDay, java.lang.String recurrence,
-		java.lang.Integer priority, boolean outOfOffice, int firstReminder,
-		int secondReminder, boolean required, java.lang.String requestMessage,
-		java.lang.String responseMessage,
+		java.lang.String[] descriptionMapValues, java.lang.String location,
+		int status, java.util.Date startDate, java.util.Date endDate,
+		boolean allDay, java.lang.String recurrence, int firstReminder,
+		int secondReminder,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -271,17 +252,11 @@ public class CalendarBookingServiceSoap {
 					titleMapValues);
 			Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(descriptionMapLanguageIds,
 					descriptionMapValues);
-			Map<Locale, String> locationMap = LocalizationUtil.getLocalizationMap(locationMapLanguageIds,
-					locationMapValues);
 
-			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.updateCalendarBooking(calendarBookingId,
-					calendarId, titleMap, descriptionMap, locationMap, type,
-					status, startDateMonth, startDateDay, startDateYear,
-					startDateHour, startDateMinute, endDateMonth, endDateDay,
-					endDateYear, endDateHour, endDateMinute, allDay,
-					recurrence, priority, outOfOffice, firstReminder,
-					secondReminder, required, requestMessage, responseMessage,
-					serviceContext);
+			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.updateCalendarBooking(userId,
+					calendarBookingId, calendarId, titleMap, descriptionMap,
+					location, status, startDate, endDate, allDay, recurrence,
+					firstReminder, secondReminder, serviceContext);
 
 			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModel(returnValue);
 		}

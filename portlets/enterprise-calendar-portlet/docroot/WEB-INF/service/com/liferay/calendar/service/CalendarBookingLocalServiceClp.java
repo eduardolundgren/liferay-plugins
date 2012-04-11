@@ -94,12 +94,10 @@ public class CalendarBookingLocalServiceClp
 
 		_addCalendarBookingMethodKey18 = new MethodKey(_classLoaderProxy.getClassName(),
 				"addCalendarBooking", long.class, long.class, long.class,
-				java.util.Map.class, java.util.Map.class, java.util.Map.class,
-				java.lang.String.class, int.class, int.class, int.class,
-				int.class, int.class, int.class, int.class, int.class,
-				int.class, int.class, boolean.class, java.lang.String.class,
-				java.lang.Integer.class, boolean.class, int.class, int.class,
-				boolean.class, java.lang.String.class, java.lang.String.class,
+				java.util.Map.class, java.util.Map.class,
+				java.lang.String.class, java.util.Date.class,
+				java.util.Date.class, boolean.class, java.lang.String.class,
+				int.class, int.class,
 				com.liferay.portal.service.ServiceContext.class);
 
 		_deleteCalendarBookingsMethodKey19 = new MethodKey(_classLoaderProxy.getClassName(),
@@ -144,13 +142,10 @@ public class CalendarBookingLocalServiceClp
 
 		_updateCalendarBookingMethodKey26 = new MethodKey(_classLoaderProxy.getClassName(),
 				"updateCalendarBooking", long.class, long.class, long.class,
-				java.util.Map.class, java.util.Map.class, java.util.Map.class,
-				java.lang.String.class, int.class, int.class, int.class,
-				int.class, int.class, int.class, int.class, int.class,
-				int.class, int.class, int.class, boolean.class,
-				java.lang.String.class, java.lang.Integer.class, boolean.class,
-				int.class, int.class, boolean.class, java.lang.String.class,
-				java.lang.String.class,
+				java.util.Map.class, java.util.Map.class,
+				java.lang.String.class, int.class, java.util.Date.class,
+				java.util.Date.class, boolean.class, java.lang.String.class,
+				int.class, int.class,
 				com.liferay.portal.service.ServiceContext.class);
 
 		_updateStatusMethodKey27 = new MethodKey(_classLoaderProxy.getClassName(),
@@ -674,14 +669,9 @@ public class CalendarBookingLocalServiceClp
 		long userId, long calendarId, long parentCalendarBookingId,
 		java.util.Map<java.util.Locale, java.lang.String> titleMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.util.Map<java.util.Locale, java.lang.String> locationMap,
-		java.lang.String type, int startDateMonth, int startDateDay,
-		int startDateYear, int startDateHour, int startDateMinute,
-		int endDateMonth, int endDateDay, int endDateYear, int endDateHour,
-		int endDateMinute, boolean allDay, java.lang.String recurrence,
-		java.lang.Integer priority, boolean outOfOffice, int firstReminder,
-		int secondReminder, boolean required, java.lang.String requestMessage,
-		java.lang.String responseMessage,
+		java.lang.String location, java.util.Date startDate,
+		java.util.Date endDate, boolean allDay, java.lang.String recurrence,
+		int firstReminder, int secondReminder,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -691,17 +681,11 @@ public class CalendarBookingLocalServiceClp
 				userId, calendarId, parentCalendarBookingId,
 				ClpSerializer.translateInput(titleMap),
 				ClpSerializer.translateInput(descriptionMap),
-				ClpSerializer.translateInput(locationMap),
-				ClpSerializer.translateInput(type), startDateMonth,
-				startDateDay, startDateYear, startDateHour, startDateMinute,
-				endDateMonth, endDateDay, endDateYear, endDateHour,
-				endDateMinute, allDay,
-				ClpSerializer.translateInput(recurrence),
-				ClpSerializer.translateInput(priority), outOfOffice,
-				firstReminder, secondReminder, required,
-				ClpSerializer.translateInput(requestMessage),
-				ClpSerializer.translateInput(responseMessage),
-				ClpSerializer.translateInput(serviceContext));
+				ClpSerializer.translateInput(location),
+				ClpSerializer.translateInput(startDate),
+				ClpSerializer.translateInput(endDate), allDay,
+				ClpSerializer.translateInput(recurrence), firstReminder,
+				secondReminder, ClpSerializer.translateInput(serviceContext));
 
 		try {
 			returnObj = _classLoaderProxy.invoke(methodHandler);
@@ -980,15 +964,9 @@ public class CalendarBookingLocalServiceClp
 		long userId, long calendarBookingId, long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> titleMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.util.Map<java.util.Locale, java.lang.String> locationMap,
-		java.lang.String type, int status, int startDateMonth,
-		int startDateDay, int startDateYear, int startDateHour,
-		int startDateMinute, int endDateMonth, int endDateDay, int endDateYear,
-		int endDateHour, int endDateMinute, boolean allDay,
-		java.lang.String recurrence, java.lang.Integer priority,
-		boolean outOfOffice, int firstReminder, int secondReminder,
-		boolean required, java.lang.String requestMessage,
-		java.lang.String responseMessage,
+		java.lang.String location, int status, java.util.Date startDate,
+		java.util.Date endDate, boolean allDay, java.lang.String recurrence,
+		int firstReminder, int secondReminder,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -998,17 +976,11 @@ public class CalendarBookingLocalServiceClp
 				userId, calendarBookingId, calendarId,
 				ClpSerializer.translateInput(titleMap),
 				ClpSerializer.translateInput(descriptionMap),
-				ClpSerializer.translateInput(locationMap),
-				ClpSerializer.translateInput(type), status, startDateMonth,
-				startDateDay, startDateYear, startDateHour, startDateMinute,
-				endDateMonth, endDateDay, endDateYear, endDateHour,
-				endDateMinute, allDay,
-				ClpSerializer.translateInput(recurrence),
-				ClpSerializer.translateInput(priority), outOfOffice,
-				firstReminder, secondReminder, required,
-				ClpSerializer.translateInput(requestMessage),
-				ClpSerializer.translateInput(responseMessage),
-				ClpSerializer.translateInput(serviceContext));
+				ClpSerializer.translateInput(location), status,
+				ClpSerializer.translateInput(startDate),
+				ClpSerializer.translateInput(endDate), allDay,
+				ClpSerializer.translateInput(recurrence), firstReminder,
+				secondReminder, ClpSerializer.translateInput(serviceContext));
 
 		try {
 			returnObj = _classLoaderProxy.invoke(methodHandler);
