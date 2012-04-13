@@ -107,16 +107,15 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String title, String description, String location, String type,
-			Date startDate, Date endDate, int status, boolean andOperator,
-			int start, int end, OrderByComparator orderByComparator)
+			String title, String description, String location, Date startDate,
+			Date endDate, int status, boolean andOperator, int start, int end,
+			OrderByComparator orderByComparator)
 		throws SystemException {
 
-		return calendarBookingFinder.filterFindByC_G_C_C_P_T_D_L_T_S_E_S(
+		return calendarBookingFinder.filterFindByC_G_C_C_P_T_D_L_S_E_S(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, title, description, location, type,
-			startDate, endDate, status, andOperator, start, end,
-			orderByComparator);
+			parentCalendarBookingId, title, description, location, startDate,
+			endDate, status, andOperator, start, end, orderByComparator);
 	}
 
 	public int searchCount(
@@ -133,14 +132,14 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String title, String description, String location, String type,
-			Date startDate, Date endDate, int status, boolean andOperator)
+			String title, String description, String location, Date startDate,
+			Date endDate, int status, boolean andOperator)
 		throws SystemException {
 
-		return calendarBookingFinder.filterCountByC_G_C_C_P_T_D_L_T_S_E_S(
+		return calendarBookingFinder.filterCountByC_G_C_C_P_T_D_L_S_E_S(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, title, description, location, type,
-			startDate, endDate, status, andOperator);
+			parentCalendarBookingId, title, description, location, startDate,
+			endDate, status, andOperator);
 	}
 
 	public CalendarBooking updateCalendarBooking(
