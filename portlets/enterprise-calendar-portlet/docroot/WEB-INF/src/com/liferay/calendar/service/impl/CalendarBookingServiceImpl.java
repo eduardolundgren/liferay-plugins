@@ -94,57 +94,53 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, Integer priority,
-			int status, int start, int end, OrderByComparator orderByComparator)
+			String keywords, Date startDate, Date endDate, int status,
+			int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 
 		return calendarBookingFinder.filterFindByKeywords(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, keywords, startDate, endDate, priority,
-			status, start, end, orderByComparator);
+			parentCalendarBookingId, keywords, startDate, endDate, status,
+			start, end, orderByComparator);
 	}
 
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, String type,
-			Date startDate, Date endDate, Integer priority, int status,
-			boolean andOperator, int start, int end,
-			OrderByComparator orderByComparator)
+			Date startDate, Date endDate, int status, boolean andOperator,
+			int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 
-		return calendarBookingFinder.filterFindByC_G_C_C_P_T_D_L_T_S_E_P_S(
+		return calendarBookingFinder.filterFindByC_G_C_C_P_T_D_L_T_S_E_S(
 			companyId, groupIds, calendarIds, calendarResourceIds,
 			parentCalendarBookingId, title, description, location, type,
-			startDate, endDate, priority, status, andOperator, start, end,
+			startDate, endDate, status, andOperator, start, end,
 			orderByComparator);
 	}
 
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, Integer priority,
-			int status)
+			String keywords, Date startDate, Date endDate, int status)
 		throws SystemException {
 
 		return calendarBookingFinder.filterCountByKeywords(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, keywords, startDate, endDate, priority,
-			status);
+			parentCalendarBookingId, keywords, startDate, endDate, status);
 	}
 
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, String type,
-			Date startDate, Date endDate, Integer priority, int status,
-			boolean andOperator)
+			Date startDate, Date endDate, int status, boolean andOperator)
 		throws SystemException {
 
-		return calendarBookingFinder.filterCountByC_G_C_C_P_T_D_L_T_S_E_P_S(
+		return calendarBookingFinder.filterCountByC_G_C_C_P_T_D_L_T_S_E_S(
 			companyId, groupIds, calendarIds, calendarResourceIds,
 			parentCalendarBookingId, title, description, location, type,
-			startDate, endDate, priority, status, andOperator);
+			startDate, endDate, status, andOperator);
 	}
 
 	public CalendarBooking updateCalendarBooking(

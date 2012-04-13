@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <custom-sql>
-	<sql id="com.liferay.calendar.service.persistence.CalendarBookingFinder.countByC_G_C_C_P_T_D_L_T_S_E_P_S">
+	<sql id="com.liferay.calendar.service.persistence.CalendarBookingFinder.countByC_G_C_C_P_T_D_L_T_S_E_S">
 		<![CDATA[
 			SELECT
 				COUNT(DISTINCT calendarBookingId) AS COUNT_VALUE
@@ -19,7 +19,6 @@
 					(lower(location) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
 					(type_ = ? [$AND_OR_NULL_CHECK$])
 				) AND
-				(priority = ? ) AND
 				(status = ?) AND
 				(
 					(startDate <= ? [$AND_OR_NULL_CHECK$]) AND
@@ -27,7 +26,7 @@
 				)
 		]]>
 	</sql>
-	<sql id="com.liferay.calendar.service.persistence.CalendarBookingFinder.findByC_G_C_C_P_T_D_L_T_S_E_P_S">
+	<sql id="com.liferay.calendar.service.persistence.CalendarBookingFinder.findByC_G_C_C_P_T_D_L_T_S_E_S">
 		<![CDATA[
 			SELECT
 				{CalendarBooking.*}
@@ -45,7 +44,6 @@
 					(lower(location) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
 					(type_ = ? [$AND_OR_NULL_CHECK$])
 				) AND
-				(priority = ? ) AND
 				(status = ?) AND
 				(
 					(startDate <= ? [$AND_OR_NULL_CHECK$]) AND

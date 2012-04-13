@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 
@@ -111,10 +110,6 @@ public class CalendarBookingLocalServiceImpl
 
 		calendarBookingPersistence.update(calendarBooking, false);
 
-		// Resources
-
-		resourceLocalService.addModelResources(calendarBooking, serviceContext);
-
 		// Workflow
 
 		calendarBookingApprovalWorkflow.startWorkflow(
@@ -131,11 +126,6 @@ public class CalendarBookingLocalServiceImpl
 		// Calendar booking
 
 		calendarBookingPersistence.remove(calendarBooking);
-
-		// Resources
-
-		resourceLocalService.deleteResource(
-			calendarBooking, ResourceConstants.SCOPE_INDIVIDUAL);
 
 		return calendarBooking;
 	}
@@ -187,57 +177,53 @@ public class CalendarBookingLocalServiceImpl
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, Integer priority,
-			int status, int start, int end, OrderByComparator orderByComparator)
+			String keywords, Date startDate, Date endDate, int status,
+			int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 
 		return calendarBookingFinder.findByKeywords(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, keywords, startDate, endDate, priority,
-			status, start, end, orderByComparator);
+			parentCalendarBookingId, keywords, startDate, endDate, status,
+			start, end, orderByComparator);
 	}
 
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, String type,
-			Date startDate, Date endDate, Integer priority, int status,
-			boolean andOperator, int start, int end,
-			OrderByComparator orderByComparator)
+			Date startDate, Date endDate, int status, boolean andOperator,
+			int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 
-		return calendarBookingFinder.findByC_G_C_C_P_T_D_L_T_S_E_P_S(
+		return calendarBookingFinder.findByC_G_C_C_P_T_D_L_T_S_E_S(
 			companyId, groupIds, calendarIds, calendarResourceIds,
 			parentCalendarBookingId, title, description, location, type,
-			startDate, endDate, priority, status, andOperator, start, end,
+			startDate, endDate, status, andOperator, start, end,
 			orderByComparator);
 	}
 
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, Integer priority,
-			int status)
+			String keywords, Date startDate, Date endDate, int status)
 		throws SystemException {
 
 		return calendarBookingFinder.countByKeywords(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, keywords, startDate, endDate, priority,
-			status);
+			parentCalendarBookingId, keywords, startDate, endDate, status);
 	}
 
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, String type,
-			Date startDate, Date endDate, Integer priority, int status,
-			boolean andOperator)
+			Date startDate, Date endDate, int status, boolean andOperator)
 		throws SystemException {
 
-		return calendarBookingFinder.countByC_G_C_C_P_T_D_L_T_S_E_P_S(
+		return calendarBookingFinder.countByC_G_C_C_P_T_D_L_T_S_E_S(
 			companyId, groupIds, calendarIds, calendarResourceIds,
 			parentCalendarBookingId, title, description, location, type,
-			startDate, endDate, priority, status, andOperator);
+			startDate, endDate, status, andOperator);
 	}
 
 	public CalendarBooking updateCalendarBooking(
@@ -291,11 +277,6 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setSecondReminder(secondReminder);
 
 		calendarBookingPersistence.update(calendarBooking, false);
-
-		// Resources
-
-		resourceLocalService.updateModelResources(
-			calendarBooking, serviceContext);
 
 		// Workflow
 
