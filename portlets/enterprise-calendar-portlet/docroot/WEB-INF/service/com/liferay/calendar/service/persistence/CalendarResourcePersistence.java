@@ -15,7 +15,6 @@
 package com.liferay.calendar.service.persistence;
 
 import com.liferay.calendar.model.CalendarResource;
-
 import com.liferay.portal.service.persistence.BasePersistence;
 
 /**

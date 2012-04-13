@@ -207,3 +207,8 @@
     vertical-align: middle;
     width: 80%;
 }
+
+
+.calendar-booking-invitations .aui-field-label {
+	margin-left: 15px;
+}

@@ -14,7 +14,9 @@
 
 package com.liferay.calendar.model.impl;
 
+import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarResource;
+import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -26,6 +28,10 @@ public class CalendarBookingImpl
 	extends CalendarBookingBaseImpl {
 
 	public CalendarBookingImpl() {
+	}
+
+	public Calendar getCalendar() throws PortalException, SystemException {
+		return CalendarLocalServiceUtil.getCalendar(getCalendarId());
 	}
 
 	public CalendarResource getCalendarResource()

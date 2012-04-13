@@ -14,20 +14,18 @@
 
 package com.liferay.calendar.model;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.GroupedModel;
 import com.liferay.portal.service.ServiceContext;
-
 import com.liferay.portlet.expando.model.ExpandoBridge;
-
-import java.io.Serializable;
-
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * The base model interface for the Calendar service. Represents a row in the &quot;Calendar&quot; database table, with each column mapped to a property of this class.

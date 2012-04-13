@@ -16,7 +16,6 @@ package com.liferay.calendar.model.impl;
 
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
-
 import com.liferay.portal.kernel.exception.SystemException;
 
 /**

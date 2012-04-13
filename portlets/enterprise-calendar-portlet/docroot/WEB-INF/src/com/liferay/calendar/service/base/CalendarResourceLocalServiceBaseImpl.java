@@ -14,6 +14,11 @@
 
 package com.liferay.calendar.service.base;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.sql.DataSource;
+
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarBookingLocalService;
 import com.liferay.calendar.service.CalendarBookingService;
@@ -27,9 +32,7 @@ import com.liferay.calendar.service.persistence.CalendarFinder;
 import com.liferay.calendar.service.persistence.CalendarPersistence;
 import com.liferay.calendar.service.persistence.CalendarResourceFinder;
 import com.liferay.calendar.service.persistence.CalendarResourcePersistence;
-
 import com.liferay.counter.service.CounterLocalService;
-
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -46,12 +49,6 @@ import com.liferay.portal.service.ResourceLocalService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
 import com.liferay.portal.service.persistence.UserPersistence;
-
-import java.io.Serializable;
-
-import java.util.List;
-
-import javax.sql.DataSource;
 
 /**
  * The base implementation of the calendar resource local service.
