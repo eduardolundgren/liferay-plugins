@@ -229,6 +229,8 @@ var CalendarList = A.Component.create(
 				var instance = this;
 
 				instance.simpleMenu = new Liferay.SimpleMenu(instance.get(SIMPLE_MENU));
+
+				instance.simpleMenu.calendarList = instance;
 			},
 
 			bindUI: function() {
@@ -255,6 +257,30 @@ var CalendarList = A.Component.create(
 				instance._renderCalendars();
 
 				instance.simpleMenu.render();
+			},
+
+			add: function(calendar) {
+				var instance = this;
+				var calendars = instance.get(CALENDARS);
+
+				calendars.push(calendar)
+
+				instance.set(CALENDARS, calendars);
+			},
+
+			clear: function() {
+				var instance= this;
+
+				instance.set(CALENDARS, []);
+			},
+
+			remove: function(item) {
+				var instance = this;
+				var calendars = instance.get(CALENDARS);
+
+				AArray.remove(calendars, AArray.indexOf(calendars, item));
+
+				instance.set(CALENDARS, calendars);
 			},
 
 			_clearCalendarColor: function(calendar) {

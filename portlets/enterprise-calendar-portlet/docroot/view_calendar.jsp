@@ -17,14 +17,6 @@
 <%@ include file="/init.jsp" %>
 
 <%
-CalendarResource groupCalendarResource = CalendarResourceUtil.fetchOrCreateGroupResource(request, scopeGroupId);
-
-CalendarResource userCalendarResource = null;
-
-if (themeDisplay.isSignedIn()) {
-	userCalendarResource = CalendarResourceUtil.fetchOrCreateUserResource(request, themeDisplay.getUserId());
-}
-
 List<Calendar> groupCalendars = null;
 
 if (groupCalendarResource != null) {
