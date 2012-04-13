@@ -26,10 +26,12 @@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.calendar.model.Calendar" %><%@
+page import="com.liferay.calendar.model.CalendarBooking" %><%@
 page import="com.liferay.calendar.model.CalendarResource" %><%@
 page import="com.liferay.calendar.search.CalendarResourceDisplayTerms" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearch" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearchTerms" %><%@
+page import="com.liferay.calendar.service.CalendarBookingServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarLocalServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarResourceServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarServiceUtil" %><%@
@@ -43,10 +45,13 @@ page import="com.liferay.calendar.util.ColorUtil" %><%@
 page import="com.liferay.calendar.util.PortletPropsValues" %><%@
 page import="com.liferay.calendar.util.WebKeys" %><%@
 page import="com.liferay.calendar.util.comparator.CalendarNameComparator" %><%@
+page import="com.liferay.calendar.workflow.CalendarBookingWorkflowConstants" %><%@
 page import="com.liferay.portal.kernel.dao.orm.QueryUtil" %><%@
 page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@
 page import="com.liferay.portal.kernel.json.JSONArray" %><%@
+page import="com.liferay.portal.kernel.json.JSONFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
+page import="com.liferay.portal.kernel.util.CalendarFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
 page import="com.liferay.portal.kernel.util.OrderByComparator" %><%@
@@ -60,7 +65,8 @@ page import="com.liferay.portal.util.PortalUtil" %><%@
 page import="com.liferay.portlet.PortalPreferences" %><%@
 page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
 
-<%@ page import="java.util.List" %>
+<%@ page import="java.util.List" %><%@
+page import="java.util.TimeZone" %>
 
 <%@ page import="javax.portlet.PortletPreferences" %><%@
 page import="javax.portlet.PortletURL" %>
@@ -84,6 +90,19 @@ if (Validator.isNotNull(portletResource)) {
 	preferences = PortletPreferencesFactoryUtil.getPortletSetup(request, portletResource);
 }
 
+CalendarResource groupCalendarResource = CalendarResourceUtil.fetchOrCreateGroupResource(request, scopeGroupId);
+
+CalendarResource userCalendarResource = null;
+Calendar userDefaultCalendar = null;
+
+if (themeDisplay.isSignedIn()) {
+	userCalendarResource = CalendarResourceUtil.fetchOrCreateUserResource(request, themeDisplay.getUserId());
+
+	if (userCalendarResource != null) {
+		userDefaultCalendar = CalendarServiceUtil.getCalendar(userCalendarResource.getDefaultCalendarId());
+	}
+}
+
 long calendarResourceClassNameId = PortalUtil.getClassNameId(CalendarResource.class);
 long groupClassNameId = PortalUtil.getClassNameId(Group.class);
 long userClassNameId = PortalUtil.getClassNameId(User.class);
@@ -92,4 +111,6 @@ String dayViewHeaderDateFormat = preferences.getValue("dayViewHeaderDateFormat",
 String navigationHeaderDateFormat = preferences.getValue("navigationHeaderDateFormat", "%A - %d %b %Y");
 boolean isoTimeFormat = GetterUtil.getBoolean(preferences.getValue("isoTimeFormat", StringPool.BLANK));
 boolean rememberLastDate = GetterUtil.getBoolean(preferences.getValue("rememberLastDate", StringPool.BLANK));
+
+TimeZone utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);
 %>
