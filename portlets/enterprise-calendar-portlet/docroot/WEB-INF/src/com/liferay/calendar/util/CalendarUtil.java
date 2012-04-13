@@ -15,6 +15,8 @@
 package com.liferay.calendar.util;
 
 import com.liferay.calendar.model.Calendar;
+import com.liferay.calendar.model.CalendarResource;
+import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 import com.liferay.calendar.util.comparator.CalendarNameComparator;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -141,8 +143,19 @@ public class CalendarUtil {
 	public static JSONObject toJSON(Calendar calendar, Locale locale) {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-		jsonObject.put("name", calendar.getName(locale));
-		jsonObject.put("color", ColorUtil.toHexString(calendar.getColor()));
+		try {
+			CalendarResource calendarResource =
+				CalendarResourceLocalServiceUtil.fetchCalendarResource(
+					calendar.getCalendarResourceId());
+
+			jsonObject.put("calendarId", calendar.getCalendarId());
+			jsonObject.put("color", ColorUtil.toHexString(calendar.getColor()));
+			jsonObject.put("classNameId", calendarResource.getClassNameId());
+			jsonObject.put("classPK", calendarResource.getClassPK());
+			jsonObject.put("name", calendar.getName(locale));
+		}
+		catch (Exception e) {
+		}
 
 		return jsonObject;
 	}
