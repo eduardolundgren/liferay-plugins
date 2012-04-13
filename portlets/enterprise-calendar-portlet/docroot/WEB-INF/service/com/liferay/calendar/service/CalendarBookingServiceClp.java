@@ -46,32 +46,28 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 		_searchMethodKey4 = new MethodKey(_classLoaderProxy.getClassName(),
 				"search", long.class, long[].class, long[].class, long[].class,
 				long.class, java.lang.String.class, java.util.Date.class,
-				java.util.Date.class, java.lang.Integer.class, int.class,
-				int.class, int.class,
+				java.util.Date.class, int.class, int.class, int.class,
 				com.liferay.portal.kernel.util.OrderByComparator.class);
 
 		_searchMethodKey5 = new MethodKey(_classLoaderProxy.getClassName(),
 				"search", long.class, long[].class, long[].class, long[].class,
 				long.class, java.lang.String.class, java.lang.String.class,
 				java.lang.String.class, java.lang.String.class,
-				java.util.Date.class, java.util.Date.class,
-				java.lang.Integer.class, int.class, boolean.class, int.class,
-				int.class,
+				java.util.Date.class, java.util.Date.class, int.class,
+				boolean.class, int.class, int.class,
 				com.liferay.portal.kernel.util.OrderByComparator.class);
 
 		_searchCountMethodKey6 = new MethodKey(_classLoaderProxy.getClassName(),
 				"searchCount", long.class, long[].class, long[].class,
 				long[].class, long.class, java.lang.String.class,
-				java.util.Date.class, java.util.Date.class,
-				java.lang.Integer.class, int.class);
+				java.util.Date.class, java.util.Date.class, int.class);
 
 		_searchCountMethodKey7 = new MethodKey(_classLoaderProxy.getClassName(),
 				"searchCount", long.class, long[].class, long[].class,
 				long[].class, long.class, java.lang.String.class,
 				java.lang.String.class, java.lang.String.class,
 				java.lang.String.class, java.util.Date.class,
-				java.util.Date.class, java.lang.Integer.class, int.class,
-				boolean.class);
+				java.util.Date.class, int.class, boolean.class);
 
 		_updateCalendarBookingMethodKey8 = new MethodKey(_classLoaderProxy.getClassName(),
 				"updateCalendarBooking", long.class, long.class, long.class,
@@ -232,8 +228,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, java.util.Date startDate,
-		java.util.Date endDate, java.lang.Integer priority, int status,
-		int start, int end,
+		java.util.Date endDate, int status, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
@@ -245,8 +240,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 				parentCalendarBookingId,
 				ClpSerializer.translateInput(keywords),
 				ClpSerializer.translateInput(startDate),
-				ClpSerializer.translateInput(endDate),
-				ClpSerializer.translateInput(priority), status, start, end,
+				ClpSerializer.translateInput(endDate), status, start, end,
 				ClpSerializer.translateInput(orderByComparator));
 
 		try {
@@ -274,9 +268,8 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, java.lang.String type,
-		java.util.Date startDate, java.util.Date endDate,
-		java.lang.Integer priority, int status, boolean andOperator, int start,
-		int end,
+		java.util.Date startDate, java.util.Date endDate, int status,
+		boolean andOperator, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
@@ -290,8 +283,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 				ClpSerializer.translateInput(location),
 				ClpSerializer.translateInput(type),
 				ClpSerializer.translateInput(startDate),
-				ClpSerializer.translateInput(endDate),
-				ClpSerializer.translateInput(priority), status, andOperator,
+				ClpSerializer.translateInput(endDate), status, andOperator,
 				start, end, ClpSerializer.translateInput(orderByComparator));
 
 		try {
@@ -317,7 +309,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 	public int searchCount(long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, java.util.Date startDate,
-		java.util.Date endDate, java.lang.Integer priority, int status)
+		java.util.Date endDate, int status)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
@@ -328,8 +320,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 				parentCalendarBookingId,
 				ClpSerializer.translateInput(keywords),
 				ClpSerializer.translateInput(startDate),
-				ClpSerializer.translateInput(endDate),
-				ClpSerializer.translateInput(priority), status);
+				ClpSerializer.translateInput(endDate), status);
 
 		try {
 			returnObj = _classLoaderProxy.invoke(methodHandler);
@@ -355,8 +346,8 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, java.lang.String type,
-		java.util.Date startDate, java.util.Date endDate,
-		java.lang.Integer priority, int status, boolean andOperator)
+		java.util.Date startDate, java.util.Date endDate, int status,
+		boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
@@ -369,8 +360,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 				ClpSerializer.translateInput(location),
 				ClpSerializer.translateInput(type),
 				ClpSerializer.translateInput(startDate),
-				ClpSerializer.translateInput(endDate),
-				ClpSerializer.translateInput(priority), status, andOperator);
+				ClpSerializer.translateInput(endDate), status, andOperator);
 
 		try {
 			returnObj = _classLoaderProxy.invoke(methodHandler);
