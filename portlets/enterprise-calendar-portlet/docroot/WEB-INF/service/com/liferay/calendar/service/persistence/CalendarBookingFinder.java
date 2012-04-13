@@ -24,20 +24,20 @@ public interface CalendarBookingFinder {
 		java.util.Date startDate, java.util.Date endDate, int status)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public int countByC_G_C_C_P_T_D_L_T_S_E_S(long companyId, long[] groupIds,
+	public int countByC_G_C_C_P_T_D_L_S_E_S(long companyId, long[] groupIds,
 		long[] calendarIds, long[] calendarResourceIds,
 		long parentCalendarBookingId, java.lang.String title,
 		java.lang.String description, java.lang.String location,
-		java.lang.String type, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator)
+		java.util.Date startDate, java.util.Date endDate, int status,
+		boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public int countByC_G_C_C_P_T_D_L_T_S_E_S(long companyId, long[] groupIds,
+	public int countByC_G_C_C_P_T_D_L_S_E_S(long companyId, long[] groupIds,
 		long[] calendarIds, long[] calendarResourceIds,
 		long parentCalendarBookingId, java.lang.String[] titles,
 		java.lang.String[] descriptions, java.lang.String[] locations,
-		java.lang.String[] types, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator)
+		java.util.Date startDate, java.util.Date endDate, int status,
+		boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	public int filterCountByKeywords(long companyId, long[] groupIds,
@@ -46,20 +46,20 @@ public interface CalendarBookingFinder {
 		java.util.Date startDate, java.util.Date endDate, int status)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public int filterCountByC_G_C_C_P_T_D_L_T_S_E_S(long companyId,
+	public int filterCountByC_G_C_C_P_T_D_L_S_E_S(long companyId,
 		long[] groupIds, long[] calendarIds, long[] calendarResourceIds,
 		long parentCalendarBookingId, java.lang.String title,
 		java.lang.String description, java.lang.String location,
-		java.lang.String type, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator)
+		java.util.Date startDate, java.util.Date endDate, int status,
+		boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public int filterCountByC_G_C_C_P_T_D_L_T_S_E_S(long companyId,
+	public int filterCountByC_G_C_C_P_T_D_L_S_E_S(long companyId,
 		long[] groupIds, long[] calendarIds, long[] calendarResourceIds,
 		long parentCalendarBookingId, java.lang.String[] titles,
 		java.lang.String[] descriptions, java.lang.String[] locations,
-		java.lang.String[] types, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator)
+		java.util.Date startDate, java.util.Date endDate, int status,
+		boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> filterFindByKeywords(
@@ -70,23 +70,23 @@ public interface CalendarBookingFinder {
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public java.util.List<com.liferay.calendar.model.CalendarBooking> filterFindByC_G_C_C_P_T_D_L_T_S_E_S(
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> filterFindByC_G_C_C_P_T_D_L_S_E_S(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
-		java.lang.String location, java.lang.String type,
-		java.util.Date startDate, java.util.Date endDate, int status,
-		boolean andOperator, int start, int end,
+		java.lang.String location, java.util.Date startDate,
+		java.util.Date endDate, int status, boolean andOperator, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public java.util.List<com.liferay.calendar.model.CalendarBooking> filterFindByC_G_C_C_P_T_D_L_T_S_E_S(
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> filterFindByC_G_C_C_P_T_D_L_S_E_S(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String[] titles, java.lang.String[] descriptions,
-		java.lang.String[] locations, java.lang.String[] types,
-		java.util.Date startDate, java.util.Date endDate, int status,
-		boolean andOperator, int start, int end,
+		java.lang.String[] locations, java.util.Date startDate,
+		java.util.Date endDate, int status, boolean andOperator, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
@@ -98,23 +98,23 @@ public interface CalendarBookingFinder {
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public java.util.List<com.liferay.calendar.model.CalendarBooking> findByC_G_C_C_P_T_D_L_T_S_E_S(
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> findByC_G_C_C_P_T_D_L_S_E_S(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
-		java.lang.String location, java.lang.String type,
-		java.util.Date startDate, java.util.Date endDate, int status,
-		boolean andOperator, int start, int end,
+		java.lang.String location, java.util.Date startDate,
+		java.util.Date endDate, int status, boolean andOperator, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
-	public java.util.List<com.liferay.calendar.model.CalendarBooking> findByC_G_C_C_P_T_D_L_T_S_E_S(
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> findByC_G_C_C_P_T_D_L_S_E_S(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String[] titles, java.lang.String[] descriptions,
-		java.lang.String[] locations, java.lang.String[] types,
-		java.util.Date startDate, java.util.Date endDate, int status,
-		boolean andOperator, int start, int end,
+		java.lang.String[] locations, java.util.Date startDate,
+		java.util.Date endDate, int status, boolean andOperator, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 }
