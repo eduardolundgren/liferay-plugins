@@ -105,6 +105,13 @@
 		<finder name="CalendarResourceId" return-type="Collection">
 			<finder-column name="calendarResourceId" />
 		</finder>
+		<finder name="ParentCalendarBookingId" return-type="Collection">
+			<finder-column name="parentCalendarBookingId" />
+		</finder>
+		<finder name="C_P" return-type="CalendarBooking" unique="true">
+			<finder-column name="calendarId" />
+			<finder-column name="parentCalendarBookingId" />
+		</finder>
 		<finder name="C_S" return-type="Collection">
 			<finder-column name="calendarResourceId" />
 			<finder-column name="status" />
@@ -113,6 +120,10 @@
 			<finder-column name="calendarId" />
 			<finder-column name="startDate" />
 			<finder-column name="endDate" />
+		</finder>
+		<finder name="P_S" return-type="Collection">
+			<finder-column name="parentCalendarBookingId" />
+			<finder-column name="status" />
 		</finder>
 
 		<!-- References -->
