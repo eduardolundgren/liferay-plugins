@@ -873,6 +873,12 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		_calendarBooking.persist();
 	}
 
+	public com.liferay.calendar.model.Calendar getCalendar()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBooking.getCalendar();
+	}
+
 	public com.liferay.calendar.model.CalendarResource getCalendarResource()
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {

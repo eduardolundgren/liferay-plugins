@@ -21,7 +21,6 @@ import com.liferay.calendar.model.CalendarBookingSoap;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -117,9 +116,10 @@ public class CalendarBookingModelImpl extends BaseModelImpl<CalendarBooking>
 	public static long CALENDARRESOURCEID_COLUMN_BITMASK = 2L;
 	public static long ENDDATE_COLUMN_BITMASK = 4L;
 	public static long GROUPID_COLUMN_BITMASK = 8L;
-	public static long STARTDATE_COLUMN_BITMASK = 16L;
-	public static long STATUS_COLUMN_BITMASK = 32L;
-	public static long UUID_COLUMN_BITMASK = 64L;
+	public static long PARENTCALENDARBOOKINGID_COLUMN_BITMASK = 16L;
+	public static long STARTDATE_COLUMN_BITMASK = 32L;
+	public static long STATUS_COLUMN_BITMASK = 64L;
+	public static long UUID_COLUMN_BITMASK = 128L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -363,7 +363,19 @@ public class CalendarBookingModelImpl extends BaseModelImpl<CalendarBooking>
 	}
 
 	public void setParentCalendarBookingId(long parentCalendarBookingId) {
+		_columnBitmask |= PARENTCALENDARBOOKINGID_COLUMN_BITMASK;
+
+		if (!_setOriginalParentCalendarBookingId) {
+			_setOriginalParentCalendarBookingId = true;
+
+			_originalParentCalendarBookingId = _parentCalendarBookingId;
+		}
+
 		_parentCalendarBookingId = parentCalendarBookingId;
+	}
+
+	public long getOriginalParentCalendarBookingId() {
+		return _originalParentCalendarBookingId;
 	}
 
 	@JSON
@@ -449,13 +461,8 @@ public class CalendarBookingModelImpl extends BaseModelImpl<CalendarBooking>
 			return;
 		}
 
-		Locale[] locales = LanguageUtil.getAvailableLocales();
-
-		for (Locale locale : locales) {
-			String title = titleMap.get(locale);
-
-			setTitle(title, locale, defaultLocale);
-		}
+		setTitle(LocalizationUtil.updateLocalization(titleMap, getTitle(),
+				"Title", LocaleUtil.toLanguageId(defaultLocale)));
 	}
 
 	@JSON
@@ -542,13 +549,9 @@ public class CalendarBookingModelImpl extends BaseModelImpl<CalendarBooking>
 			return;
 		}
 
-		Locale[] locales = LanguageUtil.getAvailableLocales();
-
-		for (Locale locale : locales) {
-			String description = descriptionMap.get(locale);
-
-			setDescription(description, locale, defaultLocale);
-		}
+		setDescription(LocalizationUtil.updateLocalization(descriptionMap,
+				getDescription(), "Description",
+				LocaleUtil.toLanguageId(defaultLocale)));
 	}
 
 	@JSON
@@ -886,6 +889,10 @@ public class CalendarBookingModelImpl extends BaseModelImpl<CalendarBooking>
 
 		calendarBookingModelImpl._setOriginalCalendarResourceId = false;
 
+		calendarBookingModelImpl._originalParentCalendarBookingId = calendarBookingModelImpl._parentCalendarBookingId;
+
+		calendarBookingModelImpl._setOriginalParentCalendarBookingId = false;
+
 		calendarBookingModelImpl._originalStartDate = calendarBookingModelImpl._startDate;
 
 		calendarBookingModelImpl._originalEndDate = calendarBookingModelImpl._endDate;
@@ -1218,6 +1225,8 @@ public class CalendarBookingModelImpl extends BaseModelImpl<CalendarBooking>
 	private long _originalCalendarResourceId;
 	private boolean _setOriginalCalendarResourceId;
 	private long _parentCalendarBookingId;
+	private long _originalParentCalendarBookingId;
+	private boolean _setOriginalParentCalendarBookingId;
 	private String _title;
 	private String _titleCurrentLanguageId;
 	private String _description;

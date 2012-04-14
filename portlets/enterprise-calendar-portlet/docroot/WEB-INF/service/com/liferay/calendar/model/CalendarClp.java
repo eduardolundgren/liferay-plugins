@@ -367,6 +367,10 @@ public class CalendarClp extends BaseModelImpl<Calendar> implements Calendar {
 		_defaultCalendar = defaultCalendar;
 	}
 
+	public com.liferay.calendar.model.CalendarResource getCalendarResource() {
+		throw new UnsupportedOperationException();
+	}
+
 	public void persist() throws SystemException {
 		if (this.isNew()) {
 			CalendarLocalServiceUtil.addCalendar(this);
