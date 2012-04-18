@@ -27,6 +27,8 @@
 
 <%@ page import="com.liferay.calendar.model.Calendar" %><%@
 page import="com.liferay.calendar.model.CalendarResource" %><%@
+page import="com.liferay.portal.model.Group"%><%@
+page import="com.liferay.portal.model.User"%><%@
 page import="com.liferay.calendar.search.CalendarResourceDisplayTerms" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearch" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearchTerms" %><%@
