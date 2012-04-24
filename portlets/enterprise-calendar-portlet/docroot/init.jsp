@@ -46,6 +46,7 @@ page import="com.liferay.calendar.util.PortletPropsValues" %><%@
 page import="com.liferay.calendar.util.WebKeys" %><%@
 page import="com.liferay.calendar.util.comparator.CalendarNameComparator" %><%@
 page import="com.liferay.calendar.workflow.CalendarBookingWorkflowConstants" %><%@
+page import="com.liferay.portal.kernel.bean.BeanParamUtil" %><%@
 page import="com.liferay.portal.kernel.dao.orm.QueryUtil" %><%@
 page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@
 page import="com.liferay.portal.kernel.json.JSONArray" %><%@
@@ -58,6 +59,7 @@ page import="com.liferay.portal.kernel.util.OrderByComparator" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.StringPool" %><%@
 page import="com.liferay.portal.kernel.util.StringUtil" %><%@
+page import="com.liferay.portal.kernel.util.TimeZoneUtil" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.model.Group" %><%@
 page import="com.liferay.portal.model.User" %><%@
@@ -67,6 +69,7 @@ page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
 
 <%@ page import="java.util.List" %><%@
 page import="java.util.TimeZone" %>
+<%@page import="java.util.Date"%>
 
 <%@ page import="javax.portlet.PortletPreferences" %><%@
 page import="javax.portlet.PortletURL" %>
@@ -113,4 +116,6 @@ boolean isoTimeFormat = GetterUtil.getBoolean(preferences.getValue("isoTimeForma
 boolean rememberLastDate = GetterUtil.getBoolean(preferences.getValue("rememberLastDate", StringPool.BLANK));
 
 TimeZone utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);
+
+java.util.Calendar now = CalendarFactoryUtil.getCalendar(timeZone);
 %>

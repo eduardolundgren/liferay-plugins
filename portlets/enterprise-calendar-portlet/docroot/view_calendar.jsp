@@ -29,8 +29,8 @@ if (userCalendarResource != null) {
 	userCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] {userCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator)null);
 }
 
-JSONArray groupCalendarsJSON = CalendarUtil.toJSON(groupCalendars, locale);
-JSONArray userCalendarsJSON = CalendarUtil.toJSON(userCalendars, locale);
+JSONArray groupCalendarsJSON = CalendarUtil.toCalendarsJSON(groupCalendars, locale);
+JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale);
 %>
 
 <aui:fieldset cssClass="calendar-portlet-column-parent">
@@ -49,7 +49,7 @@ JSONArray userCalendarsJSON = CalendarUtil.toJSON(userCalendars, locale);
 				<span class="aui-calendar-list-item-arrow" tabindex="0"></span>
 			</a>
 			<div class="calendar-portlet-calendar-list" id="<portlet:namespace />otherCalendarList">
-				<input class="calendar-portlet-list-input-text" id="<portlet:namespace />addOtherCalendar" placeholder="<liferay-ui:message key="add-other-calendars" />" type="text" />
+				<input class="calendar-portlet-add-calendars-input" id="<portlet:namespace />addOtherCalendar" placeholder="<liferay-ui:message key="add-other-calendars" />" type="text" />
 			</div>
 
 			<c:if test="<%= groupCalendarResource != null %>">
@@ -61,6 +61,8 @@ JSONArray userCalendarsJSON = CalendarUtil.toJSON(userCalendars, locale);
 				<div class="calendar-portlet-calendar-list" id="<portlet:namespace />siteCalendarList"></div>
 			</c:if>
 		</div>
+
+		<div id="<portlet:namespace />message"></div>
 	</aui:column>
 
 	<aui:column columnWidth="100">
@@ -72,85 +74,27 @@ JSONArray userCalendarsJSON = CalendarUtil.toJSON(userCalendars, locale);
 	<%@ include file="/event_recorder.jspf" %>
 </script>
 
-<button id="serviceTest">Service</button>
-
-<aui:script use="aui-scheduler,aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,json">
-
-	A.one('#serviceTest').on('click', function(e) {
-		var service1 = [{
-			"$user[defaultUser,greeting] = /user/get-user-by-id": {
-				"userId": 10158,
-			}
-		},
-		{
-			"$user[screenName,emailAddress] = /user/get-user-by-id": {
-				"userId": 10196,
-				"$group[active,friendlyURL] = /group/get-user-group": {
-					"@userId": "$user.userId"
-				}
-			}
-		}];
-
-		var service2 = [
-			{
-				"$var = /enterprise-calendar-portlet/calendarresource/get-calendar-resource": {
-					"calendarResourceId": 10701
-				}
-			},
-			{
-				"$user[defaultUser,greeting] = /user/get-user-by-id": {
-					"userId": 10158,
-				}
-			}
-		];
-
-		// console.log(service1);
-		console.log('IGOR', service2);
-
-		// A.io('http://localhost:8080/api/secure/jsonws/invoke', { method: 'post', data: { cmd: JSON.stringify(service1) } });
-		A.io('http://localhost:8080/api/secure/jsonws/invoke', { method: 'post', data: { cmd: JSON.stringify(service2) } });
-	});
-
-	/* Calendar list */
+<aui:script use="aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-scheduler,json">
+	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
+	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 
 	window.<portlet:namespace />myCalendarList = new Liferay.CalendarList(
 		{
 			boundingBox: '#<portlet:namespace />myCalendarList',
-			calendars: <%= userCalendarsJSON %>,
-			simpleMenu: {
-				items: [
-					{ id: 'm1', caption: 'Display only this Calendar', fn: function(event) { this.set('visible', false); } },
-					{ id: 'm2', caption: 'Calendar settings', fn: function() { this.set('visible', false); } },
-					{ id: 'm3', caption: 'Create event on this calendar', fn: function() { this.set('visible', false); } },
-					{ id: 'm6', caption: '-', fn: function() { this.set('visible', false); } },
-					{ id: 'm7', caption: '<div id="colorPicker"></div>', fn: function() { } }
-				]
-			}
+			calendars: <%= userCalendarsJSON %>
 		}
 	).render();
 
 	window.<portlet:namespace />otherCalendarList = new Liferay.CalendarList(
 		{
-			boundingBox: '#<portlet:namespace />otherCalendarList',
-			calendars: [ {name:'test'} ]
+			boundingBox: '#<portlet:namespace />otherCalendarList'
 		}
 	).render();
 
 	window.<portlet:namespace />siteCalendarList = new Liferay.CalendarList(
 		{
 			boundingBox: '#<portlet:namespace />siteCalendarList',
-			calendars: <%= groupCalendarsJSON %>,
-			simpleMenu: {
-				items: [
-					{ id: 'm1', caption: 'Display only this Calendar', fn: function(event) { this.set('visible', false); } },
-					{ id: 'm2', caption: 'Calendar settings', fn: function() { this.set('visible', false); } },
-					{ id: 'm3', caption: 'Create event on this calendar', fn: function() { this.set('visible', false); } },
-					{ id: 'm4', caption: 'Share this calendar', fn: function() { this.set('visible', false); } },
-					{ id: 'm5', caption: 'Notifications', fn: function() { this.set('visible', false); } },
-					{ id: 'm6', caption: '-', fn: function() { this.set('visible', false); } },
-					{ id: 'm7', caption: '<div id="colorPicker"></div>', fn: function() { } }
-				]
-			}
+			calendars: <%= groupCalendarsJSON %>
 		}
 	).render();
 
@@ -175,21 +119,35 @@ JSONArray userCalendarsJSON = CalendarUtil.toJSON(userCalendars, locale);
 		navigationDateFormat: '<%= navigationHeaderDateFormat %>'
 	});
 
-	window.<portlet:namespace />recorder = new A.SchedulerEventRecorder({
+	<portlet:renderURL var="editCalendarBookingURL">
+		<portlet:param name="jspPage" value="/edit_calendar_booking.jsp" />
+		<portlet:param name="redirect" value="<%= currentURL %>" />
+		<portlet:param name="calendarBookingId" value="{calendarBookingId}" />
+		<portlet:param name="calendarId" value="{calendarId}" />
+		<portlet:param name="startDate" value="{startDate}" />
+		<portlet:param name="endDate" value="{endDate}" />
+		<portlet:param name="titleCurrentValue" value="{titleCurrentValue}" />
+	</portlet:renderURL>
+
+	window.<portlet:namespace />recorder = new Liferay.SchedulerEventRecorder({
 		duration: 30,
+		editCalendarBookingURL: '<%= editCalendarBookingURL %>',
 		template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 	});
 
-	var calendars = [];
-	calendars = calendars.concat(window.<portlet:namespace />myCalendarList.get('calendars'));
-	calendars = calendars.concat(window.<portlet:namespace />otherCalendarList.get('calendars'));
-	calendars = calendars.concat(window.<portlet:namespace />siteCalendarList.get('calendars'));
+	Liferay.CalendarUtil.syncVisibleCalendarsMap(
+		window.<portlet:namespace />myCalendarList,
+		window.<portlet:namespace />otherCalendarList,
+		window.<portlet:namespace />siteCalendarList
+	);
 
-	window.<portlet:namespace />scheduler = new A.Scheduler(
+	window.<portlet:namespace />scheduler = new Liferay.Scheduler(
 		{
 			boundingBox: '#<portlet:namespace />scheduler',
+			eventClass: Liferay.SchedulerEvent,
 			eventRecorder: window.<portlet:namespace />recorder,
-			events: calendars,
+			events: A.Object.values(Liferay.CalendarUtil.visibleCalendars),
+			portletNamespace: '<portlet:namespace />',
 			render: true,
 			views: [
 				window.<portlet:namespace />weekView,
