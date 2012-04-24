@@ -58,11 +58,13 @@ public class CalendarResourceLocalServiceImpl
 			classPK = calendarResourceId;
 		}
 
+		long classNameId = PortalUtil.getClassNameId(className);
+
 		long globalUserId = 0;
 
-		if (CalendarResourceUtil.isGlobalResource(className)) {
+		if (CalendarResourceUtil.isGlobalResource(classNameId)) {
 			globalUserId = CalendarResourceUtil.getGlobalResourceUserId(
-				className, classPK);
+				classNameId, classPK);
 		}
 
 		if (globalUserId > 0) {
@@ -71,7 +73,6 @@ public class CalendarResourceLocalServiceImpl
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
-		long classNameId = PortalUtil.getClassNameId(className);
 		Date now = new Date();
 
 		validate(classNameId, classPK);
@@ -96,6 +97,16 @@ public class CalendarResourceLocalServiceImpl
 		}
 
 		calendarResource.setClassUuid(classUuid);
+
+		if (defaultCalendarId <= 0) {
+			Calendar calendar = calendarLocalService.addCalendar(
+				userId, groupId, calendarResourceId, nameMap, descriptionMap,
+				PortletPropsValues.CALENDAR_COLOR_DEFAULT, true,
+				serviceContext);
+
+			defaultCalendarId = calendar.getCalendarId();
+		}
+
 		calendarResource.setDefaultCalendarId(defaultCalendarId);
 		calendarResource.setCode(code);
 		calendarResource.setNameMap(nameMap);
@@ -109,18 +120,6 @@ public class CalendarResourceLocalServiceImpl
 
 		resourceLocalService.addModelResources(
 			calendarResource, serviceContext);
-
-		// Calendar
-
-		if (defaultCalendarId <= 0) {
-			Calendar calendar = calendarLocalService.addCalendar(
-				userId, groupId, calendarResourceId, nameMap, descriptionMap,
-				PortletPropsValues.CALENDAR_COLOR_DEFAULT, true,
-				serviceContext);
-
-			updateDefaultCalendarId(
-				calendarResourceId, calendar.getCalendarId());
-		}
 
 		return calendarResource;
 	}
@@ -270,20 +269,6 @@ public class CalendarResourceLocalServiceImpl
 		return updateCalendarResource(
 			calendarResourceId, calendarResource.getDefaultCalendarId(), code,
 			nameMap, descriptionMap, type, active, serviceContext);
-	}
-
-	public CalendarResource updateDefaultCalendarId(
-			long calendarResourceId, long defaultCalendarId)
-		throws PortalException, SystemException {
-
-		CalendarResource calendarResource =
-			calendarResourcePersistence.findByPrimaryKey(calendarResourceId);
-
-		calendarResource.setDefaultCalendarId(defaultCalendarId);
-
-		calendarResourcePersistence.update(calendarResource, false);
-
-		return calendarResource;
 	}
 
 	protected void validate(long classNameId, long classPK)

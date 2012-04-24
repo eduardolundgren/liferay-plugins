@@ -41,4 +41,8 @@ public class CalendarBookingImpl
 			getCalendarResourceId());
 	}
 
+	public boolean isMasterBooking() {
+		return (getParentCalendarBookingId() == getCalendarBookingId());
+	}
+
 }

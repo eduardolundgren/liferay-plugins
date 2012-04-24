@@ -16,6 +16,7 @@ package com.liferay.calendar.service.impl;
 
 import com.liferay.calendar.CalendarNameException;
 import com.liferay.calendar.model.Calendar;
+import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.base.CalendarLocalServiceBaseImpl;
 import com.liferay.calendar.util.PortletPropsValues;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -94,8 +95,15 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 					calendar.equals(calendarResourceCalendar));
 			}
 
-			calendarResourceLocalService.updateDefaultCalendarId(
-				calendarResourceId, calendarId);
+			CalendarResource calendarResource =
+				calendarResourceLocalService.fetchCalendarResource(
+					calendarResourceId);
+
+			if (calendarResource != null) {
+				calendarResource.setDefaultCalendarId(calendarId);
+
+				calendarResourcePersistence.update(calendarResource, false);
+			}
 		}
 
 		return calendar;
@@ -229,8 +237,11 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 					calendar.equals(calendarResourceCalendar));
 			}
 
-			calendarResourceLocalService.updateDefaultCalendarId(
-				calendar.getCalendarResourceId(), calendarId);
+			CalendarResource calendarResource = calendar.getCalendarResource();
+
+			calendarResource.setDefaultCalendarId(calendarId);
+
+			calendarResourcePersistence.update(calendarResource, false);
 		}
 
 		return calendar;

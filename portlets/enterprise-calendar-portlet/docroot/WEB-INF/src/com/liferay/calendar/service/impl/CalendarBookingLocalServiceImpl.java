@@ -18,6 +18,7 @@ import com.liferay.calendar.CalendarBookingDurationException;
 import com.liferay.calendar.CalendarBookingTitleException;
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
+import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.base.CalendarBookingLocalServiceBaseImpl;
 import com.liferay.calendar.workflow.CalendarBookingApprovalWorkflow;
 import com.liferay.calendar.workflow.CalendarBookingWorkflowConstants;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 
@@ -95,6 +95,15 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setModifiedDate(serviceContext.getModifiedDate(now));
 		calendarBooking.setCalendarId(calendarId);
 		calendarBooking.setCalendarResourceId(calendar.getCalendarResourceId());
+
+		int status = CalendarBookingWorkflowConstants.STATUS_PENDING;
+
+		if (parentCalendarBookingId == 0) {
+			parentCalendarBookingId = calendarBookingId;
+
+			status = CalendarBookingWorkflowConstants.STATUS_APPROVED;
+		}
+
 		calendarBooking.setParentCalendarBookingId(parentCalendarBookingId);
 		calendarBooking.setTitleMap(titleMap);
 		calendarBooking.setDescriptionMap(descriptionMap);
@@ -105,7 +114,7 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setRecurrence(recurrence);
 		calendarBooking.setFirstReminder(firstReminder);
 		calendarBooking.setSecondReminder(secondReminder);
-		calendarBooking.setStatus(WorkflowConstants.STATUS_DRAFT);
+		calendarBooking.setStatus(status);
 		calendarBooking.setStatusDate(serviceContext.getModifiedDate(now));
 
 		calendarBookingPersistence.update(calendarBooking, false);
@@ -116,6 +125,13 @@ public class CalendarBookingLocalServiceImpl
 			userId, calendarBookingId, serviceContext);
 
 		return calendarBooking;
+	}
+
+	public int countByC_P(long calendarId, long parentCalendarBookingId)
+		throws PortalException, SystemException {
+
+		return calendarBookingPersistence.countByC_P(
+			calendarId, parentCalendarBookingId);
 	}
 
 	@Override
@@ -153,6 +169,30 @@ public class CalendarBookingLocalServiceImpl
 		}
 	}
 
+	public CalendarBooking fetchByC_P(
+			long calendarId, long parentCalendarBookingId)
+		throws SystemException {
+
+		return calendarBookingPersistence.fetchByC_P(
+			calendarId, parentCalendarBookingId);
+	}
+
+	public List<CalendarBooking> findByP_S(
+			long parentCalendarBookingId, int status)
+		throws SystemException {
+
+		return calendarBookingPersistence.findByP_S(
+			parentCalendarBookingId, status);
+	}
+
+	public List<CalendarBooking> getByParentCalendarBookingId(
+			long parentCalendarBookingId)
+		throws SystemException {
+
+		return calendarBookingPersistence.findByParentCalendarBookingId(
+			parentCalendarBookingId);
+	}
+
 	@Override
 	public CalendarBooking getCalendarBooking(long calendarBookingId)
 		throws PortalException, SystemException {
@@ -177,7 +217,7 @@ public class CalendarBookingLocalServiceImpl
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, int status,
+			String keywords, Date startDate, Date endDate, int[] status,
 			int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 
@@ -191,7 +231,7 @@ public class CalendarBookingLocalServiceImpl
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, Date startDate,
-			Date endDate, int status, boolean andOperator, int start, int end,
+			Date endDate, int[] status, boolean andOperator, int start, int end,
 			OrderByComparator orderByComparator)
 		throws SystemException {
 
@@ -204,7 +244,7 @@ public class CalendarBookingLocalServiceImpl
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, int status)
+			String keywords, Date startDate, Date endDate, int[] status)
 		throws SystemException {
 
 		return calendarBookingFinder.countByKeywords(
@@ -216,7 +256,7 @@ public class CalendarBookingLocalServiceImpl
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, Date startDate,
-			Date endDate, int status, boolean andOperator)
+			Date endDate, int[] status, boolean andOperator)
 		throws SystemException {
 
 		return calendarBookingFinder.countByC_G_C_C_P_T_D_L_S_E_S(

@@ -15,20 +15,26 @@
 package com.liferay.calendar.util;
 
 import com.liferay.calendar.model.Calendar;
+import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 import com.liferay.calendar.util.comparator.CalendarNameComparator;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.util.UniqueList;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author Eduardo Lundgren
@@ -112,6 +118,12 @@ public class CalendarUtil {
 		return orderByComparator;
 	}
 
+	public static int getTimeZoneOffset(TimeZone timeZone) {
+		Date now = new Date();
+
+		return timeZone.getOffset(now.getTime());
+	}
+
 	public static String[] splitKeywords(String keywords) {
 		List<String> keywordsList = new UniqueList<String>();
 
@@ -140,7 +152,23 @@ public class CalendarUtil {
 		return StringUtil.split(StringUtil.merge(keywordsList));
 	}
 
-	public static JSONObject toJSON(Calendar calendar, Locale locale) {
+	public static JSONArray toCalendarBookingsJSON(
+			List<CalendarBooking> calendarBookings, Locale locale)
+		throws PortalException, SystemException {
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		if (calendarBookings != null) {
+			for (CalendarBooking calendarBooking : calendarBookings) {
+				jsonArray.put(
+					toCalendarJSON(calendarBooking.getCalendar(), locale));
+			}
+		}
+
+		return jsonArray;
+	}
+
+	public static JSONObject toCalendarJSON(Calendar calendar, Locale locale) {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		try {
@@ -160,16 +188,48 @@ public class CalendarUtil {
 		return jsonObject;
 	}
 
-	public static JSONArray toJSON(List<Calendar> calendars, Locale locale) {
+	public static JSONArray toCalendarsJSON(
+		List<Calendar> calendars, Locale locale) {
+
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		if (calendars != null) {
 			for (Calendar calendar : calendars) {
-				jsonArray.put(toJSON(calendar, locale));
+				jsonArray.put(toCalendarJSON(calendar, locale));
 			}
 		}
 
 		return jsonArray;
+	}
+
+	public static java.util.Calendar toLocalTimeZone(
+			long timestamp, TimeZone timeZone, Locale locale) {
+
+		int timeZoneOffset = CalendarUtil.getTimeZoneOffset(timeZone);
+
+		java.util.Calendar calendar = CalendarFactoryUtil.getCalendar(
+			timeZone, locale);
+
+		System.out.println(new Date(timestamp).getHours());
+
+		calendar.setTime(new Date(timestamp));
+		calendar.add(java.util.Calendar.MILLISECOND, timeZoneOffset);
+
+		return calendar;
+	}
+
+	public static java.util.Calendar toUTCTimeZone(
+			long timestamp, TimeZone timeZone, Locale locale) {
+
+		int timeZoneOffset = CalendarUtil.getTimeZoneOffset(timeZone);
+
+		java.util.Calendar calendar = CalendarFactoryUtil.getCalendar(
+			timeZone, locale);
+
+		calendar.setTimeInMillis(timestamp);
+		calendar.add(java.util.Calendar.MILLISECOND, -timeZoneOffset);
+
+		return calendar;
 	}
 
 }
