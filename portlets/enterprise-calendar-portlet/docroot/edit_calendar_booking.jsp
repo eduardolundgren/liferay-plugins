@@ -43,7 +43,7 @@ JSONArray acceptedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 JSONArray declinedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 JSONArray pendingCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 
-boolean canInvite = false;
+boolean canInvite = true;
 
 if (calendarBooking != null) {
 	startDateCal.setTime(calendarBooking.getStartDate());
@@ -64,7 +64,9 @@ if (calendarBooking != null) {
 			calendarBookingId,
 			CalendarBookingWorkflowConstants.STATUS_PENDING), locale);
 
-	canInvite = calendarBooking.isMasterBooking();
+	if (!calendarBooking.isMasterBooking()) {
+		canInvite = false;
+	}
 }
 
 if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0)) {
@@ -91,7 +93,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
 	<aui:input name="calendarId" type="hidden" value="<%= calendarId %>" />
-	<aui:input name="invitedResourcesJSON" type="hidden" />
+	<aui:input name="invitedCalendarsIds" type="hidden" />
 
 	<aui:fieldset>
 		<aui:input name="title" value="<%= title %>" />
@@ -160,8 +162,6 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 	</aui:button-row>
 </aui:form>
 
-<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarResources" var="calendarResourcesURL"></liferay-portlet:resourceURL>
-
 <aui:script>
 	Liferay.provide(
 		window,
@@ -170,7 +170,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			var A = AUI();
 
 			<c:if test="<%= canInvite %>">
-				document.<portlet:namespace />fm.<portlet:namespace />invitedResourcesJSON.value = A.JSON.stringify(<portlet:namespace />invitedResourcesMap);
+				document.<portlet:namespace />fm.<portlet:namespace />invitedCalendarsIds.value = A.JSON.stringify(A.Object.keys(Liferay.CalendarUtil.visibleCalendars));
 			</c:if>
 
 			submitForm(document.<portlet:namespace />fm);
@@ -182,48 +182,23 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 </aui:script>
 
 <c:if test="<%= canInvite %>">
-	<aui:script use="autocomplete,autocomplete-highlighters,json,liferay-calendar-list,liferay-calendar-simple-menu">
-		window.<portlet:namespace />invitedResourcesMap = {};
-
-		var getResourceKey = function(classNameId, classPK) {
-			var instance = this;
-
-			return [classNameId, classPK].join('<%= StringPool.COMMA %>');
-		}
-
-		var getCalendarResourceKey = function(calendar) {
-			var instance = this;
-
-			var classNameId = calendar.get('classNameId');
-			var classPK = calendar.get('classPK');
-
-			return getResourceKey(classNameId, classPK);
-		}
-
+	<aui:script use="json,liferay-calendar-list,liferay-calendar-simple-menu">
 		var removeCalendarResource = function(calendarList, calendar, menu) {
 			var instance = this;
 
 			calendarList.remove(calendar);
-
-			delete <portlet:namespace />invitedResourcesMap[getCalendarResourceKey(calendar)];
 
 			if (menu) {
 				menu.set('visible', false);
 			}
 		}
 
-		var addCalendarResource = function(calendar) {
-			var instance = this;
-
-			<portlet:namespace />invitedResourcesMap[getCalendarResourceKey(calendar)] = 1;
-		}
-
-		var syncInvitedResourcesMap = function() {
-			var instance = this;
-
-			A.Array.each(window.<portlet:namespace />calendarListAccepted.get('calendars'), addCalendarResource);
-			A.Array.each(window.<portlet:namespace />calendarListDeclined.get('calendars'), addCalendarResource);
-			A.Array.each(window.<portlet:namespace />calendarListPending.get('calendars'), addCalendarResource);
+		var syncVisibleCalendarsMap = function() {
+			Liferay.CalendarUtil.syncVisibleCalendarsMap(
+				window.<portlet:namespace />calendarListAccepted,
+				window.<portlet:namespace />calendarListDeclined,
+				window.<portlet:namespace />calendarListPending
+			);
 		}
 
 		window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
@@ -234,7 +209,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 						A.one('#<portlet:namespace />pendingCounter').html(event.newVal.length);
 
-						syncInvitedResourcesMap();
+						syncVisibleCalendarsMap();
 					}
 				},
 				boundingBox: '#<portlet:namespace />calendarListPending',
@@ -264,7 +239,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 						A.one('#<portlet:namespace />acceptedCounter').html(event.newVal.length);
 
-						syncInvitedResourcesMap();
+						syncVisibleCalendarsMap();
 					}
 				},
 				boundingBox: '#<portlet:namespace />calendarListAccepted',
@@ -278,8 +253,6 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 								var instance = this;
 
 								var calendarList = instance.calendarList;
-
-	console.log(calendarList);
 
 								removeCalendarResource(calendarList, calendarList.activeItem, instance);
 							}
@@ -297,7 +270,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 						A.one('#<portlet:namespace />declinedCounter').html(event.newVal.length);
 
-						syncInvitedResourcesMap();
+						syncVisibleCalendarsMap();
 					}
 				},
 				boundingBox: '#<portlet:namespace />calendarListDeclined',
@@ -319,37 +292,14 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			}
 		).render();
 
-		syncInvitedResourcesMap();
+		syncVisibleCalendarsMap();
 
 		/* Auto Complete */
 
+		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarResources" var="calendarResourcesURL"></liferay-portlet:resourceURL>
+
 		var inviteResourcesInput = A.one('#<portlet:namespace />inviteResource');
 
-		inviteResourcesInput.plug(
-			A.Plugin.AutoComplete,
-			{
-				activateFirstItem: true,
-				after: {
-					select: function(event) {
-						<portlet:namespace />calendarListPending.add(event.result.raw);
-
-						inviteResourcesInput.val('');
-					}
-				},
-				maxResults: 20,
-				requestTemplate: '&<portlet:namespace />keywords={query}',
-				resultFilters: function(query, results) {
-					return A.Array.filter(
-						results,
-						function(item) {
-							return !<portlet:namespace />invitedResourcesMap[getResourceKey(item.raw.classNameId, item.raw.classPK)];
-						}
-					)
-				},
-				resultHighlighter: 'wordMatch',
-				resultTextLocator: 'name',
-				source: '<%= calendarResourcesURL %>'
-			}
-		);
+		Liferay.CalendarUtil.createCalendarListAutoComplete('<%= calendarResourcesURL %>', <portlet:namespace />calendarListPending, inviteResourcesInput);
 	</aui:script>
 </c:if>
