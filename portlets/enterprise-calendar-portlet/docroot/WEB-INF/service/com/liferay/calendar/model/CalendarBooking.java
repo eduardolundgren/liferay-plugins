@@ -38,4 +38,6 @@ public interface CalendarBooking extends CalendarBookingModel, PersistedModel {
 	public com.liferay.calendar.model.CalendarResource getCalendarResource()
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
+
+	public boolean isMasterBooking();
 }

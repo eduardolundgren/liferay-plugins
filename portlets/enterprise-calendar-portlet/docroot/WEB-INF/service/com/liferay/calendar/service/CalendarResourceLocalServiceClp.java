@@ -136,9 +136,6 @@ public class CalendarResourceLocalServiceClp
 				java.util.Map.class, java.util.Map.class,
 				java.lang.String.class, boolean.class,
 				com.liferay.portal.service.ServiceContext.class);
-
-		_updateDefaultCalendarIdMethodKey26 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateDefaultCalendarId", long.class, long.class);
 	}
 
 	public com.liferay.calendar.model.CalendarResource addCalendarResource(
@@ -946,39 +943,6 @@ public class CalendarResourceLocalServiceClp
 		return (com.liferay.calendar.model.CalendarResource)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public com.liferay.calendar.model.CalendarResource updateDefaultCalendarId(
-		long calendarResourceId, long defaultCalendarId)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		Object returnObj = null;
-
-		MethodHandler methodHandler = new MethodHandler(_updateDefaultCalendarIdMethodKey26,
-				calendarResourceId, defaultCalendarId);
-
-		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
-		}
-		catch (Throwable t) {
-			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
-				throw (com.liferay.portal.kernel.exception.PortalException)t;
-			}
-
-			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
-				throw (com.liferay.portal.kernel.exception.SystemException)t;
-			}
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (com.liferay.calendar.model.CalendarResource)ClpSerializer.translateOutput(returnObj);
-	}
-
 	public ClassLoaderProxy getClassLoaderProxy() {
 		return _classLoaderProxy;
 	}
@@ -1010,5 +974,4 @@ public class CalendarResourceLocalServiceClp
 	private MethodKey _searchCountMethodKey23;
 	private MethodKey _updateCalendarResourceMethodKey24;
 	private MethodKey _updateCalendarResourceMethodKey25;
-	private MethodKey _updateDefaultCalendarIdMethodKey26;
 }

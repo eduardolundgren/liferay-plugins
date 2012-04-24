@@ -113,6 +113,53 @@ public class CalendarBookingServiceSoap {
 		}
 	}
 
+	public static com.liferay.calendar.model.CalendarBookingSoap fetchByC_P(
+		long calendarId, long parentCalendarBookingId)
+		throws RemoteException {
+		try {
+			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.fetchByC_P(calendarId,
+					parentCalendarBookingId);
+
+			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.calendar.model.CalendarBookingSoap[] findByP_S(
+		long parentCalendarBookingId, int status) throws RemoteException {
+		try {
+			java.util.List<com.liferay.calendar.model.CalendarBooking> returnValue =
+				CalendarBookingServiceUtil.findByP_S(parentCalendarBookingId,
+					status);
+
+			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.calendar.model.CalendarBookingSoap[] getByParentCalendarBookingId(
+		long parentCalendarBookingId) throws RemoteException {
+		try {
+			java.util.List<com.liferay.calendar.model.CalendarBooking> returnValue =
+				CalendarBookingServiceUtil.getByParentCalendarBookingId(parentCalendarBookingId);
+
+			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	public static com.liferay.calendar.model.CalendarBookingSoap getCalendarBooking(
 		long calendarBookingId) throws RemoteException {
 		try {
@@ -148,7 +195,7 @@ public class CalendarBookingServiceSoap {
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, java.util.Date startDate,
-		java.util.Date endDate, int status, int start, int end,
+		java.util.Date endDate, int[] status, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws RemoteException {
 		try {
@@ -172,7 +219,7 @@ public class CalendarBookingServiceSoap {
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator, int start,
+		java.util.Date endDate, int[] status, boolean andOperator, int start,
 		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws RemoteException {
@@ -195,7 +242,7 @@ public class CalendarBookingServiceSoap {
 	public static int searchCount(long companyId, long[] groupIds,
 		long[] calendarIds, long[] calendarResourceIds,
 		long parentCalendarBookingId, java.lang.String keywords,
-		java.util.Date startDate, java.util.Date endDate, int status)
+		java.util.Date startDate, java.util.Date endDate, int[] status)
 		throws RemoteException {
 		try {
 			int returnValue = CalendarBookingServiceUtil.searchCount(companyId,
@@ -216,7 +263,7 @@ public class CalendarBookingServiceSoap {
 		long[] calendarIds, long[] calendarResourceIds,
 		long parentCalendarBookingId, java.lang.String title,
 		java.lang.String description, java.lang.String location,
-		java.util.Date startDate, java.util.Date endDate, int status,
+		java.util.Date startDate, java.util.Date endDate, int[] status,
 		boolean andOperator) throws RemoteException {
 		try {
 			int returnValue = CalendarBookingServiceUtil.searchCount(companyId,

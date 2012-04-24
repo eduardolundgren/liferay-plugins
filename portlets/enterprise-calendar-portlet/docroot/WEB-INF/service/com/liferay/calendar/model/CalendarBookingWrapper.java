@@ -885,6 +885,10 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		return _calendarBooking.getCalendarResource();
 	}
 
+	public boolean isMasterBooking() {
+		return _calendarBooking.isMasterBooking();
+	}
+
 	/**
 	 * @deprecated Renamed to {@link #getWrappedModel}
 	 */
