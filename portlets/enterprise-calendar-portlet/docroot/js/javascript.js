@@ -271,6 +271,37 @@ var CalendarUtil = {
 		return events;
 	},
 
+	createCalendarListAutoComplete: function(resourceURL, calendarList, input) {
+		var instance = this;
+
+		input.plug(
+			A.Plugin.AutoComplete,
+			{
+				activateFirstItem: true,
+				after: {
+					select: function(event) {
+						calendarList.add(event.result.raw);
+
+						input.val(_EMPY_STR);
+					}
+				},
+				maxResults: 20,
+				requestTemplate: '&' + Liferay.CalendarUtil.PORTLET_NAMESPACE + 'keywords={query}',
+				resultFilters: function(query, results) {
+					return A.Array.filter(
+						results,
+						function(item) {
+							return !instance.visibleCalendars[item.raw.calendarId];
+						}
+					)
+				},
+				resultHighlighter: 'wordMatch',
+				resultTextLocator: 'name',
+				source: resourceURL
+			}
+		);
+	},
+
 	deleteEvent: function(evt) {
 		var instance = this;
 
@@ -707,7 +738,7 @@ var Calendar = A.Component.create({
 
 Liferay.SchedulerCalendar = Calendar;
 
-}, '@VERSION@' ,{ requires: ['aui-scheduler', 'aui-io', 'datasource-get', 'datasource-cache'] });
+}, '@VERSION@' ,{ requires: ['autocomplete', 'autocomplete-highlighters', 'aui-scheduler', 'aui-io', 'datasource-get', 'datasource-cache', 'liferay-portlet-url'] });
 
 
 

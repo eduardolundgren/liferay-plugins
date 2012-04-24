@@ -78,8 +78,19 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 
+	var syncVisibleCalendarsMap = function() {
+		Liferay.CalendarUtil.syncVisibleCalendarsMap(
+			window.<portlet:namespace />myCalendarList,
+			window.<portlet:namespace />otherCalendarList,
+			window.<portlet:namespace />siteCalendarList
+		);
+	}
+
 	window.<portlet:namespace />myCalendarList = new Liferay.CalendarList(
 		{
+			after: {
+				calendarsChange: syncVisibleCalendarsMap
+			},
 			boundingBox: '#<portlet:namespace />myCalendarList',
 			calendars: <%= userCalendarsJSON %>
 		}
@@ -87,16 +98,24 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 
 	window.<portlet:namespace />otherCalendarList = new Liferay.CalendarList(
 		{
+			after: {
+				calendarsChange: syncVisibleCalendarsMap
+			},
 			boundingBox: '#<portlet:namespace />otherCalendarList'
 		}
 	).render();
 
 	window.<portlet:namespace />siteCalendarList = new Liferay.CalendarList(
 		{
+			after: {
+				calendarsChange: syncVisibleCalendarsMap
+			},
 			boundingBox: '#<portlet:namespace />siteCalendarList',
 			calendars: <%= groupCalendarsJSON %>
 		}
 	).render();
+
+	syncVisibleCalendarsMap();
 
 	/* Scheduler */
 
@@ -135,12 +154,6 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 		template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 	});
 
-	Liferay.CalendarUtil.syncVisibleCalendarsMap(
-		window.<portlet:namespace />myCalendarList,
-		window.<portlet:namespace />otherCalendarList,
-		window.<portlet:namespace />siteCalendarList
-	);
-
 	window.<portlet:namespace />scheduler = new Liferay.Scheduler(
 		{
 			boundingBox: '#<portlet:namespace />scheduler',
@@ -165,4 +178,12 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 		content: '.calendar-portlet-calendar-list',
 		header: '.calendar-portlet-list-header'
 	});
+
+	/* Auto Complete */
+
+	<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarResources" var="calendarResourcesURL"></liferay-portlet:resourceURL>
+
+	var addOtherCalendarInput = A.one('#<portlet:namespace />addOtherCalendar');
+
+	Liferay.CalendarUtil.createCalendarListAutoComplete('<%= calendarResourcesURL %>', <portlet:namespace />otherCalendarList, addOtherCalendarInput);
 </aui:script>

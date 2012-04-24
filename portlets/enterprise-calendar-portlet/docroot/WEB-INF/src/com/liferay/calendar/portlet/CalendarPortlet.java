@@ -22,7 +22,6 @@ import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.CalendarBookingServiceUtil;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
-import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 import com.liferay.calendar.service.CalendarResourceServiceUtil;
 import com.liferay.calendar.service.CalendarServiceUtil;
 import com.liferay.calendar.util.CalendarResourceUtil;
@@ -36,10 +35,10 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -58,7 +57,6 @@ import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.io.IOException;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -392,21 +390,6 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 	}
 
-	protected String getCalendarResourceKey(CalendarBooking calendarBooking)
-		throws PortalException, SystemException {
-
-		CalendarResource calendarResource =
-			calendarBooking.getCalendarResource();
-
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(calendarResource.getClassNameId());
-		sb.append(StringPool.COMMA);
-		sb.append(calendarResource.getClassPK());
-
-		return sb.toString();
-	}
-
 	@Override
 	protected boolean isSessionErrorException(Throwable cause) {
 		if (cause instanceof DuplicateCalendarResourceException ||
@@ -426,50 +409,27 @@ public class CalendarPortlet extends MVCPortlet {
 
 		long userId = PortalUtil.getUserId(actionRequest);
 
-		String invitedResourcesJSON = ParamUtil.getString(
-			actionRequest, "invitedResourcesJSON",
-			JSONFactoryUtil.getNullJSON());
-
-		JSONObject invitedResourcesJSONObject =
-			JSONFactoryUtil.createJSONObject(invitedResourcesJSON);
+		long[] invitedCalendarsIds = ParamUtil.getLongValues(
+			actionRequest, "invitedCalendarsIds");
 
 		List<CalendarBooking> calendarBookings =
 			CalendarBookingServiceUtil.getByParentCalendarBookingId(
 				parentCalendarBooking.getCalendarBookingId());
 
 		for (CalendarBooking calendarBooking : calendarBookings) {
-			String resourceKey = getCalendarResourceKey(calendarBooking);
-
-			if (!invitedResourcesJSONObject.has(resourceKey)) {
+			if (!ArrayUtil.contains(invitedCalendarsIds, calendarBooking.getCalendarId())) {
 				CalendarBookingServiceUtil.deleteCalendarBooking(
 					calendarBooking.getCalendarBookingId());
 			}
 		}
 
-		Iterator<String> keys = invitedResourcesJSONObject.keys();
-
-		while (keys.hasNext()) {
-			String[] kvp = StringUtil.split(keys.next());
-
-			long classNameId = Long.parseLong(kvp[0]);
-			long classPK = Long.parseLong(kvp[1]);
-
-			CalendarResource calendarResource =
-				CalendarResourceLocalServiceUtil.fetchCalendarResource(
-					classNameId, classPK);
-
-			if (calendarResource == null) {
-				continue;
-			}
-
+		for (long calendarId : invitedCalendarsIds) {
 			int total = CalendarBookingLocalServiceUtil.countByC_P(
-				calendarResource.getDefaultCalendarId(),
-				parentCalendarBooking.getCalendarBookingId());
+				calendarId, parentCalendarBooking.getCalendarBookingId());
 
 			if (total == 0) {
 				CalendarBookingLocalServiceUtil.addCalendarBooking(
-					userId,
-					calendarResource.getDefaultCalendarId(),
+					userId, calendarId,
 					parentCalendarBooking.getCalendarBookingId(),
 					parentCalendarBooking.getTitleMap(),
 					parentCalendarBooking.getDescriptionMap(),
