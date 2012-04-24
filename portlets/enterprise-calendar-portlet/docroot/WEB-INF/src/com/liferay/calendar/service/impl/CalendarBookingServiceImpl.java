@@ -15,7 +15,6 @@
 package com.liferay.calendar.service.impl;
 
 import com.liferay.calendar.model.CalendarBooking;
-import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.base.CalendarBookingServiceBaseImpl;
 import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.ActionKeys;
@@ -67,6 +66,47 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			calendarBookingId);
 	}
 
+	public CalendarBooking fetchByC_P(
+			long calendarId, long parentCalendarBookingId)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
+
+		return calendarBookingLocalService.fetchByC_P(
+			calendarId, parentCalendarBookingId);
+	}
+
+	public List<CalendarBooking> findByP_S(
+			long parentCalendarBookingId, int status)
+		throws PortalException, SystemException {
+
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.findByP_S(
+				parentCalendarBookingId, status);
+
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			filterCalendarBooking(calendarBooking);
+		}
+
+		return calendarBookings;
+	}
+
+	public List<CalendarBooking> getByParentCalendarBookingId(
+			long parentCalendarBookingId)
+		throws PortalException, SystemException {
+
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.getByParentCalendarBookingId(
+				parentCalendarBookingId);
+
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			filterCalendarBooking(calendarBooking);
+		}
+
+		return calendarBookings;
+	}
+
 	public CalendarBooking getCalendarBooking(long calendarBookingId)
 		throws PortalException, SystemException {
 
@@ -81,7 +121,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		List<CalendarBooking> calendarBookings =
-			CalendarBookingLocalServiceUtil.getCalendarBookings(
+			calendarBookingLocalService.getCalendarBookings(
 				calendarId, startDate, endDate);
 
 		for (CalendarBooking calendarBooking : calendarBookings) {
@@ -94,7 +134,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, int status,
+			String keywords, Date startDate, Date endDate, int[] status,
 			int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 
@@ -108,7 +148,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, Date startDate,
-			Date endDate, int status, boolean andOperator, int start, int end,
+			Date endDate, int[] status, boolean andOperator, int start, int end,
 			OrderByComparator orderByComparator)
 		throws SystemException {
 
@@ -121,7 +161,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
-			String keywords, Date startDate, Date endDate, int status)
+			String keywords, Date startDate, Date endDate, int[] status)
 		throws SystemException {
 
 		return calendarBookingFinder.filterCountByKeywords(
@@ -133,7 +173,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, Date startDate,
-			Date endDate, int status, boolean andOperator)
+			Date endDate, int[] status, boolean andOperator)
 		throws SystemException {
 
 		return calendarBookingFinder.filterCountByC_G_C_C_P_T_D_L_S_E_S(

@@ -16,6 +16,7 @@ package com.liferay.calendar.util;
 
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
+import com.liferay.calendar.service.CalendarResourceServiceUtil;
 import com.liferay.calendar.util.comparator.CalendarResourceCodeComparator;
 import com.liferay.calendar.util.comparator.CalendarResourceNameComparator;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -90,6 +91,34 @@ public class CalendarResourceUtil {
 		return calendarResource;
 	}
 
+	public static CalendarResource fetchOrCreateResource(
+			HttpServletRequest request, long classNameId, long classPK)
+		throws PortalException, SystemException {
+
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
+
+		CalendarResource calendarResource = null;
+
+		if (classNameId == userClassNameId) {
+			calendarResource =
+				CalendarResourceUtil.fetchOrCreateUserResource(
+					request, classPK);
+		}
+		else if (classNameId == groupClassNameId) {
+			calendarResource =
+				CalendarResourceUtil.fetchOrCreateGroupResource(
+					request, classPK);
+		}
+		else {
+			calendarResource =
+				CalendarResourceServiceUtil.fetchCalendarResource(
+					classNameId, classPK);
+		}
+
+		return calendarResource;
+	}
+
 	public static CalendarResource fetchOrCreateUserResource(
 			HttpServletRequest request, long userId) {
 
@@ -131,17 +160,19 @@ public class CalendarResourceUtil {
 		return calendarResource;
 	}
 
-	public static long getGlobalResourceUserId(String className, long classPK)
+	public static long getGlobalResourceUserId(long classNameId, long classPK)
 		throws PortalException, SystemException {
 
 		long userId = 0;
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
 
-		if (className.equals(Group.class.getName())) {
+		if (classNameId == groupClassNameId) {
 			Group group = GroupLocalServiceUtil.getGroup(classPK);
 
 			userId = group.getCreatorUserId();
 		}
-		else if (className.equals(User.class.getName())) {
+		else if (classNameId == userClassNameId) {
 			userId = classPK;
 		}
 
@@ -169,9 +200,12 @@ public class CalendarResourceUtil {
 		return orderByComparator;
 	}
 
-	public static boolean isGlobalResource(String className) {
-		if (className.equals(Group.class.getName()) ||
-			className.equals(User.class.getName())) {
+	public static boolean isGlobalResource(long classNameId) {
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
+
+		if ((classNameId == groupClassNameId) ||
+			(classNameId == userClassNameId)) {
 
 			return true;
 		}
