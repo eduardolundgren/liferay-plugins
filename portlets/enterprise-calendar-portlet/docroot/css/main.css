@@ -1,4 +1,27 @@
+@-webkit-keyframes pulse {
+  from {
+    -webkit-transform: scale(1.0);
+    opacity: 0.75;
+  }
+  50% {
+    -webkit-transform: scale(1.1);
+    opacity: 1.0;
+  }
+  to {
+    -webkit-transform: scale(1.0);
+    opacity: 0.75;
+  }
+}
+
+.calendar-portlet-event-loading-pulse {
+  opacity: 0.75;
+  -webkit-animation-name: pulse;
+  -webkit-animation-duration: 0.85s;
+  -webkit-animation-iteration-count: infinite;
+}
+
 /* ===[ Liferay scheduler ]===
+   ==================================================
    ==================================================
    ================================================== */
 
@@ -13,13 +36,30 @@
 
 .calendar-portlet-column-parent .aui-fieldset-content .aui-fieldset-content { padding-left: 0 }
 
+.calendar-portlet-event-recorder table td { padding: 5px }
+
+.calendar-portlet-event-recorder .aui-scheduler-event-recorder-overlay-body { margin: 15px 0 }
+
+.calendar-portlet-event-loading {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity=50);
+    opacity: 0.5;
+}
+
 /* ===[ Calendar list ]===
+   ==================================================
    ==================================================
    ================================================== */
 
-.calendar-portlet-list-input-text {
-	margin: 2px 0;
-	width: 200px;
+
+.calendar-portlet-invite-resources-input {
+    margin: 2px 0;
+    width: 350px;
+}
+
+.calendar-portlet-add-calendars-input {
+    margin: 2px 0;
+    width: 200px;
 }
 
 .aui-calendar-list-item {
@@ -114,6 +154,7 @@
 
 /* ===[ Simple menu ]===
    ==================================================
+   ==================================================
    ================================================== */
 
 .aui-simple-menu { position: absolute }
@@ -169,6 +210,7 @@
 .aui-simple-menu-item-hidden { display: none }
 
 /* ===[ Simple color picker ]===
+   ==================================================
    ==================================================
    ================================================== */
 
