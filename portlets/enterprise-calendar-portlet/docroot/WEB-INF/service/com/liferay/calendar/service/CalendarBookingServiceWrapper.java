@@ -55,6 +55,28 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		return _calendarBookingService.deleteCalendarBooking(calendarBookingId);
 	}
 
+	public com.liferay.calendar.model.CalendarBooking fetchByC_P(
+		long calendarId, long parentCalendarBookingId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBookingService.fetchByC_P(calendarId,
+			parentCalendarBookingId);
+	}
+
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> findByP_S(
+		long parentCalendarBookingId, int status)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBookingService.findByP_S(parentCalendarBookingId, status);
+	}
+
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getByParentCalendarBookingId(
+		long parentCalendarBookingId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBookingService.getByParentCalendarBookingId(parentCalendarBookingId);
+	}
+
 	public com.liferay.calendar.model.CalendarBooking getCalendarBooking(
 		long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
@@ -74,7 +96,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, java.util.Date startDate,
-		java.util.Date endDate, int status, int start, int end,
+		java.util.Date endDate, int[] status, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.search(companyId, groupIds, calendarIds,
@@ -87,7 +109,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator, int start,
+		java.util.Date endDate, int[] status, boolean andOperator, int start,
 		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException {
@@ -100,7 +122,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	public int searchCount(long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, java.util.Date startDate,
-		java.util.Date endDate, int status)
+		java.util.Date endDate, int[] status)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.searchCount(companyId, groupIds,
 			calendarIds, calendarResourceIds, parentCalendarBookingId,
@@ -111,7 +133,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, java.util.Date startDate,
-		java.util.Date endDate, int status, boolean andOperator)
+		java.util.Date endDate, int[] status, boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.searchCount(companyId, groupIds,
 			calendarIds, calendarResourceIds, parentCalendarBookingId, title,

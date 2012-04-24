@@ -17,6 +17,9 @@ Liferay.Service.registerClass(
 	{
 		addCalendarBooking: true,
 		deleteCalendarBooking: true,
+		fetchByC_P: true,
+		findByP_S: true,
+		getByParentCalendarBookingId: true,
 		getCalendarBooking: true,
 		getCalendarBookings: true,
 		search: true,
@@ -30,6 +33,7 @@ Liferay.Service.registerClass(
 	{
 		addCalendarResource: true,
 		deleteCalendarResource: true,
+		fetchCalendarResource: true,
 		getCalendarResource: true,
 		search: true,
 		searchCount: true,
