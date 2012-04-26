@@ -92,6 +92,15 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 			startDate, endDate);
 	}
 
+	public void invokeTransition(long userId, long calendarBookingId,
+		java.lang.String transitionName,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_calendarBookingService.invokeTransition(userId, calendarBookingId,
+			transitionName, serviceContext);
+	}
+
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> search(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,

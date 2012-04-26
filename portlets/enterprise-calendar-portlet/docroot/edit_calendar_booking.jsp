@@ -74,11 +74,6 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 }
 %>
 
-<%= "Calendar Hour:" + startDateCal.get(java.util.Calendar.HOUR_OF_DAY) %><br>
-<%= "Calendar timeZone:" + startDateCal.getTimeZone() %><br>
-<%= "User timeZone:" + timeZone %>
-<%= "JVM timeZone:" + java.util.Calendar.getInstance().getTimeZone() %>
-
 <liferay-ui:header
 	backURL="<%= redirect %>"
 	title='<%= ((calendarBooking != null ) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>' />
@@ -115,45 +110,45 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 		</liferay-ui:panel-container>
 	</aui:fieldset>
 
-	<c:if test="<%= canInvite %>">
-		<liferay-ui:tabs
-			names="invitations"
-			refresh="<%= false %>"
-		>
-			<liferay-ui:section>
+	<liferay-ui:tabs
+		names="invitations"
+		refresh="<%= false %>"
+	>
+		<liferay-ui:section>
+			<c:if test="<%= canInvite %>">
 				<aui:input inputCssClass="calendar-portlet-invite-resources-input" label="invite-resource" name="inviteResource" placeholder="add-other-calendars" type="text" />
 
 				<div class="separator"><!-- --></div>
+			</c:if>
 
-				<aui:layout cssClass="calendar-booking-invitations">
-					<aui:column columnWidth="33" first="true">
-						<label class="aui-field-label">
-							<liferay-ui:message key="pending" />
-							(<span id="<portlet:namespace />pendingCounter"><%= pendingCalendarsJSONArray.length() %></span>)
-						</label>
+			<aui:layout cssClass="calendar-booking-invitations">
+				<aui:column columnWidth="33" first="true">
+					<label class="aui-field-label">
+						<liferay-ui:message key="pending" />
+						(<span id="<portlet:namespace />pendingCounter"><%= pendingCalendarsJSONArray.length() %></span>)
+					</label>
 
-						<div class="calendar-portlet-calendar-list" id="<portlet:namespace />calendarListPending"></div>
-					</aui:column>
-					<aui:column columnWidth="33">
-						<label class="aui-field-label">
-							<liferay-ui:message key="accepted" />
-							(<span id="<portlet:namespace />acceptedCounter"><%= acceptedCalendarsJSONArray.length() %></span>)
-						</label>
+					<div class="calendar-portlet-calendar-list" id="<portlet:namespace />calendarListPending"></div>
+				</aui:column>
+				<aui:column columnWidth="33">
+					<label class="aui-field-label">
+						<liferay-ui:message key="accepted" />
+						(<span id="<portlet:namespace />acceptedCounter"><%= acceptedCalendarsJSONArray.length() %></span>)
+					</label>
 
-						<div class="calendar-portlet-calendar-list" id="<portlet:namespace />calendarListAccepted"></div>
-					</aui:column>
-					<aui:column columnWidth="33" last="true">
-						<label class="aui-field-label">
-							<liferay-ui:message key="declined" />
-							(<span id="<portlet:namespace />declinedCounter"><%= declinedCalendarsJSONArray.length() %></span>)
-						</label>
+					<div class="calendar-portlet-calendar-list" id="<portlet:namespace />calendarListAccepted"></div>
+				</aui:column>
+				<aui:column columnWidth="33" last="true">
+					<label class="aui-field-label">
+						<liferay-ui:message key="declined" />
+						(<span id="<portlet:namespace />declinedCounter"><%= declinedCalendarsJSONArray.length() %></span>)
+					</label>
 
-						<div class="calendar-portlet-calendar-list" id="<portlet:namespace />calendarListDeclined"></div>
-					</aui:column>
-				</aui:layout>
-			</liferay-ui:section>
-		</liferay-ui:tabs>
-	</c:if>
+					<div class="calendar-portlet-calendar-list" id="<portlet:namespace />calendarListDeclined"></div>
+				</aui:column>
+			</aui:layout>
+		</liferay-ui:section>
+	</liferay-ui:tabs>
 
 	<aui:button-row>
 		<aui:button type="submit" />
@@ -181,125 +176,123 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 	Liferay.Util.focusFormField(document.<portlet:namespace />fm.<portlet:namespace />title);
 </aui:script>
 
-<c:if test="<%= canInvite %>">
-	<aui:script use="json,liferay-calendar-list,liferay-calendar-simple-menu">
-		var removeCalendarResource = function(calendarList, calendar, menu) {
-			var instance = this;
+<aui:script use="json,liferay-calendar-list,liferay-calendar-simple-menu">
+	var removeCalendarResource = function(calendarList, calendar, menu) {
+		var instance = this;
 
-			calendarList.remove(calendar);
+		calendarList.remove(calendar);
 
-			if (menu) {
-				menu.set('visible', false);
+		if (menu) {
+			menu.set('visible', false);
+		}
+	}
+
+	var syncVisibleCalendarsMap = function() {
+		Liferay.CalendarUtil.syncVisibleCalendarsMap(
+			window.<portlet:namespace />calendarListAccepted,
+			window.<portlet:namespace />calendarListDeclined,
+			window.<portlet:namespace />calendarListPending
+		);
+	}
+
+	window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
+		{
+			after: {
+				calendarsChange: function(event) {
+					var instance = this;
+
+					A.one('#<portlet:namespace />pendingCounter').html(event.newVal.length);
+
+					syncVisibleCalendarsMap();
+				}
+			},
+			boundingBox: '#<portlet:namespace />calendarListPending',
+			calendars: <%= pendingCalendarsJSONArray %>,
+			simpleMenu: {
+				items: [
+					{
+						caption: '<liferay-ui:message key="remove" />',
+						fn: function(event) {
+							var instance = this;
+
+							var calendarList = instance.calendarList;
+
+							removeCalendarResource(calendarList, calendarList.activeItem, instance);
+						}
+					}
+				]
 			}
 		}
+	).render();
 
-		var syncVisibleCalendarsMap = function() {
-			Liferay.CalendarUtil.syncVisibleCalendarsMap(
-				window.<portlet:namespace />calendarListAccepted,
-				window.<portlet:namespace />calendarListDeclined,
-				window.<portlet:namespace />calendarListPending
-			);
+	window.<portlet:namespace />calendarListAccepted = new Liferay.CalendarList(
+		{
+			after: {
+				calendarsChange: function(event) {
+					var instance = this;
+
+					A.one('#<portlet:namespace />acceptedCounter').html(event.newVal.length);
+
+					syncVisibleCalendarsMap();
+				}
+			},
+			boundingBox: '#<portlet:namespace />calendarListAccepted',
+			calendars: <%= acceptedCalendarsJSONArray %>,
+			simpleMenu: {
+				items: [
+					{
+						id: '<portlet:namespace />remove',
+						caption: '<liferay-ui:message key="remove" />',
+						fn: function(event) {
+							var instance = this;
+
+							var calendarList = instance.calendarList;
+
+							removeCalendarResource(calendarList, calendarList.activeItem, instance);
+						}
+					}
+				]
+			}
 		}
+	).render();
 
-		window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
-			{
-				after: {
-					calendarsChange: function(event) {
-						var instance = this;
+	window.<portlet:namespace />calendarListDeclined = new Liferay.CalendarList(
+		{
+			after: {
+				calendarsChange: function(event) {
+					var instance = this;
 
-						A.one('#<portlet:namespace />pendingCounter').html(event.newVal.length);
+					A.one('#<portlet:namespace />declinedCounter').html(event.newVal.length);
 
-						syncVisibleCalendarsMap();
-					}
-				},
-				boundingBox: '#<portlet:namespace />calendarListPending',
-				calendars: <%= pendingCalendarsJSONArray %>,
-				simpleMenu: {
-					items: [
-						{
-							caption: '<liferay-ui:message key="remove" />',
-							fn: function(event) {
-								var instance = this;
-
-								var calendarList = instance.calendarList;
-
-								removeCalendarResource(calendarList, calendarList.activeItem, instance);
-							}
-						}
-					]
+					syncVisibleCalendarsMap();
 				}
-			}
-		).render();
+			},
+			boundingBox: '#<portlet:namespace />calendarListDeclined',
+			calendars: <%= declinedCalendarsJSONArray %>,
+			simpleMenu: {
+				items: [
+					{
+						caption: '<liferay-ui:message key="remove" />',
+						fn: function(event) {
+							var instance = this;
 
-		window.<portlet:namespace />calendarListAccepted = new Liferay.CalendarList(
-			{
-				after: {
-					calendarsChange: function(event) {
-						var instance = this;
+							var calendarList = instance.calendarList;
 
-						A.one('#<portlet:namespace />acceptedCounter').html(event.newVal.length);
-
-						syncVisibleCalendarsMap();
-					}
-				},
-				boundingBox: '#<portlet:namespace />calendarListAccepted',
-				calendars: <%= acceptedCalendarsJSONArray %>,
-				simpleMenu: {
-					items: [
-						{
-							id: '<portlet:namespace />remove',
-							caption: '<liferay-ui:message key="remove" />',
-							fn: function(event) {
-								var instance = this;
-
-								var calendarList = instance.calendarList;
-
-								removeCalendarResource(calendarList, calendarList.activeItem, instance);
-							}
+							removeCalendarResource(calendarList, calendarList.activeItem, instance);
 						}
-					]
-				}
-			}
-		).render();
-
-		window.<portlet:namespace />calendarListDeclined = new Liferay.CalendarList(
-			{
-				after: {
-					calendarsChange: function(event) {
-						var instance = this;
-
-						A.one('#<portlet:namespace />declinedCounter').html(event.newVal.length);
-
-						syncVisibleCalendarsMap();
 					}
-				},
-				boundingBox: '#<portlet:namespace />calendarListDeclined',
-				calendars: <%= declinedCalendarsJSONArray %>,
-				simpleMenu: {
-					items: [
-						{
-							caption: '<liferay-ui:message key="remove" />',
-							fn: function(event) {
-								var instance = this;
-
-								var calendarList = instance.calendarList;
-
-								removeCalendarResource(calendarList, calendarList.activeItem, instance);
-							}
-						}
-					]
-				}
+				]
 			}
-		).render();
+		}
+	).render();
 
-		syncVisibleCalendarsMap();
+	syncVisibleCalendarsMap();
 
-		/* Auto Complete */
-
+	<c:if test="<%= canInvite %>">
 		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarResources" var="calendarResourcesURL"></liferay-portlet:resourceURL>
 
 		var inviteResourcesInput = A.one('#<portlet:namespace />inviteResource');
 
 		Liferay.CalendarUtil.createCalendarListAutoComplete('<%= calendarResourcesURL %>', <portlet:namespace />calendarListPending, inviteResourcesInput);
-	</aui:script>
-</c:if>
+	</c:if>
+</aui:script>
