@@ -36,7 +36,6 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -272,12 +271,12 @@ public class CalendarPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		TimeZone utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);
-
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			CalendarBooking.class.getName(), actionRequest);
 
-		long userId = PortalUtil.getUserId(actionRequest);
+		User user = PortalUtil.getUser(actionRequest);
+
+		TimeZone timeZone = user.getTimeZone();
 
 		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
 		long calendarBookingId = ParamUtil.getLong(
@@ -309,11 +308,9 @@ public class CalendarPortlet extends MVCPortlet {
 			startDateHour += 12;
 		}
 
-		java.util.Calendar startDate = CalendarFactoryUtil.getCalendar(
-			startDateYear, startDateMonth, startDateDay, startDateHour,
-			startDateMinute);
-
-		startDate.setTimeZone(utcTimeZone);
+		java.util.Calendar startDate = CalendarUtil.getCalendar(
+			timeZone, startDateYear, startDateMonth, startDateDay,
+			startDateHour, startDateMinute, 0, 0);
 
 		int endDateMonth = ParamUtil.getInteger(actionRequest, "endDateMonth");
 		int endDateDay = ParamUtil.getInteger(actionRequest, "endDateDay");
@@ -327,17 +324,16 @@ public class CalendarPortlet extends MVCPortlet {
 			endDateHour += 12;
 		}
 
-		java.util.Calendar endDate = CalendarFactoryUtil.getCalendar(
-			endDateYear, endDateMonth, endDateDay, endDateHour, endDateMinute);
-
-		endDate.setTimeZone(utcTimeZone);
+		java.util.Calendar endDate = CalendarUtil.getCalendar(
+			timeZone, endDateYear, endDateMonth, endDateDay, endDateHour,
+			endDateMinute, 0, 0);
 
 		CalendarBooking calendarBooking = null;
 
 		if (calendarBookingId > 0) {
 			calendarBooking =
 				CalendarBookingServiceUtil.updateCalendarBooking(
-					userId, calendarBookingId, calendarId, titleMap,
+					user.getUserId(), calendarBookingId, calendarId, titleMap,
 					descriptionMap, location, status, startDate.getTime(),
 					endDate.getTime(), allDay, recurrence, 0, 0,
 					serviceContext);
@@ -345,14 +341,14 @@ public class CalendarPortlet extends MVCPortlet {
 		else {
 			calendarBooking =
 				CalendarBookingServiceUtil.addCalendarBooking(
-					userId, calendarId, parentCalendarBookingId, titleMap,
-					descriptionMap, location, startDate.getTime(),
+					user.getUserId(), calendarId, parentCalendarBookingId,
+					titleMap, descriptionMap, location, startDate.getTime(),
 					endDate.getTime(), allDay, recurrence, 0, 0,
 					serviceContext);
 		}
 
 		if (calendarBooking.isMasterBooking()) {
-			updateCalendarBookingInvitedResources(
+			updateCalendarBookingInvitedCalendars(
 				actionRequest, actionResponse, calendarBooking, serviceContext);
 		}
 	}
@@ -401,7 +397,7 @@ public class CalendarPortlet extends MVCPortlet {
 		return false;
 	}
 
-	protected void updateCalendarBookingInvitedResources(
+	protected void updateCalendarBookingInvitedCalendars(
 			ActionRequest actionRequest, ActionResponse actionResponse,
 			CalendarBooking parentCalendarBooking,
 			ServiceContext serviceContext)
@@ -409,21 +405,23 @@ public class CalendarPortlet extends MVCPortlet {
 
 		long userId = PortalUtil.getUserId(actionRequest);
 
-		long[] invitedCalendarsIds = ParamUtil.getLongValues(
-			actionRequest, "invitedCalendarsIds");
+		long[] invitedCalendarIds = ParamUtil.getLongValues(
+			actionRequest, "invitedCalendarIds");
 
 		List<CalendarBooking> calendarBookings =
 			CalendarBookingServiceUtil.getByParentCalendarBookingId(
 				parentCalendarBooking.getCalendarBookingId());
 
 		for (CalendarBooking calendarBooking : calendarBookings) {
-			if (!ArrayUtil.contains(invitedCalendarsIds, calendarBooking.getCalendarId())) {
+			if (!ArrayUtil.contains(
+					invitedCalendarIds, calendarBooking.getCalendarId())) {
+
 				CalendarBookingServiceUtil.deleteCalendarBooking(
 					calendarBooking.getCalendarBookingId());
 			}
 		}
 
-		for (long calendarId : invitedCalendarsIds) {
+		for (long calendarId : invitedCalendarIds) {
 			int total = CalendarBookingLocalServiceUtil.countByC_P(
 				calendarId, parentCalendarBooking.getCalendarBookingId());
 

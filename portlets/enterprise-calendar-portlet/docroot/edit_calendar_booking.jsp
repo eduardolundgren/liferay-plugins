@@ -93,7 +93,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
 	<aui:input name="calendarId" type="hidden" value="<%= calendarId %>" />
-	<aui:input name="invitedCalendarsIds" type="hidden" />
+	<aui:input name="invitedCalendarIds" type="hidden" />
 
 	<aui:fieldset>
 		<aui:input name="title" value="<%= title %>" />
@@ -170,7 +170,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			var A = AUI();
 
 			<c:if test="<%= canInvite %>">
-				document.<portlet:namespace />fm.<portlet:namespace />invitedCalendarsIds.value = A.JSON.stringify(A.Object.keys(Liferay.CalendarUtil.visibleCalendars));
+				document.<portlet:namespace />fm.<portlet:namespace />invitedCalendarIds.value = A.JSON.stringify(A.Object.keys(Liferay.CalendarUtil.visibleCalendars));
 			</c:if>
 
 			submitForm(document.<portlet:namespace />fm);

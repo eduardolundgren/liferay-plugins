@@ -40,7 +40,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			<tr>
 				<td><liferay-ui:message key="calendar" />:</td>
 				<td>
-					<select name="calendarId">
+					<select id="<portlet:namespace />eventRecorderCalendarId" name="calendarId">
 
 						<%
 						for (Calendar calendar : manageableCalendars) {

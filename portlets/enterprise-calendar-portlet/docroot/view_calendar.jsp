@@ -77,6 +77,7 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-scheduler,json">
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
+	Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(userCalendars.get(0), locale) %>;
 
 	var syncVisibleCalendarsMap = function() {
 		Liferay.CalendarUtil.syncVisibleCalendarsMap(
@@ -151,6 +152,7 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 	window.<portlet:namespace />recorder = new Liferay.SchedulerEventRecorder({
 		duration: 30,
 		editCalendarBookingURL: '<%= editCalendarBookingURL %>',
+		portletNamespace: '<portlet:namespace />',
 		template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 	});
 

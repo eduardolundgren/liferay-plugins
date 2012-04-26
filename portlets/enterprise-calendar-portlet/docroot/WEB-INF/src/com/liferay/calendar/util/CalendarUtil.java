@@ -14,7 +14,6 @@
 
 package com.liferay.calendar.util;
 
-import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
@@ -31,6 +30,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.util.UniqueList;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -103,6 +103,42 @@ public class CalendarUtil {
 		return formatted.concat(suffix);
 	}
 
+	public static Calendar getCalendar(Date date, TimeZone tz) {
+		Calendar cal = CalendarFactoryUtil.getCalendar(
+			TimeZone.getTimeZone(StringPool.UTC));
+
+		cal.setTime(date);
+
+		return getCalendar(
+			tz, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+			cal.get(Calendar.DATE), cal.get(Calendar.HOUR_OF_DAY),
+			cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND),
+			cal.get(Calendar.MILLISECOND));
+	}
+
+	public static Calendar getCalendar(
+			TimeZone tz, int year, int month, int day, int hour, int minutes,
+			int seconds, int milliseconds) {
+
+		java.util.Calendar cal = CalendarFactoryUtil.getCalendar(tz);
+
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month);
+		cal.set(Calendar.DATE, day);
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minutes);
+		cal.set(Calendar.SECOND, seconds);
+		cal.set(Calendar.MILLISECOND, milliseconds);
+
+		return cal;
+	}
+
+	public static Date getDate(Date date, TimeZone tz) {
+		Calendar cal = getCalendar(date, tz);
+
+		return cal.getTime();
+	}
+
 	public static OrderByComparator getOrderByComparator(
 		String orderByCol, String orderByType) {
 
@@ -168,7 +204,9 @@ public class CalendarUtil {
 		return jsonArray;
 	}
 
-	public static JSONObject toCalendarJSON(Calendar calendar, Locale locale) {
+	public static JSONObject toCalendarJSON(
+		com.liferay.calendar.model.Calendar calendar, Locale locale) {
+
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		try {
@@ -189,12 +227,12 @@ public class CalendarUtil {
 	}
 
 	public static JSONArray toCalendarsJSON(
-		List<Calendar> calendars, Locale locale) {
+		List<com.liferay.calendar.model.Calendar> calendars, Locale locale) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		if (calendars != null) {
-			for (Calendar calendar : calendars) {
+			for (com.liferay.calendar.model.Calendar calendar : calendars) {
 				jsonArray.put(toCalendarJSON(calendar, locale));
 			}
 		}
@@ -202,34 +240,26 @@ public class CalendarUtil {
 		return jsonArray;
 	}
 
-	public static java.util.Calendar toLocalTimeZone(
-			long timestamp, TimeZone timeZone, Locale locale) {
+	public static Calendar toLastHour(Calendar cal) {
+		Calendar gtCal = (Calendar)cal.clone();
 
-		int timeZoneOffset = CalendarUtil.getTimeZoneOffset(timeZone);
+		gtCal.set(Calendar.HOUR_OF_DAY, 23);
+		gtCal.set(Calendar.MINUTE, 59);
+		gtCal.set(Calendar.SECOND, 59);
+		gtCal.set(Calendar.MILLISECOND, 999);
 
-		java.util.Calendar calendar = CalendarFactoryUtil.getCalendar(
-			timeZone, locale);
-
-		System.out.println(new Date(timestamp).getHours());
-
-		calendar.setTime(new Date(timestamp));
-		calendar.add(java.util.Calendar.MILLISECOND, timeZoneOffset);
-
-		return calendar;
+		return gtCal;
 	}
 
-	public static java.util.Calendar toUTCTimeZone(
-			long timestamp, TimeZone timeZone, Locale locale) {
+	public static Calendar toMidnight(Calendar cal) {
+		Calendar gtCal = (Calendar)cal.clone();
 
-		int timeZoneOffset = CalendarUtil.getTimeZoneOffset(timeZone);
+		gtCal.set(Calendar.HOUR_OF_DAY, 0);
+		gtCal.set(Calendar.MINUTE, 0);
+		gtCal.set(Calendar.SECOND, 0);
+		gtCal.set(Calendar.MILLISECOND, 0);
 
-		java.util.Calendar calendar = CalendarFactoryUtil.getCalendar(
-			timeZone, locale);
-
-		calendar.setTimeInMillis(timestamp);
-		calendar.add(java.util.Calendar.MILLISECOND, -timeZoneOffset);
-
-		return calendar;
+		return gtCal;
 	}
 
 }

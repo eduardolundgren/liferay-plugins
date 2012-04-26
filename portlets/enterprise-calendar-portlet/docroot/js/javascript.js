@@ -79,22 +79,14 @@ var CalendarUtil = {
 	invokerURL: '/api/secure/jsonws/invoke',
 	visibleCalendars: {},
 
-	toLocalTimeZone: function(utc) {
+	toUserTimeZone: function(utc) {
 		var instance = this;
-// console.log(utc);
+
 		if (!isDate(utc)) {
 			utc = new Date(utc);
 		}
-			// console.log(utc, utc.getTimezoneOffset(), utc.getTimezoneOffset(), instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS, DateMath.add(utc, DateMath.MINUTES, utc.getTimezoneOffset() + instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS));
-// new Date(1334674800000 + d.getTimezoneOffset()*60000 + Liferay.CalendarUtil.USER_TIMEZONE_OFFSET)
 
-		return DateMath.add(utc, DateMath.MINUTES, instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
-	},
-
-	toEpochUTC: function(date) {
-		var instance = this;
-
-		return new Date(date.getTime() - date.getTimezoneOffset()*DateMath.ONE_MINUTE_MS);
+		return DateMath.add(utc, DateMath.MINUTES, utc.getTimezoneOffset() + instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
 	},
 
 	toUTCTimeZone: function(date) {
@@ -104,19 +96,7 @@ var CalendarUtil = {
 			date = new Date(date);
 		}
 
-		date = instance.toEpochUTC(date);
-
-		return DateMath.add(date, DateMath.MINUTES, -instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
-	},
-
-	toUTCTimeZone1: function(date) {
-		var instance = this;
-
-		if (!isDate(date)) {
-			date = new Date(date);
-		}
-
-		return DateMath.add(date, DateMath.MINUTES, -date.getTimezoneOffset() - instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
+		return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
 	},
 
 	message: function(msg) {
@@ -356,10 +336,10 @@ console.log(service);
 			calendarId: calendarBooking.calendarId,
 			content: calendarBooking.titleCurrentValue,
 			description: calendarBooking.descriptionCurrentValue,
-			endDate: CalendarUtil.toLocalTimeZone(calendarBooking.endDate),
+			endDate: CalendarUtil.toUserTimeZone(calendarBooking.endDate),
 			location: calendarBooking.location,
 			parentCalendarBookingId: calendarBooking.parentCalendarBookingId,
-			startDate: CalendarUtil.toLocalTimeZone(calendarBooking.startDate),
+			startDate: CalendarUtil.toUserTimeZone(calendarBooking.startDate),
 			status: calendarBooking.status
 		});
 	},
@@ -643,18 +623,17 @@ var SchedulerEventRecorder = A.Component.create(
 			editCalendarBookingURL: {
 				validator: isString,
 				value: ''
+			},
+
+			portletNamespace: {
+				value: '',
+				validator: isString
 			}
 		},
 
 		EXTENDS: A.SchedulerEventRecorder,
 
 		prototype: {
-			initializer: function() {
-				var instance = this;
-
-				instance.overlay.on('visibleChange', A.bind(instance._syncToolbarButtons, instance));
-			},
-
 			getEventCopy: function() {
 				var instance = this;
 				var newEvt = instance.get('event');
@@ -686,12 +665,31 @@ var SchedulerEventRecorder = A.Component.create(
 				window.location.href = A.Lang.sub(editCalendarBookingURL, data);
 			},
 
-			_syncToolbarButtons: function(event) {
+			_onOverlayVisibleChange: function(event) {
+				var instance = this;
+
+				var evt = instance.get('event');
+				var portletNamespace = instance.get('portletNamespace');
+
+				SchedulerEventRecorder.superclass._onOverlayVisibleChange.apply(this, arguments);
+
+				var calendarId = evt.get('calendarId');
+
+				var eventRecorderCalendarIdNode = A.one('#' + portletNamespace + 'eventRecorderCalendarId');
+
+				if (eventRecorderCalendarIdNode) {
+					eventRecorderCalendarIdNode.val(calendarId).set('disabled', !!evt);
+				}
+
+				instance._syncToolbarButtons(event.newVal);
+			},
+
+			_syncToolbarButtons: function(overlayVisible) {
 				var instance = this;
 
 				var toolbar = instance.toolbar;
 
-				if (!event.newVal) {
+				if (!overlayVisible) {
 					return;
 				}
 
