@@ -18,18 +18,14 @@ import com.liferay.calendar.CalendarBookingDurationException;
 import com.liferay.calendar.CalendarBookingTitleException;
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
-import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.base.CalendarBookingLocalServiceBaseImpl;
+import com.liferay.calendar.util.CalendarUtil;
 import com.liferay.calendar.workflow.CalendarBookingApprovalWorkflow;
 import com.liferay.calendar.workflow.CalendarBookingWorkflowConstants;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.CalendarFactoryUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
@@ -61,18 +57,20 @@ public class CalendarBookingLocalServiceImpl
 		Calendar calendar = calendarPersistence.findByPrimaryKey(calendarId);
 		Date now = new Date();
 
-		java.util.Calendar startDateJCalendar = getJCalendar(startDate);
-		java.util.Calendar endDateJCalendar = getJCalendar(endDate);
+		TimeZone timeZone = user.getTimeZone();
+
+		java.util.Calendar startDateCal = CalendarUtil.getCalendar(
+			startDate, timeZone);
+
+		java.util.Calendar endDateCal = CalendarUtil.getCalendar(
+			endDate, timeZone);
 
 		if (allDay) {
-			startDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-			startDateJCalendar.set(java.util.Calendar.MINUTE, 0);
-
-			endDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 23);
-			endDateJCalendar.set(java.util.Calendar.MINUTE, 59);
+			startDateCal = CalendarUtil.toMidnight(startDateCal);
+			endDateCal = CalendarUtil.toLastHour(endDateCal);
 		}
 
-		validate(titleMap, startDateJCalendar, endDateJCalendar);
+		validate(titleMap, startDateCal, endDateCal);
 
 		if (firstReminder < secondReminder) {
 			int originalSecondReminder = secondReminder;
@@ -108,8 +106,8 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setTitleMap(titleMap);
 		calendarBooking.setDescriptionMap(descriptionMap);
 		calendarBooking.setLocation(location);
-		calendarBooking.setStartDate(startDateJCalendar.getTime());
-		calendarBooking.setEndDate(endDateJCalendar.getTime());
+		calendarBooking.setStartDate(startDateCal.getTime());
+		calendarBooking.setEndDate(endDateCal.getTime());
 		calendarBooking.setAllDay(allDay);
 		calendarBooking.setRecurrence(recurrence);
 		calendarBooking.setFirstReminder(firstReminder);
@@ -277,18 +275,20 @@ public class CalendarBookingLocalServiceImpl
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
-		java.util.Calendar startDateJCalendar = getJCalendar(startDate);
-		java.util.Calendar endDateJCalendar = getJCalendar(endDate);
+		TimeZone timeZone = user.getTimeZone();
+
+		java.util.Calendar startDateCal = CalendarUtil.getCalendar(
+			startDate, timeZone);
+
+		java.util.Calendar endDateCal = CalendarUtil.getCalendar(
+			endDate, timeZone);
 
 		if (allDay) {
-			startDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-			startDateJCalendar.set(java.util.Calendar.MINUTE, 0);
-
-			endDateJCalendar.set(java.util.Calendar.HOUR_OF_DAY, 23);
-			endDateJCalendar.set(java.util.Calendar.MINUTE, 59);
+			startDateCal = CalendarUtil.toMidnight(startDateCal);
+			endDateCal = CalendarUtil.toLastHour(endDateCal);
 		}
 
-		validate(titleMap, startDateJCalendar, endDateJCalendar);
+		validate(titleMap, startDateCal, endDateCal);
 
 		if (firstReminder < secondReminder) {
 			int originalSecondReminder = secondReminder;
@@ -308,8 +308,8 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setTitleMap(titleMap);
 		calendarBooking.setDescriptionMap(descriptionMap);
 		calendarBooking.setLocation(location);
-		calendarBooking.setStartDate(startDateJCalendar.getTime());
-		calendarBooking.setEndDate(endDateJCalendar.getTime());
+		calendarBooking.setStartDate(startDateCal.getTime());
+		calendarBooking.setEndDate(endDateCal.getTime());
 		calendarBooking.setAllDay(allDay);
 		calendarBooking.setRecurrence(recurrence);
 		calendarBooking.setFirstReminder(firstReminder);
@@ -346,19 +346,6 @@ public class CalendarBookingLocalServiceImpl
 		calendarBookingPersistence.update(calendarBooking, false);
 
 		return calendarBooking;
-	}
-
-	protected java.util.Calendar getJCalendar(Date date) {
-
-		TimeZone timeZone = TimeZoneUtil.getTimeZone(StringPool.UTC);
-		Locale locale = LocaleUtil.getDefault();
-
-		java.util.Calendar jCalendar = CalendarFactoryUtil.getCalendar(
-			timeZone, locale);
-
-		jCalendar.setTime(date);
-
-		return jCalendar;
 	}
 
 	protected void validate(
