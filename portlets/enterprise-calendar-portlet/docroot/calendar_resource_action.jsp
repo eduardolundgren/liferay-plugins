@@ -65,7 +65,8 @@ CalendarResource calendarResource = (CalendarResource)row.getObject();
 	<portlet:renderURL var="calendarsURL">
 		<portlet:param name="jspPage" value="/view_calendars.jsp" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
-		<portlet:param name="calendarResourceId" value="<%= String.valueOf(calendarResource.getCalendarResourceId()) %>" />
+		<portlet:param name="classNameId" value="<%= String.valueOf(calendarResource.getClassNameId()) %>" />
+		<portlet:param name="classPK" value="<%= String.valueOf(calendarResource.getClassPK()) %>" />
 	</portlet:renderURL>
 
 	<liferay-ui:icon
