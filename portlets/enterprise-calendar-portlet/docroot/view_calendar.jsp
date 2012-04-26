@@ -74,23 +74,25 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 	<%@ include file="/event_recorder.jspf" %>
 </script>
 
-<aui:script use="aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-scheduler,json">
+<aui:script use="aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-scheduler,liferay-store,json">
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 	Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(userCalendars.get(0), locale) %>;
 
-	var syncVisibleCalendarsMap = function() {
+	var syncVisibleCalendars = function() {
 		Liferay.CalendarUtil.syncVisibleCalendarsMap(
 			window.<portlet:namespace />myCalendarList,
 			window.<portlet:namespace />otherCalendarList,
 			window.<portlet:namespace />siteCalendarList
 		);
+
+		window.<portlet:namespace />scheduler.updateCalendarBookings();
 	}
 
 	window.<portlet:namespace />myCalendarList = new Liferay.CalendarList(
 		{
 			after: {
-				calendarsChange: syncVisibleCalendarsMap
+				calendarsChange: syncVisibleCalendars
 			},
 			boundingBox: '#<portlet:namespace />myCalendarList',
 			calendars: <%= userCalendarsJSON %>
@@ -100,23 +102,70 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 	window.<portlet:namespace />otherCalendarList = new Liferay.CalendarList(
 		{
 			after: {
-				calendarsChange: syncVisibleCalendarsMap
+				calendarsChange: function(event) {
+					syncVisibleCalendars();
+
+					var calendarIds = [];
+
+					A.Array.each(
+						event.newVal,
+						function(item, index, collection) {
+							calendarIds[index] = item.get('calendarId');
+						}
+					);
+
+					Liferay.Store('otherCalendars', calendarIds.join());
+				}
 			},
-			boundingBox: '#<portlet:namespace />otherCalendarList'
+			boundingBox: '#<portlet:namespace />otherCalendarList',
+
+			<%
+			String calendarIds = SessionClicks.get(request, "otherCalendars", StringPool.BLANK);
+
+			JSONArray calendarsJSONArray = JSONFactoryUtil.createJSONArray();
+
+			for (long calendarId : StringUtil.split(calendarIds, 0L)) {
+				try {
+					Calendar calendar = CalendarServiceUtil.getCalendar(calendarId);
+
+					JSONObject calendarJSONObject = CalendarUtil.toCalendarJSON(calendar, locale);
+
+					calendarJSONObject.put("visible", GetterUtil.getBoolean(SessionClicks.get(request, "calendar" + calendarId, "true")));
+
+					calendarsJSONArray.put(calendarJSONObject);
+				}
+				catch (NoSuchCalendarException nsce) {
+				}
+			}
+			%>
+
+			calendars: <%= calendarsJSONArray.toString() %>,
+			simpleMenu: {
+				items: [
+					{
+						caption: '<liferay-ui:message key="remove" />',
+						fn: function(event) {
+							var instance = this;
+
+							instance.set('visible', false);
+
+							<portlet:namespace />otherCalendarList.remove(instance.activeItem);
+						}
+					}
+				]
+			}
 		}
 	).render();
 
 	window.<portlet:namespace />siteCalendarList = new Liferay.CalendarList(
 		{
 			after: {
-				calendarsChange: syncVisibleCalendarsMap
+				calendarsChange: syncVisibleCalendars
 			},
 			boundingBox: '#<portlet:namespace />siteCalendarList',
 			calendars: <%= groupCalendarsJSON %>
 		}
 	).render();
-
-	syncVisibleCalendarsMap();
 
 	/* Scheduler */
 
@@ -171,6 +220,8 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 			]
 		}
 	);
+
+	syncVisibleCalendars();
 
 	/* Toggler */
 
