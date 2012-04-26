@@ -191,6 +191,21 @@ public class CalendarBookingServiceSoap {
 		}
 	}
 
+	public static void invokeTransition(long userId, long calendarBookingId,
+		java.lang.String transitionName,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws RemoteException {
+		try {
+			CalendarBookingServiceUtil.invokeTransition(userId,
+				calendarBookingId, transitionName, serviceContext);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	public static com.liferay.calendar.model.CalendarBookingSoap[] search(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,

@@ -97,6 +97,16 @@ public class CalendarBookingServiceUtil {
 		return getService().getCalendarBookings(calendarId, startDate, endDate);
 	}
 
+	public static void invokeTransition(long userId, long calendarBookingId,
+		java.lang.String transitionName,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService()
+			.invokeTransition(userId, calendarBookingId, transitionName,
+			serviceContext);
+	}
+
 	public static java.util.List<com.liferay.calendar.model.CalendarBooking> search(
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,

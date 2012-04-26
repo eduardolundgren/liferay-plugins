@@ -79,26 +79,6 @@ var CalendarUtil = {
 	invokerURL: '/api/secure/jsonws/invoke',
 	visibleCalendars: {},
 
-	toUserTimeZone: function(utc) {
-		var instance = this;
-
-		if (!isDate(utc)) {
-			utc = new Date(utc);
-		}
-
-		return DateMath.add(utc, DateMath.MINUTES, utc.getTimezoneOffset() + instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
-	},
-
-	toUTCTimeZone: function(date) {
-		var instance = this;
-
-		if (!isDate(date)) {
-			date = new Date(date);
-		}
-
-		return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
-	},
-
 	message: function(msg) {
 		var instance = this;
 
@@ -139,6 +119,25 @@ var CalendarUtil = {
 		}
 
 		return instance.dataSource;
+	},
+
+	getStatusLabel: function(statusId) {
+		var status = String.valueOf(statusId);
+
+		if (Liferay.Workflow.STATUS_APPROVED === statusId) {
+			status = Liferay.Language.get('accepted');
+		}
+		else if (Liferay.Workflow.STATUS_DRAFT === statusId) {
+			status = Liferay.Language.get('draft');
+		}
+		else if (Liferay.Workflow.STATUS_PENDING === statusId) {
+			status = Liferay.Language.get('pending');
+		}
+		else if (Liferay.Workflow.STATUS_DENIED === statusId) {
+			status = Liferay.Language.get('declined');
+		}
+
+		return status;
 	},
 
 	destroyEvent: function(evt) {
@@ -325,6 +324,26 @@ console.log(service);
 				}
 			}
 		});
+	},
+
+	toUserTimeZone: function(utc) {
+		var instance = this;
+
+		if (!isDate(utc)) {
+			utc = new Date(utc);
+		}
+
+		return DateMath.add(utc, DateMath.MINUTES, utc.getTimezoneOffset() + instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
+	},
+
+	toUTCTimeZone: function(date) {
+		var instance = this;
+
+		if (!isDate(date)) {
+			date = new Date(date);
+		}
+
+		return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
 	},
 
 	toSchedulerEvent: function(calendarBooking) {
@@ -628,6 +647,11 @@ var SchedulerEventRecorder = A.Component.create(
 			portletNamespace: {
 				value: '',
 				validator: isString
+			},
+
+			status: {
+				value: Liferay.Workflow.STATUS_DRAFT,
+				setter: toNumber
 			}
 		},
 
@@ -645,6 +669,19 @@ var SchedulerEventRecorder = A.Component.create(
 				newEvt.setAttrs(instance.serializeForm());
 
 				return newEvt;
+			},
+
+			getTemplateData: function() {
+				var instance = this;
+
+				var evt = instance.get('event') || instance;
+
+				return A.merge(
+					SchedulerEventRecorder.superclass.getTemplateData.apply(this, arguments),
+					{
+						status: CalendarUtil.getStatusLabel(evt.get('status'))
+					}
+				);
 			},
 
 			_handleEditDetailsEvent: function(event) {
@@ -668,17 +705,24 @@ var SchedulerEventRecorder = A.Component.create(
 			_onOverlayVisibleChange: function(event) {
 				var instance = this;
 
-				var evt = instance.get('event');
-				var portletNamespace = instance.get('portletNamespace');
-
 				SchedulerEventRecorder.superclass._onOverlayVisibleChange.apply(this, arguments);
 
-				var calendarId = evt.get('calendarId');
+				var evt = instance.get('event');
+				var overlayBB = instance.overlay.get('boundingBox');
+				var portletNamespace = instance.get('portletNamespace');
 
-				var eventRecorderCalendarIdNode = A.one('#' + portletNamespace + 'eventRecorderCalendarId');
+				overlayBB.toggleClass('calendar-portlet-event-recorder-editing', !!evt);
 
-				if (eventRecorderCalendarIdNode) {
-					eventRecorderCalendarIdNode.val(calendarId).set('disabled', !!evt);
+				var eventRecorderCalendar = A.one('#' + portletNamespace + 'eventRecorderCalendar');
+
+				if (eventRecorderCalendar) {
+					var calendarId = CalendarUtil.DEFAULT_CALENDAR.calendarId;
+
+					if (evt) {
+						calendarId = evt.get('calendarId');
+					}
+
+					eventRecorderCalendar.val(calendarId);
 				}
 
 				instance._syncToolbarButtons(event.newVal);
@@ -687,11 +731,15 @@ var SchedulerEventRecorder = A.Component.create(
 			_syncToolbarButtons: function(overlayVisible) {
 				var instance = this;
 
-				var toolbar = instance.toolbar;
-
 				if (!overlayVisible) {
 					return;
 				}
+
+				var evt = instance.get('event') || instance;
+				var status = evt.get('status');
+
+				var overlay = instance.overlay;
+				var toolbar = instance.toolbar;
 
 				toolbar.add(
 					{
@@ -700,6 +748,44 @@ var SchedulerEventRecorder = A.Component.create(
 						label: Liferay.Language.get('edit-details')
 					}
 				);
+
+				if (status === Liferay.Workflow.STATUS_DRAFT) {
+					toolbar.remove('declineBtn');
+				}
+
+				if (status === Liferay.Workflow.STATUS_APPROVED ||
+					status === Liferay.Workflow.STATUS_DRAFT) {
+
+					toolbar.remove('acceptBtn');
+				}
+
+				if (status === Liferay.Workflow.STATUS_PENDING) {
+					toolbar.add(
+						{
+							handler: A.bind(instance._handleEditDetailsEvent, instance),
+							icon: 'circle-check',
+							id: 'acceptBtn',
+							label: Liferay.Language.get('accept')
+						}
+					);
+				}
+
+				if (status === Liferay.Workflow.STATUS_PENDING ||
+					status === Liferay.Workflow.STATUS_ACCEPTED) {
+
+					toolbar.add(
+						{
+							handler: A.bind(instance._handleEditDetailsEvent, instance),
+							icon: 'circle-close',
+							id: 'declineBtn',
+							label: Liferay.Language.get('decline')
+						}
+					);
+				}
+
+				var estimatedOverlayWidth = 50 + toolbar.get('boundingBox').get('offsetWidth');
+
+				overlay.set('width', Math.max(300, estimatedOverlayWidth));
 			}
 		}
 	}

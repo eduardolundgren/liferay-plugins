@@ -22,6 +22,7 @@ Liferay.Service.registerClass(
 		getByParentCalendarBookingId: true,
 		getCalendarBooking: true,
 		getCalendarBookings: true,
+		invokeTransition: true,
 		search: true,
 		searchCount: true,
 		updateCalendarBooking: true

@@ -46,6 +46,10 @@
     opacity: 0.5;
 }
 
+.calendar-portlet-event-recorder-editing .calendar-portlet-event-recorder-calendar-row {
+    display: none;
+}
+
 /* ===[ Calendar list ]===
    ==================================================
    ==================================================

@@ -18,6 +18,8 @@ import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.service.base.CalendarBookingServiceBaseImpl;
 import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.ActionKeys;
+import com.liferay.calendar.workflow.CalendarBookingApprovalWorkflow;
+import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -131,6 +133,15 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 		return calendarBookings;
 	}
 
+	public void invokeTransition(
+			long userId, long calendarBookingId, String transitionName,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		calendarBookingApprovalWorkflow.invokeTransition(
+			userId, calendarBookingId, transitionName, serviceContext);
+	}
+
 	public List<CalendarBooking> search(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
@@ -215,4 +226,6 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 		return calendarBooking;
 	}
 
+	@BeanReference(type = CalendarBookingApprovalWorkflow.class)
+	protected CalendarBookingApprovalWorkflow calendarBookingApprovalWorkflow;
 }
