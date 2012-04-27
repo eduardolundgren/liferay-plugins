@@ -5,6 +5,7 @@ Liferay.Service.registerClass(
 	{
 		addCalendar: true,
 		deleteCalendar: true,
+		fetchCalendar: true,
 		getCalendar: true,
 		search: true,
 		searchCount: true,

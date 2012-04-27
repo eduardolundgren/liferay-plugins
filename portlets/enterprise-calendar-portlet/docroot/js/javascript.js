@@ -152,10 +152,12 @@ var CalendarUtil = {
 	getEvents: function(startDate, endDate, status, success, failure) {
 		var instance = this;
 
+		var calendarIds = A.Object.keys(CalendarUtil.visibleCalendars);
+
 		instance.invoke(
 			{
 				"$booking = /enterprise-calendar-portlet/calendarbooking/search": {
-					calendarIds: '',
+					calendarIds: calendarIds.join(','),
 					calendarResourceIds: '',
 					companyId: COMPANY_ID,
 					end: -1,
@@ -186,10 +188,47 @@ var CalendarUtil = {
 		return JSON.stringify(map);
 	},
 
-	addEvent: function(evt) {
+	invokeTransition: function(evt, status) {
 		var instance = this;
 
 		var scheduler = evt.get('scheduler');
+
+		instance.invoke(
+			{
+				"/enterprise-calendar-portlet/calendarbooking/invoke-transition": {
+					calendarBookingId: evt.get('calendarBookingId'),
+					transitionName: CalendarUtil.getStatusLabel(status).toLowerCase(),
+					userId: USER_ID
+				}
+			},
+			{
+				success: function(data) {
+					evt.set('loading', false);
+
+					if (data) {
+						if (data.exception) {
+							return;
+						}
+
+						if (scheduler) {
+							var eventRecorder = scheduler.get('eventRecorder');
+
+							eventRecorder.hideOverlay();
+
+							scheduler.loadCalendarBookings();
+						}
+					}
+				},
+
+				start: function() {
+					evt.set('loading', true);
+				}
+			}
+		);
+	},
+
+	addEvent: function(evt) {
+		var instance = this;
 
 		instance.invoke(
 			{
@@ -382,8 +421,6 @@ console.log(service);
 	updateEvent: function(evt) {
 		var instance = this;
 
-		var scheduler = evt.get('scheduler');
-
 		instance.invoke(
 			{
 				"/enterprise-calendar-portlet/calendarbooking/update-calendar-booking": {
@@ -477,6 +514,21 @@ var Scheduler = A.Component.create(
 				Scheduler.superclass.bindUI.apply(this, arguments);
 			},
 
+			loadCalendarBookings: function() {
+				var instance = this;
+
+				var currentDate = instance.get('currentDate');
+
+				CalendarUtil.message(Liferay.Language.get('loading') + '...');
+
+				CalendarUtil.getEvents(
+					DateMath.findMonthStart(currentDate),
+					DateMath.findMonthEnd(currentDate),
+					[Workflow.STATUS_APPROVED, Workflow.STATUS_PENDING],
+					A.bind(instance.loadCalendarBookingsJSON, instance)
+				);
+			},
+
 			loadCalendarBookingsJSON: function(calendarBookings) {
 				var instance = this;
 
@@ -494,20 +546,6 @@ var Scheduler = A.Component.create(
 				CalendarUtil.message('');
 			},
 
-			updateCalendarBookings: function() {
-				var instance = this;
-
-				var currentDate = instance.get('currentDate');
-
-				CalendarUtil.message(Liferay.Language.get('loading') + '...');
-
-				CalendarUtil.getEvents(
-					DateMath.findMonthStart(currentDate),
-					DateMath.findMonthEnd(currentDate),
-					[Workflow.STATUS_APPROVED, Workflow.STATUS_PENDING],
-					A.bind(instance.loadCalendarBookingsJSON, instance)
-				);
-			},
 
 			_afterCurrentDateChange: function(event) {
 				var instance = this;
@@ -550,7 +588,7 @@ var Scheduler = A.Component.create(
 			_uiSetCurrentMonth: function(val) {
 				var instance = this;
 
-				instance.updateCalendarBookings();
+				instance.loadCalendarBookings();
 			}
 		}
 	}
@@ -693,6 +731,32 @@ var SchedulerEventRecorder = A.Component.create(
 				);
 			},
 
+			isMasterBooking: function() {
+				var instance = this;
+
+				return false;
+			},
+
+			_handleAcceptEvent: function(event) {
+				var instance = this;
+
+				var evt = instance.get('event');
+
+				if (evt) {
+					CalendarUtil.invokeTransition(evt, Liferay.Workflow.STATUS_APPROVED);
+				}
+			},
+
+			_handleDeclineEvent: function(event) {
+				var instance = this;
+
+				var evt = instance.get('event');
+
+				if (evt) {
+					CalendarUtil.invokeTransition(evt, Liferay.Workflow.STATUS_DENIED);
+				}
+			},
+
 			_handleEditDetailsEvent: function(event) {
 				var instance = this;
 
@@ -750,6 +814,10 @@ var SchedulerEventRecorder = A.Component.create(
 				var overlay = instance.overlay;
 				var toolbar = instance.toolbar;
 
+				if (evt.isMasterBooking()) {
+					return;
+				}
+
 				toolbar.add(
 					{
 						handler: A.bind(instance._handleEditDetailsEvent, instance),
@@ -771,7 +839,7 @@ var SchedulerEventRecorder = A.Component.create(
 				if (status === Liferay.Workflow.STATUS_PENDING) {
 					toolbar.add(
 						{
-							handler: A.bind(instance._handleEditDetailsEvent, instance),
+							handler: A.bind(instance._handleAcceptEvent, instance),
 							icon: 'circle-check',
 							id: 'acceptBtn',
 							label: Liferay.Language.get('accept')
@@ -780,11 +848,11 @@ var SchedulerEventRecorder = A.Component.create(
 				}
 
 				if (status === Liferay.Workflow.STATUS_PENDING ||
-					status === Liferay.Workflow.STATUS_ACCEPTED) {
+					status === Liferay.Workflow.STATUS_APPROVED) {
 
 					toolbar.add(
 						{
-							handler: A.bind(instance._handleEditDetailsEvent, instance),
+							handler: A.bind(instance._handleDeclineEvent, instance),
 							icon: 'circle-close',
 							id: 'declineBtn',
 							label: Liferay.Language.get('decline')
@@ -1113,11 +1181,11 @@ var CalendarList = A.Component.create(
 
 			add: function(calendar) {
 				var instance = this;
-				var calendars = instance.get(CALENDARS);
 
-				calendars.push(calendar)
+				var calendars = instance.get('calendars');
 
-				instance.set(CALENDARS, calendars);
+				calendars.push(calendar);
+				instance.set('calendars', calendars);
 			},
 
 			clear: function() {
@@ -1126,11 +1194,11 @@ var CalendarList = A.Component.create(
 				instance.set(CALENDARS, []);
 			},
 
-			remove: function(item) {
+			remove: function(calendar) {
 				var instance = this;
-				var calendars = instance.get(CALENDARS);
+				var calendars = instance.get('calendars');
 
-				AArray.remove(calendars, AArray.indexOf(calendars, item));
+				AArray.remove(calendars, AArray.indexOf(calendars, calendar));
 
 				instance.set(CALENDARS, calendars);
 			},

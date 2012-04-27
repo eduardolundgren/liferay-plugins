@@ -49,6 +49,11 @@ public class CalendarServiceWrapper implements CalendarService,
 		return _calendarService.deleteCalendar(calendarId);
 	}
 
+	public com.liferay.calendar.model.Calendar fetchCalendar(long calendarId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarService.fetchCalendar(calendarId);
+	}
+
 	public com.liferay.calendar.model.Calendar getCalendar(long calendarId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {

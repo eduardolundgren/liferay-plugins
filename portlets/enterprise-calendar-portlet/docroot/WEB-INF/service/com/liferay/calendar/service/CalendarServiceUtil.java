@@ -58,6 +58,12 @@ public class CalendarServiceUtil {
 		return getService().deleteCalendar(calendarId);
 	}
 
+	public static com.liferay.calendar.model.Calendar fetchCalendar(
+		long calendarId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().fetchCalendar(calendarId);
+	}
+
 	public static com.liferay.calendar.model.Calendar getCalendar(
 		long calendarId)
 		throws com.liferay.portal.kernel.exception.PortalException,

@@ -63,6 +63,10 @@ public class CalendarServiceImpl extends CalendarServiceBaseImpl {
 		return calendarLocalService.deleteCalendar(calendarId);
 	}
 
+	public Calendar fetchCalendar(long calendarId) throws SystemException {
+		return calendarLocalService.fetchCalendar(calendarId);
+	}
+
 	public Calendar getCalendar(long calendarId)
 		throws PortalException, SystemException {
 
