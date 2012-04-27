@@ -52,14 +52,15 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			<a class="calendar-portlet-list-header aui-toggler-header-expanded" href="javascript:void(0);">
 				<span class="calendar-portlet-list-arrow"></span>
 				<span class="calendar-portlet-list-text"><liferay-ui:message key="my-calendars" /></span>
-				<span class="aui-calendar-list-item-arrow" tabindex="0"></span>
+				<c:if test="<%= userCalendarResource != null %>">
+					<span class="aui-calendar-list-item-arrow" data-calendarResourceId="<%= userCalendarResource.getCalendarResourceId() %>" tabindex="0"></span>
+				</c:if>
 			</a>
 			<div class="calendar-portlet-calendar-list" id="<portlet:namespace />myCalendarList"></div>
 
 			<a class="calendar-portlet-list-header aui-toggler-header-expanded" href="javascript:void(0);">
 				<span class="calendar-portlet-list-arrow"></span>
 				<span class="calendar-portlet-list-text"><liferay-ui:message key="other-calendars" /></span>
-				<span class="aui-calendar-list-item-arrow" tabindex="0"></span>
 			</a>
 			<div class="calendar-portlet-calendar-list" id="<portlet:namespace />otherCalendarList">
 				<input class="calendar-portlet-add-calendars-input" id="<portlet:namespace />addOtherCalendar" placeholder="<liferay-ui:message key="add-other-calendars" />" type="text" />
@@ -69,7 +70,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 				<a class="calendar-portlet-list-header aui-toggler-header-expanded" href="javascript:void(0);">
 					<span class="calendar-portlet-list-arrow"></span>
 					<span class="calendar-portlet-list-text"><%= LanguageUtil.format(pageContext, "x-calendars", groupCalendarResource.getName(locale)) %></span>
-					<span class="aui-calendar-list-item-arrow" tabindex="0"></span>
+					<span class="aui-calendar-list-item-arrow" data-calendarResourceId="<%= groupCalendarResource.getCalendarResourceId() %>" tabindex="0"></span>
 				</a>
 				<div class="calendar-portlet-calendar-list" id="<portlet:namespace />siteCalendarList"></div>
 			</c:if>
@@ -87,7 +88,9 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 	<%@ include file="/event_recorder.jspf" %>
 </script>
 
-<aui:script use="aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-scheduler,liferay-store,json">
+<%@ include file="/view_calendar_menus.jspf" %>
+
+<aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
 	Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(userCalendars.get(0), locale) %>;
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
@@ -100,13 +103,16 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 		);
 	}
 
+	// Calendar Lists
+
 	window.<portlet:namespace />myCalendarList = new Liferay.CalendarList(
 		{
 			after: {
 				calendarsChange: syncVisibleCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />myCalendarList',
-			calendars: <%= userCalendarsJSON %>
+			calendars: <%= userCalendarsJSON %>,
+			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
 
@@ -135,20 +141,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			%>
 
 			calendars: <%= otherCalendarsJSON.toString() %>,
-			simpleMenu: {
-				items: [
-					{
-						caption: '<liferay-ui:message key="remove" />',
-						fn: function(event) {
-							var instance = this;
-
-							instance.set('visible', false);
-
-							<portlet:namespace />otherCalendarList.remove(<portlet:namespace />otherCalendarList.activeItem);
-						}
-					}
-				]
-			}
+			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
 
@@ -158,7 +151,8 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 				calendarsChange: syncVisibleCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />siteCalendarList',
-			calendars: <%= groupCalendarsJSON %>
+			calendars: <%= groupCalendarsJSON %>,
+			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
 

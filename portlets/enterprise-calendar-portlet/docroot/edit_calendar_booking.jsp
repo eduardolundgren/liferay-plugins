@@ -195,6 +195,22 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 		);
 	}
 
+	var calendarsMenu = {
+		items: [
+			{
+				caption: '<liferay-ui:message key="remove" />',
+				fn: function(event) {
+					var instance = this;
+
+					var calendarList = instance.get('host');
+
+					removeCalendarResource(calendarList, calendarList.activeItem, instance);
+				},
+				id: 'remove'
+			}
+		]
+	}
+
 	window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
 		{
 			after: {
@@ -208,20 +224,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			},
 			boundingBox: '#<portlet:namespace />calendarListPending',
 			calendars: <%= pendingCalendarsJSONArray %>,
-			simpleMenu: {
-				items: [
-					{
-						caption: '<liferay-ui:message key="remove" />',
-						fn: function(event) {
-							var instance = this;
-
-							var calendarList = instance.calendarList;
-
-							removeCalendarResource(calendarList, calendarList.activeItem, instance);
-						}
-					}
-				]
-			}
+			simpleMenu: calendarsMenu
 		}
 	).render();
 
@@ -238,21 +241,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			},
 			boundingBox: '#<portlet:namespace />calendarListAccepted',
 			calendars: <%= acceptedCalendarsJSONArray %>,
-			simpleMenu: {
-				items: [
-					{
-						id: '<portlet:namespace />remove',
-						caption: '<liferay-ui:message key="remove" />',
-						fn: function(event) {
-							var instance = this;
-
-							var calendarList = instance.calendarList;
-
-							removeCalendarResource(calendarList, calendarList.activeItem, instance);
-						}
-					}
-				]
-			}
+			simpleMenu: calendarsMenu
 		}
 	).render();
 
@@ -269,20 +258,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			},
 			boundingBox: '#<portlet:namespace />calendarListDeclined',
 			calendars: <%= declinedCalendarsJSONArray %>,
-			simpleMenu: {
-				items: [
-					{
-						caption: '<liferay-ui:message key="remove" />',
-						fn: function(event) {
-							var instance = this;
-
-							var calendarList = instance.calendarList;
-
-							removeCalendarResource(calendarList, calendarList.activeItem, instance);
-						}
-					}
-				]
-			}
+			simpleMenu: calendarsMenu
 		}
 	).render();
 
