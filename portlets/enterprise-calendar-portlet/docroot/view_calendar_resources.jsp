@@ -53,27 +53,14 @@ CalendarResourceDisplayTerms displayTerms = new CalendarResourceDisplayTerms(ren
 <c:choose>
 	<c:when test="<%= displayTerms.getScope() == themeDisplay.getCompanyGroupId() %>">
 		<h3><liferay-ui:message key="users" /></h3>
-		<%
-		CalendarResourceSearch calendarResourceSearch = new CalendarResourceSearch(renderRequest, iteratorURL, CalendarResourceSearch.DEFAULT_CUR_PARAM + "_users");
-		String searchContainerId = "users";
-		%>
+
 		<%@ include file="/calendar_resource_user_search_container.jspf" %>
 
 		<h3><liferay-ui:message key="sites" /></h3>
-		<%
-		calendarResourceSearch = new CalendarResourceSearch(renderRequest, iteratorURL, CalendarResourceSearch.DEFAULT_CUR_PARAM + "_groups");
-		searchContainerId = "groups";
-		%>
-		<%@ include file="/calendar_resource_group_search_container.jspf" %>
 
+		<%@ include file="/calendar_resource_group_search_container.jspf" %>
 	</c:when>
 	<c:otherwise>
-		<%
-		long[] groupIds = new long[] {themeDisplay.getScopeGroupId()};
-		long[] classNameIds = new long[] {PortalUtil.getClassNameId(CalendarResource.class.getName())};
-		CalendarResourceSearch calendarResourceSearch = new CalendarResourceSearch(renderRequest, iteratorURL, CalendarResourceSearch.DEFAULT_CUR_PARAM);
-		String searchContainerId = "resources";
-		%>
 		<%@ include file="/calendar_resource_search_container.jspf" %>
 	</c:otherwise>
 </c:choose>

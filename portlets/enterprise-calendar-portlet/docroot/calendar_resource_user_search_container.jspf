@@ -2,7 +2,7 @@
 	<portlet:param name="mvcPath" value="/view_calendar_resources.jsp" />
 </liferay-portlet:renderURL>
 
-<liferay-ui:search-container searchContainer="<%= calendarResourceSearch%>" id="<%= searchContainerId %>">
+<liferay-ui:search-container searchContainer='<%= new CalendarResourceSearch(renderRequest, iteratorURL, CalendarResourceSearch.DEFAULT_CUR_PARAM + "_users") %>' id="users">
 	<liferay-ui:search-container-results>
 		<%
 		CalendarResourceSearchTerms searchTerms = (CalendarResourceSearchTerms)searchContainer.getSearchTerms();
