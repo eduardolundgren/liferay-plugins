@@ -488,7 +488,25 @@ var Scheduler = A.Component.create(
 					calendar.set('events', events);
 				});
 
+				instance.set('events', A.Object.values(visibleCalendarsMap));
+				instance.syncEventsUI();
+
 				CalendarUtil.message('');
+			},
+
+			updateCalendarBookings: function() {
+				var instance = this;
+
+				var currentDate = instance.get('currentDate');
+
+				CalendarUtil.message(Liferay.Language.get('loading') + '...');
+
+				CalendarUtil.getEvents(
+					DateMath.findMonthStart(currentDate),
+					DateMath.findMonthEnd(currentDate),
+					[Workflow.STATUS_APPROVED, Workflow.STATUS_PENDING],
+					A.bind(instance.loadCalendarBookingsJSON, instance)
+				);
 			},
 
 			_afterCurrentDateChange: function(event) {
@@ -532,16 +550,7 @@ var Scheduler = A.Component.create(
 			_uiSetCurrentMonth: function(val) {
 				var instance = this;
 
-				var currentDate = instance.get('currentDate');
-
-				CalendarUtil.message(Liferay.Language.get('loading') + '...');
-
-				CalendarUtil.getEvents(
-					DateMath.findMonthStart(currentDate),
-					DateMath.findMonthEnd(currentDate),
-					[Workflow.STATUS_APPROVED, Workflow.STATUS_PENDING],
-					A.bind(instance.loadCalendarBookingsJSON, instance)
-				);
+				instance.updateCalendarBookings();
 			}
 		}
 	}
@@ -817,12 +826,22 @@ var Calendar = A.Component.create({
 		}
 	},
 
+	prototype: {
+		_onVisibleChange: function(event) {
+			var instance = this;
+
+			Calendar.superclass._onVisibleChange.apply(instance, arguments);
+
+			Liferay.Store('calendar' + instance.get('calendarId'), event.newVal);
+		}
+	},
+
 	EXTENDS: A.SchedulerCalendar
 });
 
 Liferay.SchedulerCalendar = Calendar;
 
-}, '@VERSION@' ,{ requires: ['autocomplete', 'autocomplete-highlighters', 'aui-scheduler', 'aui-io', 'datasource-get', 'datasource-cache', 'liferay-portlet-url'] });
+}, '@VERSION@' ,{ requires: ['autocomplete', 'autocomplete-highlighters', 'aui-scheduler', 'aui-io', 'datasource-get', 'datasource-cache', 'liferay-portlet-url', 'liferay-store'] });
 
 
 
