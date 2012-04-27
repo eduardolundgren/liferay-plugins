@@ -883,6 +883,11 @@ var Calendar = A.Component.create({
 			setter: toNumber
 		},
 
+		calendarResourceId: {
+			value: 0,
+			setter: toNumber
+		},
+
 		classNameId: {
 			value: 0,
 			setter: toNumber
@@ -895,6 +900,30 @@ var Calendar = A.Component.create({
 	},
 
 	prototype: {
+		_afterColorChange: function(event) {
+			var instance = this;
+
+			Calendar.superclass._afterColorChange.apply(instance, arguments);
+
+			// CalendarUtil.invoke(
+			// 	{
+			// 		"/enterprise-calendar-portlet/calendar/update-calendar": {
+			// 			calendarId: instance.get('calendarId'),
+			// 			nameMap: CalendarUtil.getLocalizationMap(instance.get('name')),
+			// 			descriptionMap: CalendarUtil.getLocalizationMap(instance.get('description')),
+			// 			color: instance.get('color'),
+			// 			defaultCalendar: true,
+			// 			serviceContext: {}
+			// 		}
+			// 	},
+			// 	{
+			// 		success: function(data) {
+			// 			console.log(data);
+			// 		}
+			// 	}
+			// );
+		},
+
 		_onVisibleChange: function(event) {
 			var instance = this;
 
@@ -1149,8 +1178,6 @@ var CalendarList = A.Component.create(
 				var instance = this;
 
 				instance.simpleMenu = new Liferay.SimpleMenu(instance.get(SIMPLE_MENU));
-
-				instance.simpleMenu.calendarList = instance;
 			},
 
 			bindUI: function() {
@@ -1357,9 +1384,10 @@ var CalendarList = A.Component.create(
 						align: {
 							points: [ A.WidgetPositionAlign.TL, A.WidgetPositionAlign.BL ]
 						},
+						bubbleTargets: [ instance ],
+						host: instance,
 						items: [],
 						plugins: [ A.Plugin.OverlayAutohide ],
-						bubbleTargets: [ instance ],
 						visible: false,
 						width: 290,
 						zIndex: 500

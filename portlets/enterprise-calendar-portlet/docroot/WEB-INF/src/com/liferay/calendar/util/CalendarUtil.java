@@ -215,6 +215,7 @@ public class CalendarUtil {
 					calendar.getCalendarResourceId());
 
 			jsonObject.put("calendarId", calendar.getCalendarId());
+			jsonObject.put("calendarResourceId", calendarResource.getCalendarResourceId());
 			jsonObject.put("color", ColorUtil.toHexString(calendar.getColor()));
 			jsonObject.put("classNameId", calendarResource.getClassNameId());
 			jsonObject.put("classPK", calendarResource.getClassPK());

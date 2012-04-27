@@ -224,7 +224,11 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 
 		// Resources
 
-		resourceLocalService.updateModelResources(calendar, serviceContext);
+		long groupId = calendar.getGroupId();
+
+		if (groupId > 0) {
+			resourceLocalService.updateModelResources(calendar, serviceContext);
+		}
 
 		// Calendar resource
 
