@@ -29,8 +29,21 @@ if (userCalendarResource != null) {
 	userCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] {userCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator)null);
 }
 
+List<Calendar> otherCalendars = new ArrayList<Calendar>();
+
+long[] calendarIds = StringUtil.split(SessionClicks.get(request, "otherCalendars", StringPool.BLANK), 0L);
+
+for (long calendarId : calendarIds) {
+	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
+
+	if (calendar != null) {
+		otherCalendars.add(calendar);
+	}
+}
+
 JSONArray groupCalendarsJSON = CalendarUtil.toCalendarsJSON(groupCalendars, locale);
 JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale);
+JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, locale);
 %>
 
 <aui:fieldset cssClass="calendar-portlet-column-parent">
@@ -75,24 +88,22 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 </script>
 
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-scheduler,liferay-store,json">
-	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
-	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 	Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(userCalendars.get(0), locale) %>;
+	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
+	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 
-	var syncVisibleCalendars = function() {
+	var syncVisibleCalendarsMap = function() {
 		Liferay.CalendarUtil.syncVisibleCalendarsMap(
 			window.<portlet:namespace />myCalendarList,
 			window.<portlet:namespace />otherCalendarList,
 			window.<portlet:namespace />siteCalendarList
 		);
-
-		window.<portlet:namespace />scheduler.updateCalendarBookings();
 	}
 
 	window.<portlet:namespace />myCalendarList = new Liferay.CalendarList(
 		{
 			after: {
-				calendarsChange: syncVisibleCalendars
+				calendarsChange: syncVisibleCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />myCalendarList',
 			calendars: <%= userCalendarsJSON %>
@@ -103,16 +114,10 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 		{
 			after: {
 				calendarsChange: function(event) {
-					syncVisibleCalendars();
+					syncVisibleCalendarsMap();
+					window.<portlet:namespace />scheduler.loadCalendarBookings();
 
-					var calendarIds = [];
-
-					A.Array.each(
-						event.newVal,
-						function(item, index, collection) {
-							calendarIds[index] = item.get('calendarId');
-						}
-					);
+					var calendarIds = A.Array.invoke(event.newVal, 'get', 'calendarId');
 
 					Liferay.Store('otherCalendars', calendarIds.join());
 				}
@@ -120,26 +125,16 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 			boundingBox: '#<portlet:namespace />otherCalendarList',
 
 			<%
-			String calendarIds = SessionClicks.get(request, "otherCalendars", StringPool.BLANK);
+			for (int i = 0; i < otherCalendarsJSON.length(); i++) {
+				JSONObject jsonObject = otherCalendarsJSON.getJSONObject(i);
 
-			JSONArray calendarsJSONArray = JSONFactoryUtil.createJSONArray();
+				long calendarId = jsonObject.getLong("calendarId");
 
-			for (long calendarId : StringUtil.split(calendarIds, 0L)) {
-				try {
-					Calendar calendar = CalendarServiceUtil.getCalendar(calendarId);
-
-					JSONObject calendarJSONObject = CalendarUtil.toCalendarJSON(calendar, locale);
-
-					calendarJSONObject.put("visible", GetterUtil.getBoolean(SessionClicks.get(request, "calendar" + calendarId, "true")));
-
-					calendarsJSONArray.put(calendarJSONObject);
-				}
-				catch (NoSuchCalendarException nsce) {
-				}
+				jsonObject.put("visible", GetterUtil.getBoolean(SessionClicks.get(request, "calendar" + calendarId, "true")));
 			}
 			%>
 
-			calendars: <%= calendarsJSONArray.toString() %>,
+			calendars: <%= otherCalendarsJSON.toString() %>,
 			simpleMenu: {
 				items: [
 					{
@@ -149,7 +144,7 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 
 							instance.set('visible', false);
 
-							<portlet:namespace />otherCalendarList.remove(instance.activeItem);
+							<portlet:namespace />otherCalendarList.remove(<portlet:namespace />otherCalendarList.activeItem);
 						}
 					}
 				]
@@ -160,12 +155,14 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 	window.<portlet:namespace />siteCalendarList = new Liferay.CalendarList(
 		{
 			after: {
-				calendarsChange: syncVisibleCalendars
+				calendarsChange: syncVisibleCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />siteCalendarList',
 			calendars: <%= groupCalendarsJSON %>
 		}
 	).render();
+
+	syncVisibleCalendarsMap();
 
 	/* Scheduler */
 
@@ -220,8 +217,6 @@ JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale
 			]
 		}
 	);
-
-	syncVisibleCalendars();
 
 	/* Toggler */
 
