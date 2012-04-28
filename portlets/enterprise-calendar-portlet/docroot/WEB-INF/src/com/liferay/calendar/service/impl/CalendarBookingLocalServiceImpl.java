@@ -141,6 +141,15 @@ public class CalendarBookingLocalServiceImpl
 
 		calendarBookingPersistence.remove(calendarBooking);
 
+		// Invited calendar bookings
+
+		List<CalendarBooking> invitedBookings = getByParentCalendarBookingId(
+			calendarBooking.getCalendarBookingId());
+
+		for (CalendarBooking invitedBooking : invitedBookings) {
+			deleteCalendarBooking(invitedBooking);
+		}
+
 		return calendarBooking;
 	}
 

@@ -323,11 +323,18 @@ var CalendarUtil = {
 	deleteEvent: function(evt) {
 		var instance = this;
 
-		instance.invoke({
-			'/enterprise-calendar-portlet/calendarbooking/delete-calendar-booking': {
-				calendarBookingId: evt.get('calendarBookingId')
+		instance.invoke(
+			{
+				'/enterprise-calendar-portlet/calendarbooking/delete-calendar-booking': {
+					calendarBookingId: evt.get('calendarBookingId')
+				},
+			},
+			{
+				success: function() {
+					evt.get('scheduler').loadCalendarBookings();		
+				}
 			}
-		});
+		);
 	},
 
 	invoke: function(service, callback) {
