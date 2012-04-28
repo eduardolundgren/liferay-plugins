@@ -53,7 +53,7 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 			<span
 				class="color-box color-picker-element"
 				id="<portlet:namespace />colorBox"
-				style='background-color:<%= calendar != null ? ColorUtil.toHexString(calendar.getColor()) : "#0000FF" %>'
+				style='background-color:<%= calendar != null ? ColorUtil.toHexString(calendar.getColor()) : ColorUtil.toHexString(PortletPropsValues.CALENDAR_COLOR_DEFAULT) %>'
 			>
 			</span>
 		</aui:field-wrapper>

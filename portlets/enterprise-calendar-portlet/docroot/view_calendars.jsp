@@ -44,8 +44,8 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 	iteratorURL="<%= portletURL %>"
 >
 	<liferay-ui:search-container-results
-		results="<%= CalendarServiceUtil.search(themeDisplay.getCompanyId(), new long[] {themeDisplay.getScopeGroupId()}, new long[] {calendarResource.getCalendarResourceId()}, null, false, searchContainer.getStart(), searchContainer.getEnd(), new CalendarNameComparator(true)) %>"
-		total="<%= CalendarServiceUtil.searchCount(themeDisplay.getCompanyId(), new long[] {themeDisplay.getScopeGroupId()}, new long[] {calendarResource.getCalendarResourceId()}, null, false) %>"
+		results="<%= CalendarServiceUtil.search(themeDisplay.getCompanyId(), new long[] {themeDisplay.getScopeGroupId(), themeDisplay.getCompanyGroupId()}, new long[] {calendarResource.getCalendarResourceId()}, null, false, searchContainer.getStart(), searchContainer.getEnd(), new CalendarNameComparator(true)) %>"
+		total="<%= CalendarServiceUtil.searchCount(themeDisplay.getCompanyId(), new long[] {themeDisplay.getScopeGroupId(), themeDisplay.getCompanyGroupId()}, new long[] {calendarResource.getCalendarResourceId()}, null, false) %>"
 	/>
 
 	<liferay-ui:search-container-row

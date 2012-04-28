@@ -30,6 +30,7 @@ Liferay.Service.registerClass(
 	{
 		addCalendarResource: true,
 		deleteCalendarResource: true,
+		fetchCalendarResource: true,
 		getCalendarResource: true,
 		search: true,
 		searchCount: true,

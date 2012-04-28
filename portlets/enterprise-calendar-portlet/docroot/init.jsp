@@ -27,6 +27,8 @@
 
 <%@ page import="com.liferay.calendar.model.Calendar" %><%@
 page import="com.liferay.calendar.model.CalendarResource" %><%@
+page import="com.liferay.portal.model.Group" %><%@
+page import="com.liferay.portal.model.User" %><%@
 page import="com.liferay.calendar.search.CalendarResourceDisplayTerms" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearch" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearchTerms" %><%@
@@ -47,9 +49,14 @@ page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.StringPool" %><%@
 page import="com.liferay.portal.kernel.util.StringUtil" %><%@
+page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
+page import="com.liferay.portal.service.GroupServiceUtil" %><%@
+page import="com.liferay.portal.service.UserLocalServiceUtil" %><%@
+page import="com.liferay.portal.util.comparator.UserScreenNameComparator" %><%@
 page import="com.liferay.portal.util.PortalUtil" %>
 
-<%@ page import="java.util.List" %>
+<%@ page import="java.util.LinkedHashMap" %><%@
+page import="java.util.List" %>
 
 <%@ page import="javax.portlet.PortletURL" %>
 

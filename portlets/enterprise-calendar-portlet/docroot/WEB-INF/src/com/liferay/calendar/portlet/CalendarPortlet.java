@@ -18,20 +18,31 @@ import com.liferay.calendar.DuplicateCalendarResourceException;
 import com.liferay.calendar.NoSuchResourceException;
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarResource;
+import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 import com.liferay.calendar.service.CalendarResourceServiceUtil;
 import com.liferay.calendar.service.CalendarServiceUtil;
 import com.liferay.calendar.util.WebKeys;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
+import com.liferay.portal.model.Company;
+import com.liferay.portal.model.Group;
+import com.liferay.portal.model.User;
 import com.liferay.portal.security.auth.PrincipalException;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import java.io.IOException;
-
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -87,11 +98,41 @@ public class CalendarPortlet extends MVCPortlet {
 
 			long calendarResourceId = ParamUtil.getLong(
 				renderRequest, "calendarResourceId");
+			long classNameId = ParamUtil.getLong(renderRequest, "classNameId");
+			long classPK = ParamUtil.getLong(renderRequest, "classPK");
 
 			if (calendarResourceId > 0) {
 				calendarResource =
-					CalendarResourceServiceUtil.getCalendarResource(
+					CalendarResourceLocalServiceUtil.getCalendarResource(
 						calendarResourceId);
+			}
+			else if (classNameId > 0 && classPK > 0) {
+				calendarResource =
+					CalendarResourceLocalServiceUtil.fetchCalendarResource(
+						classNameId, classPK);
+
+				if ((calendarResource == null) &&
+						(classNameId == PortalUtil.getClassNameId(
+							User.class.getName()))) {
+
+					ServiceContext serviceContext =
+						ServiceContextFactory.getInstance(
+							CalendarResource.class.getName(), renderRequest);
+
+					calendarResource = _createUserCalendarResource(
+						classPK, serviceContext);
+				}
+				else if ((calendarResource == null) &&
+							(classNameId == PortalUtil.getClassNameId(
+								Group.class.getName()))) {
+
+					ServiceContext serviceContext =
+						ServiceContextFactory.getInstance(
+							CalendarResource.class.getName(), renderRequest);
+
+					calendarResource = _createGroupCalendarResource(
+						classPK, serviceContext);
+				}
 			}
 
 			renderRequest.setAttribute(
@@ -182,6 +223,52 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		return false;
+	}
+
+	private CalendarResource _createGroupCalendarResource(
+			long classPK, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		Group group = GroupLocalServiceUtil.getGroup(classPK);
+
+		Company company = CompanyLocalServiceUtil.getCompany(
+			serviceContext.getCompanyId());
+
+		User user = UserLocalServiceUtil.getDefaultUser(company.getCompanyId());
+
+		Map<Locale, String> nameMap = new HashMap<Locale, String>();
+		nameMap.put(LocaleUtil.getDefault(), group.getName());
+
+		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
+		descriptionMap.put(LocaleUtil.getDefault(), group.getDescription());
+
+		return CalendarResourceLocalServiceUtil.addCalendarResource(
+			user.getUserId(), company.getGroup().getGroupId(),
+			Group.class.getName(), classPK, user.getUuid(), 0,
+			user.getScreenName(), nameMap, descriptionMap, null, true,
+			serviceContext);
+	}
+
+	private CalendarResource _createUserCalendarResource(
+			long classPK, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		User user = UserLocalServiceUtil.getUser(classPK);
+
+		Company company = CompanyLocalServiceUtil.getCompany(
+			serviceContext.getCompanyId());
+
+		Map<Locale, String> nameMap = new HashMap<Locale, String>();
+		nameMap.put(LocaleUtil.getDefault(), user.getFullName());
+
+		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
+		descriptionMap.put(LocaleUtil.getDefault(), user.getEmailAddress());
+
+		return CalendarResourceLocalServiceUtil.addCalendarResource(
+			user.getUserId(), company.getGroup().getGroupId(),
+			User.class.getName(), classPK, user.getUuid(), 0,
+			user.getScreenName(), nameMap, descriptionMap, null, true,
+			serviceContext);
 	}
 
 }
