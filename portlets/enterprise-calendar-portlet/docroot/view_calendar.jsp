@@ -95,6 +95,10 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 
+	<c:if test="<%= userCalendars != null %>">
+		Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(userCalendars.get(0), locale) %>;
+	</c:if>
+
 	var syncVisibleCalendarsMap = function() {
 		Liferay.CalendarUtil.syncVisibleCalendarsMap(
 			window.<portlet:namespace />myCalendarList,

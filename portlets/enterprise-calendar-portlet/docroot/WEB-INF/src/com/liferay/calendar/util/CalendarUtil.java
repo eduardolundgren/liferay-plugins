@@ -116,6 +116,10 @@ public class CalendarUtil {
 			cal.get(Calendar.MILLISECOND));
 	}
 
+	public static Calendar getCalendar(long timestamp, TimeZone tz) {
+		return getCalendar(new Date(timestamp), tz);
+	}
+
 	public static Calendar getCalendar(
 			TimeZone tz, int year, int month, int day, int hour, int minutes,
 			int seconds, int milliseconds) {

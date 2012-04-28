@@ -30,11 +30,8 @@ long calendarId = BeanParamUtil.getLong(calendarBooking, request, "calendarId", 
 long startDate = ParamUtil.getLong(request, "startDate", now.getTimeInMillis());
 long endDate = ParamUtil.getLong(request, "endDate", defaultEndDate.getTimeInMillis());
 
-java.util.Calendar startDateCal = CalendarFactoryUtil.getCalendar(timeZone, locale);
-java.util.Calendar endDateCal = CalendarFactoryUtil.getCalendar(timeZone, locale);
-
-startDateCal.setTimeInMillis(startDate);
-endDateCal.setTimeInMillis(endDate);
+java.util.Calendar startDateCal = CalendarUtil.getCalendar(startDate, timeZone);
+java.util.Calendar endDateCal = CalendarUtil.getCalendar(endDate, timeZone);
 
 com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(startDateCal, 30);
 com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(endDateCal, 30);
@@ -76,7 +73,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 <liferay-ui:header
 	backURL="<%= redirect %>"
-	title='<%= ((calendarBooking != null ) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>' />
+	title='<%= ((calendarBooking != null) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>' />
 
 <liferay-portlet:actionURL name="updateCalendarBooking" var="updateCalendarBookingURL">
 	<liferay-portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />
@@ -91,7 +88,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 	<aui:input name="invitedCalendarIds" type="hidden" />
 
 	<aui:fieldset>
-		<aui:input name="title" value="<%= title %>" />
+		<aui:input name="title" />
 
 		<aui:input name="startDate" value="<%= startDateCal %>" />
 
@@ -116,7 +113,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 	>
 		<liferay-ui:section>
 			<c:if test="<%= canInvite %>">
-				<aui:input inputCssClass="calendar-portlet-invite-resources-input" label="invite-resource" name="inviteResource" placeholder="add-other-calendars" type="text" />
+				<aui:input inputCssClass="calendar-portlet-invite-resources-input" label="invite-resource" name="inviteResource" placeholder="add-guests-groups-rooms" type="text" />
 
 				<div class="separator"><!-- --></div>
 			</c:if>
@@ -165,7 +162,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			var A = AUI();
 
 			<c:if test="<%= canInvite %>">
-				document.<portlet:namespace />fm.<portlet:namespace />invitedCalendarIds.value = A.JSON.stringify(A.Object.keys(Liferay.CalendarUtil.visibleCalendars));
+				A.one('#<portlet:namespace />invitedCalendarIds').val(A.JSON.stringify(A.Object.keys(Liferay.CalendarUtil.visibleCalendars)));
 			</c:if>
 
 			submitForm(document.<portlet:namespace />fm);
@@ -174,6 +171,10 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 	);
 
 	Liferay.Util.focusFormField(document.<portlet:namespace />fm.<portlet:namespace />title);
+
+	<c:if test="<%= calendarBooking == null %>">
+		document.<portlet:namespace />fm.<portlet:namespace />title_<%= LanguageUtil.getLanguageId(request) %>.value = decodeURIComponent('<%= HtmlUtil.escapeURL(title) %>');
+	</c:if>
 </aui:script>
 
 <aui:script use="json,liferay-calendar-list,liferay-calendar-simple-menu">

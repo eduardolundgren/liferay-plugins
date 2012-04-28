@@ -107,7 +107,8 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		java.lang.String keywords, java.util.Date startDate,
 		java.util.Date endDate, int[] status, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.search(companyId, groupIds, calendarIds,
 			calendarResourceIds, parentCalendarBookingId, keywords, startDate,
 			endDate, status, start, end, orderByComparator);
@@ -121,7 +122,8 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		java.util.Date endDate, int[] status, boolean andOperator, int start,
 		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.search(companyId, groupIds, calendarIds,
 			calendarResourceIds, parentCalendarBookingId, title, description,
 			location, startDate, endDate, status, andOperator, start, end,
@@ -132,7 +134,8 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, java.util.Date startDate,
 		java.util.Date endDate, int[] status)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.searchCount(companyId, groupIds,
 			calendarIds, calendarResourceIds, parentCalendarBookingId,
 			keywords, startDate, endDate, status);
@@ -143,7 +146,8 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, java.util.Date startDate,
 		java.util.Date endDate, int[] status, boolean andOperator)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.searchCount(companyId, groupIds,
 			calendarIds, calendarResourceIds, parentCalendarBookingId, title,
 			description, location, startDate, endDate, status, andOperator);

@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
@@ -276,7 +277,7 @@ public class CalendarPortlet extends MVCPortlet {
 
 		User user = PortalUtil.getUser(actionRequest);
 
-		TimeZone timeZone = user.getTimeZone();
+		TimeZone utcTimeZone = TimeZoneUtil.getTimeZone(StringPool.UTC);
 
 		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
 		long calendarBookingId = ParamUtil.getLong(
@@ -309,7 +310,7 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		java.util.Calendar startDate = CalendarUtil.getCalendar(
-			timeZone, startDateYear, startDateMonth, startDateDay,
+			utcTimeZone, startDateYear, startDateMonth, startDateDay,
 			startDateHour, startDateMinute, 0, 0);
 
 		int endDateMonth = ParamUtil.getInteger(actionRequest, "endDateMonth");
@@ -325,7 +326,7 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		java.util.Calendar endDate = CalendarUtil.getCalendar(
-			timeZone, endDateYear, endDateMonth, endDateDay, endDateHour,
+			utcTimeZone, endDateYear, endDateMonth, endDateDay, endDateHour,
 			endDateMinute, 0, 0);
 
 		CalendarBooking calendarBooking = null;

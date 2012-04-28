@@ -20,13 +20,16 @@ import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.ActionKeys;
 import com.liferay.calendar.workflow.CalendarBookingApprovalWorkflow;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.service.ServiceContext;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -147,12 +150,15 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String keywords, Date startDate, Date endDate, int[] status,
 			int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		throws SystemException, PortalException {
 
-		return calendarBookingFinder.filterFindByKeywords(
-			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, keywords, startDate, endDate, status,
-			start, end, orderByComparator);
+		List<CalendarBooking> calendarBookings =
+			calendarBookingFinder.findByKeywords(
+				companyId, groupIds, calendarIds, calendarResourceIds,
+				parentCalendarBookingId, keywords, startDate, endDate, status,
+				start, end, orderByComparator);
+
+		return filterCalendarBookings(calendarBookings, ActionKeys.VIEW);
 	}
 
 	public List<CalendarBooking> search(
@@ -161,23 +167,30 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			String title, String description, String location, Date startDate,
 			Date endDate, int[] status, boolean andOperator, int start, int end,
 			OrderByComparator orderByComparator)
-		throws SystemException {
+		throws PortalException, SystemException {
 
-		return calendarBookingFinder.filterFindByC_G_C_C_P_T_D_L_S_E_S(
-			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, title, description, location, startDate,
-			endDate, status, andOperator, start, end, orderByComparator);
+		List<CalendarBooking> calendarBookings =
+			calendarBookingFinder.findByC_G_C_C_P_T_D_L_S_E_S(
+				companyId, groupIds, calendarIds, calendarResourceIds,
+				parentCalendarBookingId, title, description, location,
+				startDate, endDate, status, andOperator, start, end,
+				orderByComparator);
+
+		return filterCalendarBookings(calendarBookings, ActionKeys.VIEW);
 	}
 
 	public int searchCount(
 			long companyId, long[] groupIds, long[] calendarIds,
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String keywords, Date startDate, Date endDate, int[] status)
-		throws SystemException {
+		throws PortalException, SystemException {
 
-		return calendarBookingFinder.filterCountByKeywords(
+		List<CalendarBooking> calendarBookings = search(
 			companyId, groupIds, calendarIds, calendarResourceIds,
-			parentCalendarBookingId, keywords, startDate, endDate, status);
+			parentCalendarBookingId, keywords, startDate, endDate, status,
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator)null);
+
+		return calendarBookings.size();
 	}
 
 	public int searchCount(
@@ -185,12 +198,15 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			long[] calendarResourceIds, long parentCalendarBookingId,
 			String title, String description, String location, Date startDate,
 			Date endDate, int[] status, boolean andOperator)
-		throws SystemException {
+		throws PortalException, SystemException {
 
-		return calendarBookingFinder.filterCountByC_G_C_C_P_T_D_L_S_E_S(
+		List<CalendarBooking> calendarBookings = search(
 			companyId, groupIds, calendarIds, calendarResourceIds,
 			parentCalendarBookingId, title, description, location, startDate,
-			endDate, status, andOperator);
+			endDate, status, andOperator, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+			(OrderByComparator)null);
+
+			return calendarBookings.size();
 	}
 
 	public CalendarBooking updateCalendarBooking(
@@ -226,6 +242,35 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 		return calendarBooking;
 	}
 
+	protected List<CalendarBooking> filterCalendarBookings(
+			List<CalendarBooking> calendarBookings, String actionId)
+		throws PortalException, SystemException {
+
+		calendarBookings = ListUtil.copy(calendarBookings);
+
+		Iterator<CalendarBooking> itr = calendarBookings.iterator();
+
+		while (itr.hasNext()) {
+			CalendarBooking calendarBooking = itr.next();
+
+			if (!CalendarPermission.contains(
+					getPermissionChecker(), calendarBooking.getCalendarId(),
+					actionId)) {
+
+				itr.remove();
+			}
+			else if (!CalendarPermission.contains(
+						getPermissionChecker(), calendarBooking.getCalendarId(),
+						ActionKeys.VIEW_BOOKING_DETAILS)) {
+
+				filterCalendarBooking(calendarBooking);
+			}
+		}
+
+		return calendarBookings;
+	}
+
 	@BeanReference(type = CalendarBookingApprovalWorkflow.class)
 	protected CalendarBookingApprovalWorkflow calendarBookingApprovalWorkflow;
+
 }

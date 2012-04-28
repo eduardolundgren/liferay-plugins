@@ -764,7 +764,7 @@ var SchedulerEventRecorder = A.Component.create(
 				var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 				var data = instance.serializeForm();
 
-				data.titleCurrentValue = data.content;
+				data.titleCurrentValue = encodeURIComponent(data.content);
 				data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 				data.endDate = CalendarUtil.toUTCTimeZone(data.endDate).getTime();
 
@@ -814,10 +814,6 @@ var SchedulerEventRecorder = A.Component.create(
 				var overlay = instance.overlay;
 				var toolbar = instance.toolbar;
 
-				if (evt.isMasterBooking()) {
-					return;
-				}
-
 				toolbar.add(
 					{
 						handler: A.bind(instance._handleEditDetailsEvent, instance),
@@ -825,6 +821,10 @@ var SchedulerEventRecorder = A.Component.create(
 						label: Liferay.Language.get('edit-details')
 					}
 				);
+
+				// if (evt.isMasterBooking()) {
+				// 	return;
+				// }
 
 				if (status === Liferay.Workflow.STATUS_DRAFT) {
 					toolbar.remove('declineBtn');
