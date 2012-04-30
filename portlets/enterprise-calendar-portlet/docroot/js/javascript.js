@@ -311,7 +311,7 @@ var CalendarUtil = {
 						function(item) {
 							return !instance.visibleCalendars[item.raw.calendarId];
 						}
-					)
+					);
 				},
 				resultHighlighter: 'wordMatch',
 				resultTextLocator: 'name',
@@ -327,11 +327,11 @@ var CalendarUtil = {
 			{
 				'/enterprise-calendar-portlet/calendarbooking/delete-calendar-booking': {
 					calendarBookingId: evt.get('calendarBookingId')
-				},
+				}
 			},
 			{
 				success: function() {
-					evt.get('scheduler').loadCalendarBookings();		
+					evt.get('scheduler').loadCalendarBookings();
 				}
 			}
 		);
@@ -524,13 +524,16 @@ var Scheduler = A.Component.create(
 			loadCalendarBookings: function() {
 				var instance = this;
 
-				var currentDate = instance.get('currentDate');
-
 				CalendarUtil.message(Liferay.Language.get('loading') + '...');
 
+				var currentDate = instance.get('currentDate');
+				var firstDayOfWeek = instance.get('firstDayOfWeek');
+
+				var startDate = DateMath.getFirstDayOfWeek(DateMath.findMonthStart(currentDate), firstDayOfWeek);
+				var endDate = DateMath.add(DateMath.getFirstDayOfWeek(DateMath.findMonthEnd(currentDate), firstDayOfWeek), DateMath.DAY, 7);
+
 				CalendarUtil.getEvents(
-					DateMath.findMonthStart(currentDate),
-					DateMath.findMonthEnd(currentDate),
+					startDate, endDate,
 					[Workflow.STATUS_APPROVED, Workflow.STATUS_PENDING],
 					A.bind(instance.loadCalendarBookingsJSON, instance)
 				);
