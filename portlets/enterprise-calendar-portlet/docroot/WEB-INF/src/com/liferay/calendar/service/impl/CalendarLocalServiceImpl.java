@@ -268,6 +268,17 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 			calendar.isDefaultCalendar(), serviceContext);
 	}
 
+	public Calendar updateCalendarColor(
+			long calendarId, int color, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		Calendar calendar = calendarPersistence.findByPrimaryKey(calendarId);
+
+		return updateCalendar(
+			calendarId, calendar.getNameMap(), calendar.getDescriptionMap(),
+			color, calendar.isDefaultCalendar(), serviceContext);
+	}
+
 	public void updateDefaultCalendar(
 			Calendar calendar, boolean defaultCalendar)
 		throws SystemException {

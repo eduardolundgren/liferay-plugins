@@ -339,5 +339,22 @@ public class CalendarServiceSoap {
 		}
 	}
 
+	public static com.liferay.calendar.model.CalendarSoap updateCalendarColor(
+		long calendarId, int color,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws RemoteException {
+		try {
+			com.liferay.calendar.model.Calendar returnValue = CalendarServiceUtil.updateCalendarColor(calendarId,
+					color, serviceContext);
+
+			return com.liferay.calendar.model.CalendarSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(CalendarServiceSoap.class);
 }

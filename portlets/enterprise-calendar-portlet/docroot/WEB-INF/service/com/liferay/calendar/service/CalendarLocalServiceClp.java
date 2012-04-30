@@ -125,7 +125,11 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 				java.util.Map.class, int.class,
 				com.liferay.portal.service.ServiceContext.class);
 
-		_updateDefaultCalendarMethodKey26 = new MethodKey(_classLoaderProxy.getClassName(),
+		_updateCalendarColorMethodKey26 = new MethodKey(_classLoaderProxy.getClassName(),
+				"updateCalendarColor", long.class, int.class,
+				com.liferay.portal.service.ServiceContext.class);
+
+		_updateDefaultCalendarMethodKey27 = new MethodKey(_classLoaderProxy.getClassName(),
 				"updateDefaultCalendar",
 				com.liferay.calendar.model.Calendar.class, boolean.class);
 	}
@@ -911,10 +915,44 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 		return (com.liferay.calendar.model.Calendar)ClpSerializer.translateOutput(returnObj);
 	}
 
+	public com.liferay.calendar.model.Calendar updateCalendarColor(
+		long calendarId, int color,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		Object returnObj = null;
+
+		MethodHandler methodHandler = new MethodHandler(_updateCalendarColorMethodKey26,
+				calendarId, color, ClpSerializer.translateInput(serviceContext));
+
+		try {
+			returnObj = _classLoaderProxy.invoke(methodHandler);
+		}
+		catch (Throwable t) {
+			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
+				throw (com.liferay.portal.kernel.exception.PortalException)t;
+			}
+
+			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
+				throw (com.liferay.portal.kernel.exception.SystemException)t;
+			}
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.calendar.model.Calendar)ClpSerializer.translateOutput(returnObj);
+	}
+
 	public void updateDefaultCalendar(
 		com.liferay.calendar.model.Calendar calendar, boolean defaultCalendar)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_updateDefaultCalendarMethodKey26,
+		MethodHandler methodHandler = new MethodHandler(_updateDefaultCalendarMethodKey27,
 				ClpSerializer.translateInput(calendar), defaultCalendar);
 
 		try {
@@ -966,5 +1004,6 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 	private MethodKey _searchCountMethodKey23;
 	private MethodKey _updateCalendarMethodKey24;
 	private MethodKey _updateCalendarMethodKey25;
-	private MethodKey _updateDefaultCalendarMethodKey26;
+	private MethodKey _updateCalendarColorMethodKey26;
+	private MethodKey _updateDefaultCalendarMethodKey27;
 }
