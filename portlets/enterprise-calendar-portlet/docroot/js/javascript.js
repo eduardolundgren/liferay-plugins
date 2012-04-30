@@ -261,6 +261,8 @@ var CalendarUtil = {
 						evt.set('calendarResourceId', data.calendarResourceId);
 						evt.set('parentCalendarBookingId', data.parentCalendarBookingId);
 						evt.set('status', data.status);
+
+						CalendarUtil.visibleCalendars[evt.get('calendarId')].addEvent(evt);
 					}
 				},
 
@@ -915,31 +917,14 @@ var Calendar = A.Component.create({
 
 			Calendar.superclass._afterColorChange.apply(instance, arguments);
 
-			// CalendarUtil.invoke(
-			// 	{
-			// 		"/enterprise-calendar-portlet/calendar/update-calendar": {
-			// 			calendarId: instance.get('calendarId'),
-			// 			nameMap: CalendarUtil.getLocalizationMap(instance.get('name')),
-			// 			descriptionMap: CalendarUtil.getLocalizationMap(instance.get('description')),
-			// 			color: instance.get('color'),
-			// 			defaultCalendar: true,
-			// 			serviceContext: {}
-			// 		}
-			// 	},
-			// 	{
-			// 		success: function(data) {
-			// 			console.log(data);
-			// 		}
-			// 	}
-			// );
-		},
-
-		_onVisibleChange: function(event) {
-			var instance = this;
-
-			Calendar.superclass._onVisibleChange.apply(instance, arguments);
-
-			Liferay.Store('calendar' + instance.get('calendarId'), event.newVal);
+			CalendarUtil.invoke(
+				{
+					"/enterprise-calendar-portlet/calendar/update-calendar-color": {
+						calendarId: instance.get('calendarId'),
+						color: parseInt(event.newVal.substr(1), 16)
+					}
+				}
+			);
 		}
 	},
 

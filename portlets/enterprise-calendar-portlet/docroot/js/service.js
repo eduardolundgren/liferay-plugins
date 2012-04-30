@@ -9,7 +9,8 @@ Liferay.Service.registerClass(
 		getCalendar: true,
 		search: true,
 		searchCount: true,
-		updateCalendar: true
+		updateCalendar: true,
+		updateCalendarColor: true
 	}
 );
 

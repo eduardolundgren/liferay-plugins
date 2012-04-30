@@ -114,6 +114,11 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 				calendarsChange: syncVisibleCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />myCalendarList',
+
+			<%
+			updateCalendarsJSONVisibility(request, userCalendarsJSON);
+			%>
+
 			calendars: <%= userCalendarsJSON %>,
 			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
@@ -134,16 +139,10 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			boundingBox: '#<portlet:namespace />otherCalendarList',
 
 			<%
-			for (int i = 0; i < otherCalendarsJSON.length(); i++) {
-				JSONObject jsonObject = otherCalendarsJSON.getJSONObject(i);
-
-				long calendarId = jsonObject.getLong("calendarId");
-
-				jsonObject.put("visible", GetterUtil.getBoolean(SessionClicks.get(request, "calendar" + calendarId, "true")));
-			}
+			updateCalendarsJSONVisibility(request, otherCalendarsJSON);
 			%>
 
-			calendars: <%= otherCalendarsJSON.toString() %>,
+			calendars: <%= otherCalendarsJSON %>,
 			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
@@ -154,6 +153,11 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 				calendarsChange: syncVisibleCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />siteCalendarList',
+
+			<%
+			updateCalendarsJSONVisibility(request, groupCalendarsJSON);
+			%>
+
 			calendars: <%= groupCalendarsJSON %>,
 			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
@@ -205,6 +209,15 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			eventClass: Liferay.SchedulerEvent,
 			eventRecorder: window.<portlet:namespace />recorder,
 			events: A.Object.values(Liferay.CalendarUtil.visibleCalendars),
+			on: {
+				'scheduler-calendar:visibleChange': function(event) {
+					var instance = this;
+
+					var calendar = event.target;
+
+					Liferay.Store('view-calendar.jsp-scheduler-calendar:visible' + calendar.get('calendarId'), event.newVal);
+				}
+			},
 			portletNamespace: '<portlet:namespace />',
 			render: true,
 			views: [
@@ -232,3 +245,15 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 
 	Liferay.CalendarUtil.createCalendarListAutoComplete('<%= calendarResourcesURL %>', <portlet:namespace />otherCalendarList, addOtherCalendarInput);
 </aui:script>
+
+<%!
+private void updateCalendarsJSONVisibility(HttpServletRequest request, JSONArray calendarsJSON) {
+	for (int i = 0; i < calendarsJSON.length(); i++) {
+		JSONObject jsonObject = calendarsJSON.getJSONObject(i);
+
+		long calendarId = jsonObject.getLong("calendarId");
+
+		jsonObject.put("visible", GetterUtil.getBoolean(SessionClicks.get(request, "view-calendar.jsp-scheduler-calendar:visible" + calendarId, "true")));
+	}
+}
+%>

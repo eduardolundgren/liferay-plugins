@@ -89,6 +89,10 @@ public class CalendarServiceClp implements CalendarService {
 				"updateCalendar", long.class, java.util.Map.class,
 				java.util.Map.class, int.class,
 				com.liferay.portal.service.ServiceContext.class);
+
+		_updateCalendarColorMethodKey14 = new MethodKey(_classLoaderProxy.getClassName(),
+				"updateCalendarColor", long.class, int.class,
+				com.liferay.portal.service.ServiceContext.class);
 	}
 
 	public com.liferay.calendar.model.Calendar addCalendar(long groupId,
@@ -606,6 +610,40 @@ public class CalendarServiceClp implements CalendarService {
 		return (com.liferay.calendar.model.Calendar)ClpSerializer.translateOutput(returnObj);
 	}
 
+	public com.liferay.calendar.model.Calendar updateCalendarColor(
+		long calendarId, int color,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		Object returnObj = null;
+
+		MethodHandler methodHandler = new MethodHandler(_updateCalendarColorMethodKey14,
+				calendarId, color, ClpSerializer.translateInput(serviceContext));
+
+		try {
+			returnObj = _classLoaderProxy.invoke(methodHandler);
+		}
+		catch (Throwable t) {
+			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
+				throw (com.liferay.portal.kernel.exception.PortalException)t;
+			}
+
+			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
+				throw (com.liferay.portal.kernel.exception.SystemException)t;
+			}
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.calendar.model.Calendar)ClpSerializer.translateOutput(returnObj);
+	}
+
 	public ClassLoaderProxy getClassLoaderProxy() {
 		return _classLoaderProxy;
 	}
@@ -625,4 +663,5 @@ public class CalendarServiceClp implements CalendarService {
 	private MethodKey _searchCountMethodKey11;
 	private MethodKey _updateCalendarMethodKey12;
 	private MethodKey _updateCalendarMethodKey13;
+	private MethodKey _updateCalendarColorMethodKey14;
 }

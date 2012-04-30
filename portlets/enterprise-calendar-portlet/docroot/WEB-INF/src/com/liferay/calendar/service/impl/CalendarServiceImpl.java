@@ -197,6 +197,17 @@ public class CalendarServiceImpl extends CalendarServiceBaseImpl {
 			calendarId, nameMap, descriptionMap, color, serviceContext);
 	}
 
+	public Calendar updateCalendarColor(
+			long calendarId, int color, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.UPDATE);
+
+		return calendarLocalService.updateCalendarColor(
+			calendarId, color, serviceContext);
+	}
+
 	protected List<Calendar> filterCalendars(
 			List<Calendar> calendars, String actionId)
 		throws PrincipalException {
