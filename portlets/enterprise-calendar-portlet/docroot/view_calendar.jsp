@@ -247,7 +247,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 </aui:script>
 
 <%!
-private void updateCalendarsJSONVisibility(HttpServletRequest request, JSONArray calendarsJSON) {
+protected void updateCalendarsJSONVisibility(HttpServletRequest request, JSONArray calendarsJSON) {
 	for (int i = 0; i < calendarsJSON.length(); i++) {
 		JSONObject jsonObject = calendarsJSON.getJSONObject(i);
 

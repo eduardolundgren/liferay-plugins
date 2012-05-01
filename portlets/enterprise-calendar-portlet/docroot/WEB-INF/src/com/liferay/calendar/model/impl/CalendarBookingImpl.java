@@ -18,8 +18,16 @@ import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
+import com.liferay.calendar.util.CalendarUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.TimeZoneUtil;
+import com.liferay.portal.model.User;
+import com.liferay.portal.service.UserLocalServiceUtil;
+
+import java.util.Date;
 
 /**
  * @author Eduardo Lundgren
@@ -41,8 +49,32 @@ public class CalendarBookingImpl
 			getCalendarResourceId());
 	}
 
+	public Date getUTCEndDate() throws PortalException, SystemException {
+		return getUTCDate(getEndDate());
+	}
+
+	public Date getUTCStartDate() throws PortalException, SystemException {
+		return getUTCDate(getStartDate());
+	}
+
 	public boolean isMasterBooking() {
 		return (getParentCalendarBookingId() == getCalendarBookingId());
+	}
+
+	protected Date getUTCDate(Date date)
+		throws PortalException, SystemException {
+
+		User user = UserLocalServiceUtil.getUser(getUserId());
+
+		java.util.Calendar userDate = CalendarFactoryUtil.getCalendar(
+			user.getTimeZone());
+
+		userDate.setTime(date);
+
+		java.util.Calendar utcDate = CalendarUtil.getCalendar(
+			userDate, TimeZoneUtil.getTimeZone(StringPool.UTC));
+
+		return utcDate.getTime();
 	}
 
 }

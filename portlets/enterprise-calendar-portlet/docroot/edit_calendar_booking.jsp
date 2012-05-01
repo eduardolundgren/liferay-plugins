@@ -73,7 +73,8 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 
 <liferay-ui:header
 	backURL="<%= redirect %>"
-	title='<%= ((calendarBooking != null) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>' />
+	title='<%= ((calendarBooking != null) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>'
+/>
 
 <liferay-portlet:actionURL name="updateCalendarBooking" var="updateCalendarBookingURL">
 	<liferay-portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />

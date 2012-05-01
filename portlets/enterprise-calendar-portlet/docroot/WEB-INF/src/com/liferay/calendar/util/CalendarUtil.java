@@ -103,17 +103,21 @@ public class CalendarUtil {
 		return formatted.concat(suffix);
 	}
 
+	public static Calendar getCalendar(Calendar cal, TimeZone tz) {
+		return getCalendar(
+			tz, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+			cal.get(Calendar.DATE), cal.get(Calendar.HOUR_OF_DAY),
+			cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND),
+			cal.get(Calendar.MILLISECOND));
+	}
+
 	public static Calendar getCalendar(Date date, TimeZone tz) {
 		Calendar cal = CalendarFactoryUtil.getCalendar(
 			TimeZone.getTimeZone(StringPool.UTC));
 
 		cal.setTime(date);
 
-		return getCalendar(
-			tz, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-			cal.get(Calendar.DATE), cal.get(Calendar.HOUR_OF_DAY),
-			cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND),
-			cal.get(Calendar.MILLISECOND));
+		return getCalendar(cal, tz);
 	}
 
 	public static Calendar getCalendar(long timestamp, TimeZone tz) {
@@ -219,7 +223,8 @@ public class CalendarUtil {
 					calendar.getCalendarResourceId());
 
 			jsonObject.put("calendarId", calendar.getCalendarId());
-			jsonObject.put("calendarResourceId", calendarResource.getCalendarResourceId());
+			jsonObject.put(
+				"calendarResourceId", calendarResource.getCalendarResourceId());
 			jsonObject.put("color", ColorUtil.toHexString(calendar.getColor()));
 			jsonObject.put("classNameId", calendarResource.getClassNameId());
 			jsonObject.put("classPK", calendarResource.getClassPK());

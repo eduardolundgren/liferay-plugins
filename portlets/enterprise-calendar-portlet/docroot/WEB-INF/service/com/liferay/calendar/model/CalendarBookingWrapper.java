@@ -885,6 +885,18 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		return _calendarBooking.getCalendarResource();
 	}
 
+	public java.util.Date getUTCEndDate()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBooking.getUTCEndDate();
+	}
+
+	public java.util.Date getUTCStartDate()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBooking.getUTCStartDate();
+	}
+
 	public boolean isMasterBooking() {
 		return _calendarBooking.isMasterBooking();
 	}

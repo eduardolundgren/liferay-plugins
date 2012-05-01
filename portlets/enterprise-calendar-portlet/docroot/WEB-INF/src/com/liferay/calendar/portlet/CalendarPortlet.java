@@ -57,7 +57,6 @@ import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.io.IOException;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -407,8 +406,6 @@ public class CalendarPortlet extends MVCPortlet {
 
 		User user = PortalUtil.getUser(actionRequest);
 
-		TimeZone utcTimeZone = TimeZoneUtil.getTimeZone(StringPool.UTC);
-
 		long[] invitedCalendarIds = ParamUtil.getLongValues(
 			actionRequest, "invitedCalendarIds");
 
@@ -430,24 +427,14 @@ public class CalendarPortlet extends MVCPortlet {
 				calendarId, parentCalendarBooking.getCalendarBookingId());
 
 			if (total == 0) {
-				Date startDate = CalendarUtil.getDate(
-					parentCalendarBooking.getStartDate(), utcTimeZone);
-
-				Date endDate = CalendarUtil.getDate(
-					parentCalendarBooking.getEndDate(), utcTimeZone);
-//
-//				Date utcStartDate = CalendarUtil.getDate(
-//					startDate, utcTimeZone);
-//
-//				Date utcEndDate = CalendarUtil.getDate(endDate, utcTimeZone);
-
 				CalendarBookingLocalServiceUtil.addCalendarBooking(
 					user.getUserId(), calendarId,
 					parentCalendarBooking.getCalendarBookingId(),
 					parentCalendarBooking.getTitleMap(),
 					parentCalendarBooking.getDescriptionMap(),
 					parentCalendarBooking.getLocation(),
-					startDate, endDate,
+					parentCalendarBooking.getUTCStartDate(),
+					parentCalendarBooking.getUTCEndDate(),
 					parentCalendarBooking.getAllDay(),
 					parentCalendarBooking.getRecurrence(),
 					parentCalendarBooking.getFirstReminder(),

@@ -467,6 +467,14 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 		throw new UnsupportedOperationException();
 	}
 
+	public java.util.Date getUTCEndDate() {
+		throw new UnsupportedOperationException();
+	}
+
+	public java.util.Date getUTCStartDate() {
+		throw new UnsupportedOperationException();
+	}
+
 	public boolean isMasterBooking() {
 		throw new UnsupportedOperationException();
 	}
