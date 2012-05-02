@@ -27,7 +27,7 @@ User rowUser = (User)row.getObject();
 	<portlet:renderURL var="calendarsURL">
 		<portlet:param name="jspPage" value="/view_calendars.jsp" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
-		<portlet:param name="classNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(User.class.getName())) %>" />
+		<portlet:param name="classNameId" value="<%= String.valueOf(userClassNameId) %>" />
 		<portlet:param name="classPK" value="<%=  String.valueOf(rowUser.getUserId()) %>" />
 	</portlet:renderURL>
 

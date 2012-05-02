@@ -139,33 +139,10 @@ public class CalendarPortlet extends MVCPortlet {
 					CalendarResourceServiceUtil.getCalendarResource(
 						calendarResourceId);
 			}
-			else if (classNameId > 0 && classPK > 0) {
-				calendarResource =
-					CalendarResourceLocalServiceUtil.fetchCalendarResource(
-						classNameId, classPK);
-
-				if ((calendarResource == null) &&
-						(classNameId == PortalUtil.getClassNameId(
-							User.class.getName()))) {
-
-					ServiceContext serviceContext =
-						ServiceContextFactory.getInstance(
-							CalendarResource.class.getName(), renderRequest);
-
-					calendarResource = _createUserCalendarResource(
-						classPK, serviceContext);
-				}
-				else if ((calendarResource == null) &&
-							(classNameId == PortalUtil.getClassNameId(
-								Group.class.getName()))) {
-
-					ServiceContext serviceContext =
-						ServiceContextFactory.getInstance(
-							CalendarResource.class.getName(), renderRequest);
-
-					calendarResource = _createGroupCalendarResource(
-						classPK, serviceContext);
-				}
+			else if ((classNameId > 0) && (classPK > 0)) {
+				calendarResource = CalendarResourceUtil.fetchOrCreateResource(
+					PortalUtil.getHttpServletRequest(renderRequest),
+					classNameId, classPK);
 			}
 
 			renderRequest.setAttribute(
@@ -491,52 +468,6 @@ public class CalendarPortlet extends MVCPortlet {
 
 			jsonArray.put(jsonObject);
 		}
-	}
-
-	private CalendarResource _createGroupCalendarResource(
-			long classPK, ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
-		Group group = GroupLocalServiceUtil.getGroup(classPK);
-
-		Company company = CompanyLocalServiceUtil.getCompany(
-			serviceContext.getCompanyId());
-
-		User user = UserLocalServiceUtil.getDefaultUser(company.getCompanyId());
-
-		Map<Locale, String> nameMap = new HashMap<Locale, String>();
-		nameMap.put(LocaleUtil.getDefault(), group.getName());
-
-		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
-		descriptionMap.put(LocaleUtil.getDefault(), group.getDescription());
-
-		return CalendarResourceLocalServiceUtil.addCalendarResource(
-			user.getUserId(), company.getGroup().getGroupId(),
-			Group.class.getName(), classPK, user.getUuid(), 0,
-			user.getScreenName(), nameMap, descriptionMap, null, true,
-			serviceContext);
-	}
-
-	private CalendarResource _createUserCalendarResource(
-			long classPK, ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
-		User user = UserLocalServiceUtil.getUser(classPK);
-
-		Company company = CompanyLocalServiceUtil.getCompany(
-			serviceContext.getCompanyId());
-
-		Map<Locale, String> nameMap = new HashMap<Locale, String>();
-		nameMap.put(LocaleUtil.getDefault(), user.getFullName());
-
-		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
-		descriptionMap.put(LocaleUtil.getDefault(), user.getEmailAddress());
-
-		return CalendarResourceLocalServiceUtil.addCalendarResource(
-			user.getUserId(), company.getGroup().getGroupId(),
-			User.class.getName(), classPK, user.getUuid(), 0,
-			user.getScreenName(), nameMap, descriptionMap, null, true,
-			serviceContext);
 	}
 
 }

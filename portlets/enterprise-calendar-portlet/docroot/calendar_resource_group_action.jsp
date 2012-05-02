@@ -27,7 +27,7 @@ Group rowGroup = (Group)row.getObject();
 	<portlet:renderURL var="calendarsURL">
 		<portlet:param name="jspPage" value="/view_calendars.jsp" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
-		<portlet:param name="classNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(Group.class.getName())) %>" />
+		<portlet:param name="classNameId" value="<%= String.valueOf(groupClassNameId) %>" />
 		<portlet:param name="classPK" value="<%=  String.valueOf(rowGroup.getGroupId()) %>" />
 	</portlet:renderURL>
 
