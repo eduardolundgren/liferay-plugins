@@ -89,9 +89,9 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 				"setBeanIdentifier", java.lang.String.class);
 
 		_addCalendarMethodKey18 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addCalendar", long.class, long.class, long.class,
-				java.util.Map.class, java.util.Map.class, int.class,
-				boolean.class, com.liferay.portal.service.ServiceContext.class);
+				"addCalendar", long.class, long.class, java.util.Map.class,
+				java.util.Map.class, int.class, boolean.class,
+				com.liferay.portal.service.ServiceContext.class);
 
 		_getCalendarResourceCalendarsMethodKey19 = new MethodKey(_classLoaderProxy.getClassName(),
 				"getCalendarResourceCalendars", long.class, long.class);
@@ -642,7 +642,7 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 	}
 
 	public com.liferay.calendar.model.Calendar addCalendar(long userId,
-		long groupId, long calendarResourceId,
+		long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		int color, boolean defaultCalendar,
@@ -652,7 +652,7 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 		Object returnObj = null;
 
 		MethodHandler methodHandler = new MethodHandler(_addCalendarMethodKey18,
-				userId, groupId, calendarResourceId,
+				userId, calendarResourceId,
 				ClpSerializer.translateInput(nameMap),
 				ClpSerializer.translateInput(descriptionMap), color,
 				defaultCalendar, ClpSerializer.translateInput(serviceContext));

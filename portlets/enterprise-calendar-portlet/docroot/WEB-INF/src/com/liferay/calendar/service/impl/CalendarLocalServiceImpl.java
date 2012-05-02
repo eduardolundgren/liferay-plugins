@@ -17,6 +17,7 @@ package com.liferay.calendar.service.impl;
 import com.liferay.calendar.CalendarNameException;
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarResource;
+import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 import com.liferay.calendar.service.base.CalendarLocalServiceBaseImpl;
 import com.liferay.calendar.util.PortletPropsValues;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -41,9 +42,9 @@ import java.util.Map;
 public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 
 	public Calendar addCalendar(
-			long userId, long groupId, long calendarResourceId,
-			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
-			int color, boolean defaultCalendar, ServiceContext serviceContext)
+			long userId, long calendarResourceId, Map<Locale, String> nameMap,
+			Map<Locale, String> descriptionMap, int color,
+			boolean defaultCalendar, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Calendar
@@ -58,12 +59,16 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 
 		validate(nameMap);
 
+		CalendarResource calendarResource =
+			CalendarResourceLocalServiceUtil.getCalendarResource(
+				calendarResourceId);
+
 		long calendarId = counterLocalService.increment();
 
 		Calendar calendar = calendarPersistence.create(calendarId);
 
 		calendar.setUuid(serviceContext.getUuid());
-		calendar.setGroupId(groupId);
+		calendar.setGroupId(calendarResource.getGroupId());
 		calendar.setCompanyId(user.getCompanyId());
 		calendar.setUserId(user.getUserId());
 		calendar.setUserName(user.getFullName());
@@ -85,7 +90,8 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 
 		if (defaultCalendar) {
 			List<Calendar> calendarResourceCalendars =
-				getCalendarResourceCalendars(groupId, calendarResourceId);
+				getCalendarResourceCalendars(
+					calendarResource.getGroupId(), calendarResourceId);
 
 			for (Calendar calendarResourceCalendar :
 					calendarResourceCalendars) {
@@ -95,15 +101,9 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 					calendar.equals(calendarResourceCalendar));
 			}
 
-			CalendarResource calendarResource =
-				calendarResourceLocalService.fetchCalendarResource(
-					calendarResourceId);
+			calendarResource.setDefaultCalendarId(calendarId);
 
-			if (calendarResource != null) {
-				calendarResource.setDefaultCalendarId(calendarId);
-
-				calendarResourcePersistence.update(calendarResource, false);
-			}
+			calendarResourcePersistence.update(calendarResource, false);
 		}
 
 		return calendar;

@@ -50,8 +50,8 @@ public class CalendarServiceImpl extends CalendarServiceBaseImpl {
 			ActionKeys.ADD_CALENDAR);
 
 		return calendarLocalService.addCalendar(
-			getUserId(), groupId, calendarResourceId, nameMap, descriptionMap,
-			color, defaultCalendar, serviceContext);
+			getUserId(), calendarResourceId, nameMap, descriptionMap, color,
+			defaultCalendar, serviceContext);
 	}
 
 	public Calendar deleteCalendar(long calendarId)

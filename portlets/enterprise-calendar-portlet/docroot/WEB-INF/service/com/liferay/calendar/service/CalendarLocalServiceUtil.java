@@ -283,7 +283,7 @@ public class CalendarLocalServiceUtil {
 	}
 
 	public static com.liferay.calendar.model.Calendar addCalendar(long userId,
-		long groupId, long calendarResourceId,
+		long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		int color, boolean defaultCalendar,
@@ -291,7 +291,7 @@ public class CalendarLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
-				   .addCalendar(userId, groupId, calendarResourceId, nameMap,
+				   .addCalendar(userId, calendarResourceId, nameMap,
 			descriptionMap, color, defaultCalendar, serviceContext);
 	}
 

@@ -75,7 +75,7 @@ public class CalendarResourceServiceImpl
 		}
 
 		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResource, ActionKeys.DELETE);
+			getPermissionChecker(), calendarResource, ActionKeys.VIEW);
 
 		return calendarResource;
 	}

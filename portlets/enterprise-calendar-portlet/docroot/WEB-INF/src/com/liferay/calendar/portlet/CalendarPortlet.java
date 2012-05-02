@@ -452,7 +452,7 @@ public class CalendarPortlet extends MVCPortlet {
 			CalendarResourceUtil.fetchOrCreateResource(
 				request, classNameId, classPK);
 
-		if (calendarResource != null) {
+		if ((calendarResource != null)) {
 			Calendar calendar = CalendarLocalServiceUtil.getCalendar(
 				calendarResource.getDefaultCalendarId());
 

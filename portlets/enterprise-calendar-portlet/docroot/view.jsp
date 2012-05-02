@@ -23,16 +23,13 @@ portletURL.setParameter("tabs1", tabs1);
 %>
 
 <liferay-ui:tabs
-	names="calendar,agenda,resources"
+	names="calendar,resources"
 	url="<%= portletURL.toString() %>"
 />
 
 <c:choose>
 	<c:when test='<%= tabs1.equals("calendar") %>'>
 		<liferay-util:include page="/view_calendar.jsp" servletContext="<%= application %>" />
-	</c:when>
-	<c:when test='<%= tabs1.equals("agenda") %>'>
-		<liferay-util:include page="/view_agenda.jsp" servletContext="<%= application %>" />
 	</c:when>
 	<c:when test='<%= tabs1.equals("resources") %>'>
 		<liferay-util:include page="/view_calendar_resources.jsp" servletContext="<%= application %>" />

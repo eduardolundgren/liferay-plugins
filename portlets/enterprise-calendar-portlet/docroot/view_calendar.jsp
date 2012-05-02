@@ -69,7 +69,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			<c:if test="<%= groupCalendarResource != null %>">
 				<a class="calendar-portlet-list-header aui-toggler-header-expanded" href="javascript:void(0);">
 					<span class="calendar-portlet-list-arrow"></span>
-					<span class="calendar-portlet-list-text"><%= LanguageUtil.format(pageContext, "x-calendars", groupCalendarResource.getName(locale)) %></span>
+					<span class="calendar-portlet-list-text"><liferay-ui:message key="current-site-calendars" /></span>
 					<span class="aui-calendar-list-item-arrow" data-calendarResourceId="<%= groupCalendarResource.getCalendarResourceId() %>" tabindex="0"></span>
 				</a>
 				<div class="calendar-portlet-calendar-list" id="<portlet:namespace />siteCalendarList"></div>

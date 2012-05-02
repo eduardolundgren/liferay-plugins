@@ -100,7 +100,7 @@ public class CalendarResourceLocalServiceImpl
 
 		if (defaultCalendarId <= 0) {
 			Calendar calendar = calendarLocalService.addCalendar(
-				userId, groupId, calendarResourceId, nameMap, descriptionMap,
+				userId, calendarResourceId, nameMap, descriptionMap,
 				PortletPropsValues.CALENDAR_COLOR_DEFAULT, true,
 				serviceContext);
 
