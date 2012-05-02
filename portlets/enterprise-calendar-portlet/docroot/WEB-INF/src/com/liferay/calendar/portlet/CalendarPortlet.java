@@ -131,11 +131,18 @@ public class CalendarPortlet extends MVCPortlet {
 
 			long calendarResourceId = ParamUtil.getLong(
 				renderRequest, "calendarResourceId");
+			long classNameId = ParamUtil.getLong(renderRequest, "classNameId");
+			long classPK = ParamUtil.getLong(renderRequest, "classPK");
 
 			if (calendarResourceId > 0) {
 				calendarResource =
 					CalendarResourceServiceUtil.getCalendarResource(
 						calendarResourceId);
+			}
+			else if ((classNameId > 0) && (classPK > 0)) {
+				calendarResource = CalendarResourceUtil.fetchOrCreateResource(
+					PortalUtil.getHttpServletRequest(renderRequest),
+					classNameId, classPK);
 			}
 
 			renderRequest.setAttribute(

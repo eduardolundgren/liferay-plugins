@@ -1440,7 +1440,9 @@ var SimpleColorPicker = A.Component.create(
 			},
 
 			pallete: {
-				setter: AArray,
+				setter: function(val) {
+					return AArray.invoke(val, 'toUpperCase');
+				},
 				validator: isArray,
 				value: ['#d96666', '#e67399', '#b373b3', '#8c66d9', '#668cb3', '#668cd9', '#59bfb3', '#65ad89', '#4cb052', '#8cbf40', '#bfbf4d', '#e0c240', '#f2a640', '#e6804d', '#be9494', '#a992a9', '#8997a5', '#94a2be', '#85aaa5', '#a7a77d', '#c4a883', '#c7561e', '#b5515d', '#c244ab']
 			}
@@ -1487,7 +1489,7 @@ var SimpleColorPicker = A.Component.create(
 
 				instance.items.removeClass(CSS_SIMPLE_COLOR_PICKER_ITEM_SELECTED);
 
-				var newNode = instance.items.item(pallete.indexOf(val));
+				var newNode = instance.items.item(pallete.indexOf(val.toUpperCase()));
 
 				if (newNode) {
 					newNode.addClass(CSS_SIMPLE_COLOR_PICKER_ITEM_SELECTED);
