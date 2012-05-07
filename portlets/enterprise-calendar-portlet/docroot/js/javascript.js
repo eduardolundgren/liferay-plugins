@@ -638,6 +638,7 @@
 					instance._uiSetLoading(instance.get('loading'));
 
 					instance.on('loadingChange', instance._onLoadingChange);
+					instance.on('statusChange', instance._onStatusChange);
 				},
 
 				isMasterBooking: function() {
@@ -652,11 +653,22 @@
 					instance._uiSetLoading(event.newVal);
 				},
 
+				_onStatusChange: function(event) {
+					var instance = this;
+
+					instance._uiSetStatus(event.newVal);
+				},
+
 				_uiSetLoading: function(val) {
 					var instance = this;
 
 					instance.get('node').toggleClass('calendar-portlet-event-loading', val);
-					instance.get('paddingNode').toggleClass('calendar-portlet-event-loading', val);
+				},
+
+				_uiSetStatus: function(val) {
+					var instance = this;
+
+					instance.get('node').toggleClass('calendar-portlet-event-pending', val);
 				}
 			}
 		});
