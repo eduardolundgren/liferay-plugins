@@ -29,6 +29,12 @@
     opacity: 0.5;
 }
 
+.calendar-portlet-event-pending {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter: alpha(opacity=80);
+    opacity: 0.8;
+}
+
 .calendar-portlet-event-recorder-editing .calendar-portlet-event-recorder-calendar-row {
     display: none
 }
