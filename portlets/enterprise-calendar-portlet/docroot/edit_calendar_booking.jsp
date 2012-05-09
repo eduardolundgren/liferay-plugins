@@ -29,12 +29,15 @@ long calendarBookingId = BeanParamUtil.getLong(calendarBooking, request, "calend
 long calendarId = BeanParamUtil.getLong(calendarBooking, request, "calendarId", userDefaultCalendar.getCalendarId());
 long startDate = ParamUtil.getLong(request, "startDate", now.getTimeInMillis());
 long endDate = ParamUtil.getLong(request, "endDate", defaultEndDate.getTimeInMillis());
+boolean allDay = ParamUtil.getBoolean(request, "allDay", false);
 
 java.util.Calendar startDateCal = CalendarUtil.getCalendar(startDate, timeZone);
 java.util.Calendar endDateCal = CalendarUtil.getCalendar(endDate, timeZone);
 
-com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(startDateCal, 30);
-com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(endDateCal, 30);
+if (!allDay) {
+	com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(startDateCal, 30);
+	com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(endDateCal, 30);
+}
 
 JSONArray acceptedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 JSONArray declinedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
