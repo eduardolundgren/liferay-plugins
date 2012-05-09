@@ -68,12 +68,20 @@ AUI.add(
 						var contentBox = instance.get('contentBox');
 
 						contentBox.delegate('click', A.bind(instance._onClickItems, instance), STR_DOT + CSS_SIMPLE_MENU_ITEM);
+
+						A.one(document).on('click', A.bind(instance._onClickDocument, instance));
 					},
 
 					renderUI: function() {
 						var instance = this;
 
 						instance._renderItems(instance.get('items'));
+					},
+
+					_onClickDocument: function() {
+						var instance = this;
+
+						instance.set('visible', false);
 					},
 
 					_onClickItems: function(event) {
@@ -182,12 +190,15 @@ AUI.add(
 
 			getClassName = A.getClassName,
 
+			CSS_CALENDAR_LIST_EMPTY_MESSAGE = getClassName('calendar-list', 'empty', 'message'),
 			CSS_CALENDAR_LIST_ITEM = getClassName('calendar-list', 'item'),
 			CSS_CALENDAR_LIST_ITEM_ACTIVE = getClassName('calendar-list', 'item', 'active'),
 			CSS_CALENDAR_LIST_ITEM_ARROW = getClassName('calendar-list', 'item', 'arrow'),
 			CSS_CALENDAR_LIST_ITEM_COLOR = getClassName('calendar-list', 'item', 'color'),
 			CSS_CALENDAR_LIST_ITEM_HOVER = getClassName('calendar-list', 'item', 'hover'),
 			CSS_CALENDAR_LIST_ITEM_LABEL = getClassName('calendar-list', 'item', 'label'),
+
+			TPL_CALENDAR_LIST_EMPTY_MESSAGE = new A.Template('<div class="' + CSS_CALENDAR_LIST_EMPTY_MESSAGE + '">{message}</div>'),
 
 			TPL_CALENDAR_LIST_ITEM = new A.Template(
 				'<tpl for="calendars">',
@@ -214,6 +225,12 @@ AUI.add(
 						setter: '_setSimpleMenu',
 						validator: isObject,
 						value: null
+					},
+
+					strings: {
+						value: {
+							emptyMessage: Liferay.Language.get('no-calendars-selected')
+						}
 					}
 				},
 
@@ -222,6 +239,16 @@ AUI.add(
 				prototype: {
 					initializer: function() {
 						var instance = this;
+
+						var strings = instance.get('strings');
+
+						instance.emptyMessageNode = A.Node.create(
+							TPL_CALENDAR_LIST_EMPTY_MESSAGE.parse(
+								{
+									message: strings['emptyMessage']
+								}
+							)
+						);
 
 						instance.simpleMenu = new Liferay.SimpleMenu(instance.get('simpleMenu'));
 					},
@@ -393,15 +420,23 @@ AUI.add(
 					_renderCalendars: function() {
 						var instance = this;
 
-						instance.items = A.NodeList.create(
-							TPL_CALENDAR_LIST_ITEM.parse(
-								{
-									calendars: instance.get('calendars')
-								}
-							)
-						);
+						var calendars = instance.get('calendars');
+						var contentBox = instance.get('contentBox');
 
-						instance.get('contentBox').setContent(instance.items);
+						if (calendars.length > 0) {
+							instance.items = A.NodeList.create(
+								TPL_CALENDAR_LIST_ITEM.parse(
+									{
+										calendars: calendars
+									}
+								)
+							);
+
+							contentBox.setContent(instance.items);
+						}
+						else {
+							contentBox.setContent(instance.emptyMessageNode);
+						}
 					},
 
 					_setCalendarColor: function(calendar, val) {

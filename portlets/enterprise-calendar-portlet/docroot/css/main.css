@@ -49,6 +49,10 @@
     width: 200px;
 }
 
+.aui-calendar-list-empty-message {
+	margin: 4px 0 0 4px;
+}
+
 .aui-calendar-list-item {
     -webkit-user-select: none;
     -moz-user-select: none;
