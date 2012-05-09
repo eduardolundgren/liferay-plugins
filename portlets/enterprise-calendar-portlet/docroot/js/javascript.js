@@ -16,14 +16,17 @@
 		'liferay-scheduler',
 		function(A) {
 
+		var DateMath = A.DataType.DateMath;
+
 		var Lang = A.Lang;
+
+		var instanceOf = A.instanceOf;
+
 		var isArray = Lang.isArray;
 		var isBoolean = Lang.isBoolean;
 		var isDate = Lang.isDate;
 		var isObject = Lang.isObject;
 		var isString = Lang.isString;
-
-		var DateMath = A.DataType.DateMath;
 
 		var jsonParse = function(val) {
 			var jsonObj = null;
@@ -89,7 +92,11 @@
 								evt.set('parentCalendarBookingId', data.parentCalendarBookingId);
 								evt.set('status', data.status);
 
-								CalendarUtil.visibleCalendars[evt.get('calendarId')].addEvent(evt);
+								var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
+
+								if (calendar) {
+									calendar.addEvent(evt);
+								}
 							}
 						}
 					}
@@ -534,6 +541,18 @@
 						CalendarUtil.message('');
 					},
 
+					_afterActiveViewChange: function(event) {
+						var instance = this;
+
+						var activeView = event.newVal;
+						var eventRecorder = instance.get('eventRecorder');
+
+						if (instanceOf(eventRecorder, Liferay.SchedulerEventRecorder)) {
+							eventRecorder.set('allDay', instanceOf(activeView, A.SchedulerMonthView));
+						}
+
+						Liferay.Scheduler.superclass._afterActiveViewChange.apply(instance, arguments);
+					},
 
 					_afterCurrentDateChange: function(event) {
 						var instance = this;
@@ -638,6 +657,7 @@
 					instance._uiSetLoading(instance.get('loading'));
 
 					instance.on('loadingChange', instance._onLoadingChange);
+					instance.on('statusChange', instance._onStatusChange);
 				},
 
 				isMasterBooking: function() {
@@ -652,11 +672,22 @@
 					instance._uiSetLoading(event.newVal);
 				},
 
+				_onStatusChange: function(event) {
+					var instance = this;
+
+					instance._uiSetStatus(event.newVal);
+				},
+
 				_uiSetLoading: function(val) {
 					var instance = this;
 
 					instance.get('node').toggleClass('calendar-portlet-event-loading', val);
-					instance.get('paddingNode').toggleClass('calendar-portlet-event-loading', val);
+				},
+
+				_uiSetStatus: function(val) {
+					var instance = this;
+
+					instance.get('node').toggleClass('calendar-portlet-event-pending', val);
 				}
 			}
 		});
@@ -668,6 +699,11 @@
 				NAME: 'scheduler-event-recorder',
 
 				ATTRS: {
+					allDay: {
+						validator: isBoolean,
+						value: false
+					},
+
 					editCalendarBookingURL: {
 						validator: isString,
 						value: STR_BLANK
@@ -746,6 +782,7 @@
 						var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 						var data = instance.serializeForm();
 
+						data.allDay = instance.get('allDay');
 						data.endDate = CalendarUtil.toUTCTimeZone(data.endDate).getTime();
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);

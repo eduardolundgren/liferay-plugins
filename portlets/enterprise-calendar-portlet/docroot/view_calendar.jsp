@@ -192,6 +192,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 	<portlet:renderURL var="editCalendarBookingURL">
 		<portlet:param name="jspPage" value="/edit_calendar_booking.jsp" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
+		<portlet:param name="allDay" value="{allDay}" />
 		<portlet:param name="calendarBookingId" value="{calendarBookingId}" />
 		<portlet:param name="calendarId" value="{calendarId}" />
 		<portlet:param name="startDate" value="{startDate}" />

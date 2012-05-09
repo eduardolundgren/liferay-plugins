@@ -29,6 +29,12 @@
     opacity: 0.5;
 }
 
+.calendar-portlet-event-pending {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter: alpha(opacity=80);
+    opacity: 0.8;
+}
+
 .calendar-portlet-event-recorder-editing .calendar-portlet-event-recorder-calendar-row {
     display: none
 }
@@ -41,6 +47,10 @@
 .calendar-portlet-add-calendars-input {
     margin: 2px 0;
     width: 200px;
+}
+
+.aui-calendar-list-empty-message {
+	margin: 4px 0 0 4px;
 }
 
 .aui-calendar-list-item {
