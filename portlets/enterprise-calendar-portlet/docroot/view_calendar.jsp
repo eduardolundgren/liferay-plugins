@@ -17,6 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
+String activeView = ParamUtil.getString(request, "activeView", "week");
+long currentDate = ParamUtil.getLong(request, "currentDate", now.getTimeInMillis());
+
 List<Calendar> groupCalendars = null;
 
 if (groupCalendarResource != null) {
@@ -191,7 +194,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 
 	<portlet:renderURL var="editCalendarBookingURL">
 		<portlet:param name="jspPage" value="/edit_calendar_booking.jsp" />
-		<portlet:param name="redirect" value="<%= currentURL %>" />
+		<portlet:param name="redirect" value="{redirect}" />
 		<portlet:param name="allDay" value="{allDay}" />
 		<portlet:param name="calendarBookingId" value="{calendarBookingId}" />
 		<portlet:param name="calendarId" value="{calendarId}" />
@@ -200,18 +203,41 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 		<portlet:param name="titleCurrentValue" value="{titleCurrentValue}" />
 	</portlet:renderURL>
 
+	<portlet:renderURL var="redirectURL">
+		<portlet:param name="jspPage" value="/view_calendar.jsp" />
+		<portlet:param name="activeView" value="{activeView}" />
+		<portlet:param name="currentDate" value="{currentDate}" />
+	</portlet:renderURL>
+
 	window.<portlet:namespace />recorder = new Liferay.SchedulerEventRecorder(
 		{
 			duration: 30,
 			editCalendarBookingURL: '<%= editCalendarBookingURL %>',
 			portletNamespace: '<portlet:namespace />',
+			redirectURL: '<%= redirectURL %>',
 			template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 		}
 	);
 
+	var activeView;
+
+	<c:choose>
+		<c:when test='<%= activeView.equals("day") %>'>
+			activeView = window.<portlet:namespace />dayView;
+		</c:when>
+		<c:when test='<%= activeView.equals("month") %>'>
+			activeView = window.<portlet:namespace />monthView;
+		</c:when>
+		<c:otherwise>
+			activeView = window.<portlet:namespace />weekView;
+		</c:otherwise>
+	</c:choose>
+
 	window.<portlet:namespace />scheduler = new Liferay.Scheduler(
 		{
+			activeView: activeView,
 			boundingBox: '#<portlet:namespace />scheduler',
+			currentDate: new Date(<%= currentDate %>),
 			eventClass: Liferay.SchedulerEvent,
 			eventRecorder: window.<portlet:namespace />recorder,
 			events: A.Object.values(Liferay.CalendarUtil.visibleCalendars),

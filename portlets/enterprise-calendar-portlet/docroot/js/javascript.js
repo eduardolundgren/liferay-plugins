@@ -671,6 +671,28 @@
 					return (instance.get('parentCalendarBookingId') === instance.get('calendarBookingId'));
 				},
 
+				syncNodeColorUI: function() {
+					var instance = this;
+
+					Liferay.SchedulerEvent.superclass.syncNodeColorUI.apply(instance, arguments);
+
+					var node = instance.get('node');
+					var scheduler = instance.get('scheduler');
+
+					if (scheduler) {
+						var activeViewName = scheduler.get('activeView').get('name');
+
+						if ((activeViewName === 'month') && !instance.get('allDay')) {
+							node.setStyles(
+								{
+									backgroundColor: 'transparent',
+									border: 'none'
+								}
+							);
+						}
+					}
+				},
+
 				_onLoadingChange: function(event) {
 					var instance = this;
 
@@ -718,6 +740,11 @@
 					},
 
 					portletNamespace: {
+						validator: isString,
+						value: STR_BLANK
+					},
+
+					redirectURL: {
 						validator: isString,
 						value: STR_BLANK
 					},
@@ -772,6 +799,22 @@
 						SchedulerEventRecorder.superclass.populateForm.apply(this, arguments);
 					},
 
+					_getRedirectURL: function() {
+						var instance = this;
+
+						var scheduler = instance.get('scheduler');
+						var activeViewName = scheduler.get('activeView').get('name');
+						var currentDate = scheduler.get('currentDate');
+
+						return A.Lang.sub(
+							decodeURIComponent(instance.get('redirectURL')),
+							{
+								activeView: activeViewName,
+								currentDate: currentDate.getTime()
+							}
+						);
+					},
+
 					_handleAcceptEvent: function(event) {
 						var instance = this;
 
@@ -800,6 +843,7 @@
 						var data = instance.serializeForm();
 
 						data.endDate = CalendarUtil.toUTCTimeZone(data.endDate).getTime();
+						data.redirect = encodeURIComponent(instance._getRedirectURL());
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);
 
