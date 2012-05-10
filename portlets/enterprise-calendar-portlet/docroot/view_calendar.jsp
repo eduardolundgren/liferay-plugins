@@ -194,19 +194,15 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 
 	<portlet:renderURL var="editCalendarBookingURL">
 		<portlet:param name="jspPage" value="/edit_calendar_booking.jsp" />
-		<portlet:param name="redirect" value="{redirect}" />
+		<portlet:param name="redirect" value="<%= portletURL.toString() %>" />
+		<portlet:param name="activeView" value="{activeView}" />
 		<portlet:param name="allDay" value="{allDay}" />
 		<portlet:param name="calendarBookingId" value="{calendarBookingId}" />
 		<portlet:param name="calendarId" value="{calendarId}" />
-		<portlet:param name="startDate" value="{startDate}" />
-		<portlet:param name="endDate" value="{endDate}" />
-		<portlet:param name="titleCurrentValue" value="{titleCurrentValue}" />
-	</portlet:renderURL>
-
-	<portlet:renderURL var="redirectURL">
-		<portlet:param name="jspPage" value="/view_calendar.jsp" />
-		<portlet:param name="activeView" value="{activeView}" />
 		<portlet:param name="currentDate" value="{currentDate}" />
+		<portlet:param name="endDate" value="{endDate}" />
+		<portlet:param name="startDate" value="{startDate}" />
+		<portlet:param name="titleCurrentValue" value="{titleCurrentValue}" />
 	</portlet:renderURL>
 
 	window.<portlet:namespace />recorder = new Liferay.SchedulerEventRecorder(
@@ -214,7 +210,6 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			duration: 30,
 			editCalendarBookingURL: '<%= editCalendarBookingURL %>',
 			portletNamespace: '<portlet:namespace />',
-			redirectURL: '<%= redirectURL %>',
 			template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 		}
 	);
