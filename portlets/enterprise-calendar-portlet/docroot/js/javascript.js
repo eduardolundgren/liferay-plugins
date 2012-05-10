@@ -683,8 +683,9 @@
 						if ((activeViewName === 'month') && !instance.get('allDay')) {
 							node.setStyles(
 								{
-									backgroundColor: 'transparent',
-									border: 'none'
+									backgroundColor: '#f8f8f8',
+									border: 'none',
+									color: instance.get('color')
 								}
 							);
 						}
@@ -742,11 +743,6 @@
 						value: STR_BLANK
 					},
 
-					redirectURL: {
-						validator: isString,
-						value: STR_BLANK
-					},
-
 					status: {
 						setter: toNumber,
 						value: Liferay.Workflow.STATUS_DRAFT
@@ -797,22 +793,6 @@
 						SchedulerEventRecorder.superclass.populateForm.apply(this, arguments);
 					},
 
-					_getRedirectURL: function() {
-						var instance = this;
-
-						var scheduler = instance.get('scheduler');
-						var activeViewName = scheduler.get('activeView').get('name');
-						var currentDate = scheduler.get('currentDate');
-
-						return A.Lang.sub(
-							decodeURIComponent(instance.get('redirectURL')),
-							{
-								activeView: activeViewName,
-								currentDate: currentDate.getTime()
-							}
-						);
-					},
-
 					_handleAcceptEvent: function(event) {
 						var instance = this;
 
@@ -836,12 +816,17 @@
 					_handleEditDetailsEvent: function(event) {
 						var instance = this;
 
+						var scheduler = instance.get('scheduler');
+						var activeViewName = scheduler.get('activeView').get('name');
+						var currentDate = scheduler.get('currentDate');
+
 						var evt = instance.get('event');
 						var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 						var data = instance.serializeForm();
 
+						data.activeView = activeViewName;
+						data.currentDate = currentDate.getTime();
 						data.endDate = CalendarUtil.toUTCTimeZone(data.endDate).getTime();
-						data.redirect = encodeURIComponent(instance._getRedirectURL());
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);
 
