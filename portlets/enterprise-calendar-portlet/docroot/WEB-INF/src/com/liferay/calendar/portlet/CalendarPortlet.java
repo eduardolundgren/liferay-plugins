@@ -437,8 +437,6 @@ public class CalendarPortlet extends MVCPortlet {
 				calendarId, parentCalendarBooking.getCalendarBookingId());
 
 			if (total == 0) {
-				// CalendarResourcePermission
-
 				Calendar calendar = CalendarServiceUtil.getCalendar(calendarId);
 
 				CalendarBookingLocalServiceUtil.addCalendarBooking(
