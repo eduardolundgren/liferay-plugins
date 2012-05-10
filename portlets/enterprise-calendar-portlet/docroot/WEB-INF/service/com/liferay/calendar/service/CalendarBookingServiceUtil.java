@@ -64,22 +64,6 @@ public class CalendarBookingServiceUtil {
 	}
 
 	public static com.liferay.calendar.model.CalendarBooking addCalendarBooking(
-		long userId, long calendarId,
-		java.util.Map<java.util.Locale, java.lang.String> titleMap,
-		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.lang.String location, java.util.Date startDate,
-		java.util.Date endDate, boolean allDay, java.lang.String recurrence,
-		int firstReminder, int secondReminder,
-		com.liferay.portal.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return getService()
-				   .addCalendarBooking(userId, calendarId, titleMap,
-			descriptionMap, location, startDate, endDate, allDay, recurrence,
-			firstReminder, secondReminder, serviceContext);
-	}
-
-	public static com.liferay.calendar.model.CalendarBooking addCalendarBooking(
 		long userId, long calendarId, long parentCalendarBookingId,
 		java.util.Map<java.util.Locale, java.lang.String> titleMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -94,6 +78,22 @@ public class CalendarBookingServiceUtil {
 			parentCalendarBookingId, titleMap, descriptionMap, location,
 			startDate, endDate, allDay, recurrence, firstReminder,
 			secondReminder, serviceContext);
+	}
+
+	public static com.liferay.calendar.model.CalendarBooking addCalendarBooking(
+		long userId, long calendarId,
+		java.util.Map<java.util.Locale, java.lang.String> titleMap,
+		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		java.lang.String location, java.util.Date startDate,
+		java.util.Date endDate, boolean allDay, java.lang.String recurrence,
+		int firstReminder, int secondReminder,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .addCalendarBooking(userId, calendarId, titleMap,
+			descriptionMap, location, startDate, endDate, allDay, recurrence,
+			firstReminder, secondReminder, serviceContext);
 	}
 
 	public static com.liferay.calendar.model.CalendarBooking deleteCalendarBooking(

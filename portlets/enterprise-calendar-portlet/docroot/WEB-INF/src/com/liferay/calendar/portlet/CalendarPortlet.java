@@ -437,10 +437,8 @@ public class CalendarPortlet extends MVCPortlet {
 				calendarId, parentCalendarBooking.getCalendarBookingId());
 
 			if (total == 0) {
-				Calendar calendar = CalendarServiceUtil.getCalendar(calendarId);
-
 				CalendarBookingLocalServiceUtil.addCalendarBooking(
-					calendar.getUserId(), calendarId,
+					parentCalendarBooking.getUserId(), calendarId,
 					parentCalendarBooking.getCalendarBookingId(),
 					parentCalendarBooking.getTitleMap(),
 					parentCalendarBooking.getDescriptionMap(),
@@ -471,16 +469,20 @@ public class CalendarPortlet extends MVCPortlet {
 			PermissionChecker permissionChecker =
 				themeDisplay.getPermissionChecker();
 
-			Calendar calendar = CalendarLocalServiceUtil.getCalendar(
-				calendarResource.getDefaultCalendarId());
+			List<Calendar> calendars =
+				CalendarLocalServiceUtil.getCalendarResourceCalendars(
+					calendarResource.getGroupId(),
+					calendarResource.getCalendarResourceId());
 
-			if (CalendarPermission.contains(
-				permissionChecker, calendar, ActionKeys.VIEW)) {
+			for (Calendar calendar : calendars) {
+				if (CalendarPermission.contains(
+						permissionChecker, calendar, ActionKeys.VIEW)) {
 
-				JSONObject jsonObject = CalendarUtil.toCalendarJSON(
-					calendar, locale);
+					JSONObject jsonObject = CalendarUtil.toCalendarJSON(
+						calendar, locale);
 
-				jsonArray.put(jsonObject);
+					jsonArray.put(jsonObject);
+				}
 			}
 		}
 	}
