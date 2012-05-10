@@ -24,14 +24,19 @@ AUI.add(
 
 		var getItemHandler = A.cached(
 			function(id, items) {
-				var item = AArray.filter(
+				var found = null;
+
+				AArray.some(
 					items,
 					function(item, index, collection) {
-						return (item.id === id);
+						if (item.id === id) {
+							found = item;
+							return true;
+						}
 					}
 				);
 
-				return (item[0] && item[0].fn);
+				return (found && found[0] && found[0].fn);
 			}
 		);
 
