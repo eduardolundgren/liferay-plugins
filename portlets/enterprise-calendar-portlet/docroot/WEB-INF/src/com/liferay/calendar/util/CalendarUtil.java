@@ -225,9 +225,13 @@ public class CalendarUtil {
 			jsonObject.put("calendarId", calendar.getCalendarId());
 			jsonObject.put(
 				"calendarResourceId", calendarResource.getCalendarResourceId());
+			jsonObject.put(
+				"calendarResourceName", calendarResource.getName(locale));
 			jsonObject.put("color", ColorUtil.toHexString(calendar.getColor()));
+			jsonObject.put("defaultCalendar", calendar.isDefaultCalendar());
 			jsonObject.put("classNameId", calendarResource.getClassNameId());
 			jsonObject.put("classPK", calendarResource.getClassPK());
+			jsonObject.put("global", calendarResource.isGlobal());
 			jsonObject.put("name", calendar.getName(locale));
 		}
 		catch (Exception e) {
