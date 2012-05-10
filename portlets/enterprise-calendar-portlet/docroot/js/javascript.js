@@ -20,8 +20,6 @@
 
 		var Lang = A.Lang;
 
-		var instanceOf = A.instanceOf;
-
 		var isArray = Lang.isArray;
 		var isBoolean = Lang.isBoolean;
 		var isDate = Lang.isDate;
@@ -541,19 +539,6 @@
 						CalendarUtil.message('');
 					},
 
-					_afterActiveViewChange: function(event) {
-						var instance = this;
-
-						var activeView = event.newVal;
-						var eventRecorder = instance.get('eventRecorder');
-
-						if (instanceOf(eventRecorder, Liferay.SchedulerEventRecorder)) {
-							eventRecorder.set('allDay', instanceOf(activeView, A.SchedulerMonthView));
-						}
-
-						Liferay.Scheduler.superclass._afterActiveViewChange.apply(instance, arguments);
-					},
-
 					_afterCurrentDateChange: function(event) {
 						var instance = this;
 
@@ -608,7 +593,7 @@
 
 			ATTRS: {
 				allDay: {
-					validator: isBoolean,
+					setter: A.DataType.Boolean.parse,
 					value: false
 				},
 
@@ -655,6 +640,7 @@
 					var instance = this;
 
 					instance._uiSetLoading(instance.get('loading'));
+					instance._uiSetStatus(instance.get('status'));
 
 					instance.on('loadingChange', instance._onLoadingChange);
 					instance.on('statusChange', instance._onStatusChange);
@@ -687,7 +673,10 @@
 				_uiSetStatus: function(val) {
 					var instance = this;
 
-					instance.get('node').toggleClass('calendar-portlet-event-pending', val);
+					var node = instance.get('node');
+
+					node.toggleClass('calendar-portlet-event-pending', (val === Workflow.STATUS_PENDING));
+					node.toggleClass('calendar-portlet-event-approved', (val === Workflow.STATUS_APPROVED));
 				}
 			}
 		});
@@ -700,7 +689,7 @@
 
 				ATTRS: {
 					allDay: {
-						validator: isBoolean,
+						setter: A.DataType.Boolean.parse,
 						value: false
 					},
 
@@ -744,6 +733,7 @@
 						return A.merge(
 							SchedulerEventRecorder.superclass.getTemplateData.apply(this, arguments),
 							{
+								allDay: evt.get('allDay'),
 								status: CalendarUtil.getStatusLabel(evt.get('status'))
 							}
 						);
@@ -753,6 +743,14 @@
 						var instance = this;
 
 						return false;
+					},
+
+					populateForm: function() {
+						var instance = this;
+
+						instance._syncViewDefData();
+
+						SchedulerEventRecorder.superclass.populateForm.apply(this, arguments);
 					},
 
 					_handleAcceptEvent: function(event) {
@@ -782,12 +780,12 @@
 						var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 						var data = instance.serializeForm();
 
-						data.allDay = instance.get('allDay');
 						data.endDate = CalendarUtil.toUTCTimeZone(data.endDate).getTime();
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);
 
 						if (evt) {
+							data.allDay = evt.get('allDay');
 							data.calendarBookingId = evt.get('calendarBookingId');
 						}
 
@@ -818,6 +816,20 @@
 						}
 
 						instance._syncToolbarButtons(event.newVal);
+					},
+
+					_syncViewDefData: function() {
+						var instance = this;
+
+						var scheduler = instance.get('scheduler');
+						var activeViewName = scheduler.get('activeView').get('name');
+
+						if (activeViewName === 'month') {
+							instance.set('allDay', true);
+						}
+						else {
+							instance.set('allDay', false);
+						}
 					},
 
 					_syncToolbarButtons: function(overlayVisible) {

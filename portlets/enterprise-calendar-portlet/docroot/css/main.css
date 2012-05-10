@@ -49,8 +49,13 @@
     width: 200px;
 }
 
-.aui-calendar-list-empty-message {
+.calendar-booking-invitations .aui-calendar-list-empty-message {
 	margin: 4px 0 0 4px;
+}
+	
+.aui-calendar-list-empty-message {
+    color: #666;
+	margin-top: 4px;
 }
 
 .aui-calendar-list-item {
