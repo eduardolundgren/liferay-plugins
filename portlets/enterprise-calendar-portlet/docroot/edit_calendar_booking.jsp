@@ -69,8 +69,12 @@ if (calendarBooking != null) {
 	}
 }
 
-if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0)) {
-	acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSON(userDefaultCalendar, locale));
+if (acceptedCalendarsJSONArray.length() == 0) {
+	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
+
+	if (calendar != null) {
+		acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSON(calendar, locale));
+	}
 }
 %>
 

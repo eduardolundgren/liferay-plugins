@@ -1,5 +1,7 @@
 (function() {
 	var STR_BLANK = '';
+	var STR_DASH = '-';
+	var STR_SPACE = ' ';
 
 	var toNumber = function(val) {
 		return parseInt(val, 10) || 0;
@@ -142,8 +144,25 @@
 								}
 							);
 						},
+						resultFormatter: function(query, results) {
+							return A.Array.map(
+								results, function (result) {
+									var calendar = result.raw;
+									var text = '';
+
+									if (calendar.global) {
+										text = [calendar.calendarResourceName, STR_DASH, calendar.name].join(STR_SPACE);
+									}
+									else {
+										text = calendar.name;
+									}
+
+									return A.Highlight.words(text, query);
+								}
+							);
+						},
 						resultHighlighter: 'wordMatch',
-						resultTextLocator: 'name',
+						resultTextLocator: 'calendarResourceName',
 						source: resourceURL
 					}
 				);
@@ -911,6 +930,11 @@
 					setter: toNumber
 				},
 
+				calendarResourceName: {
+					value: '',
+					validator: isString
+				},
+
 				classNameId: {
 					value: 0,
 					setter: toNumber
@@ -919,10 +943,33 @@
 				classPK: {
 					value: 0,
 					setter: toNumber
+				},
+
+				defaultCalendar: {
+					setter: A.DataType.Boolean.parse,
+					value: false
+				},
+
+				global: {
+					setter: A.DataType.Boolean.parse,
+					value: false
 				}
 			},
 
 			prototype: {
+				getDisplayName: function() {
+					var instance = this;
+
+					var displayName = instance.get('name');
+					var calendarResourceName = instance.get('calendarResourceName');
+
+					if (displayName !== calendarResourceName) {
+						displayName = [calendarResourceName, STR_DASH, displayName].join(STR_SPACE);
+					}
+
+					return displayName;
+				},
+
 				_afterColorChange: function(event) {
 					var instance = this;
 
