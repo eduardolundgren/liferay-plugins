@@ -36,7 +36,7 @@ AUI.add(
 					}
 				);
 
-				return (found && found[0] && found[0].fn);
+				return (found && found.fn);
 			}
 		);
 

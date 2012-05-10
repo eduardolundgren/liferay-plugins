@@ -24,6 +24,8 @@ import com.liferay.calendar.service.CalendarBookingServiceUtil;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.calendar.service.CalendarResourceServiceUtil;
 import com.liferay.calendar.service.CalendarServiceUtil;
+import com.liferay.calendar.service.permission.CalendarPermission;
+import com.liferay.calendar.util.ActionKeys;
 import com.liferay.calendar.util.CalendarResourceUtil;
 import com.liferay.calendar.util.CalendarUtil;
 import com.liferay.calendar.util.WebKeys;
@@ -45,6 +47,7 @@ import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.auth.PrincipalException;
+import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.GroupServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
@@ -464,13 +467,23 @@ public class CalendarPortlet extends MVCPortlet {
 				request, classNameId, classPK);
 
 		if (calendarResource != null) {
+			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+			PermissionChecker permissionChecker =
+				themeDisplay.getPermissionChecker();
+
 			Calendar calendar = CalendarLocalServiceUtil.getCalendar(
 				calendarResource.getDefaultCalendarId());
 
-			JSONObject jsonObject = CalendarUtil.toCalendarJSON(
-				calendar, locale);
+			if (CalendarPermission.contains(
+				permissionChecker, calendar, ActionKeys.VIEW)) {
 
-			jsonArray.put(jsonObject);
+				JSONObject jsonObject = CalendarUtil.toCalendarJSON(
+					calendar, locale);
+
+				jsonArray.put(jsonObject);
+			}
 		}
 	}
 
