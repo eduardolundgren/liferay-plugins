@@ -22,6 +22,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<div class="aui-scheduler-event-recorder-overlay-arrow-shadow aui-scheduler-event-recorder-overlay-arrow"></div>
 	<div class="aui-scheduler-event-recorder-overlay-arrow"></div>
 
+	<input name="allDay" type="hidden" value="{allDay}" />
 	<input name="startDate" type="hidden" value="{startDate}" />
 	<input name="endDate" type="hidden" value="{endDate}" />
 

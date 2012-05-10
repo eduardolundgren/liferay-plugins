@@ -229,7 +229,10 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			},
 			boundingBox: '#<portlet:namespace />calendarListPending',
 			calendars: <%= pendingCalendarsJSONArray %>,
-			simpleMenu: calendarsMenu
+			simpleMenu: calendarsMenu,
+			strings: {
+				emptyMessage: '<liferay-ui:message key="no-pending-invites" />'
+			}
 		}
 	).render();
 
@@ -246,7 +249,10 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			},
 			boundingBox: '#<portlet:namespace />calendarListAccepted',
 			calendars: <%= acceptedCalendarsJSONArray %>,
-			simpleMenu: calendarsMenu
+			simpleMenu: calendarsMenu,
+			strings: {
+				emptyMessage: '<liferay-ui:message key="no-accepted-invites" />'
+			}
 		}
 	).render();
 
@@ -263,7 +269,10 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 			},
 			boundingBox: '#<portlet:namespace />calendarListDeclined',
 			calendars: <%= declinedCalendarsJSONArray %>,
-			simpleMenu: calendarsMenu
+			simpleMenu: calendarsMenu,
+			strings: {
+				emptyMessage: '<liferay-ui:message key="no-declined-invites" />'
+			}
 		}
 	).render();
 

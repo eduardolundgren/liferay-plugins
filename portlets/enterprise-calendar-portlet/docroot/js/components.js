@@ -198,7 +198,7 @@ AUI.add(
 			CSS_CALENDAR_LIST_ITEM_HOVER = getClassName('calendar-list', 'item', 'hover'),
 			CSS_CALENDAR_LIST_ITEM_LABEL = getClassName('calendar-list', 'item', 'label'),
 
-			TPL_CALENDAR_LIST_EMPTY_MESSAGE = new A.Template('<div class="' + CSS_CALENDAR_LIST_EMPTY_MESSAGE + '">{message}</div>'),
+			TPL_CALENDAR_LIST_EMPTY_MESSAGE = '<div class="' + CSS_CALENDAR_LIST_EMPTY_MESSAGE + '">{message}</div>',
 
 			TPL_CALENDAR_LIST_ITEM = new A.Template(
 				'<tpl for="calendars">',
@@ -243,7 +243,8 @@ AUI.add(
 						var strings = instance.get('strings');
 
 						instance.emptyMessageNode = A.Node.create(
-							TPL_CALENDAR_LIST_EMPTY_MESSAGE.parse(
+							Lang.sub(
+								TPL_CALENDAR_LIST_EMPTY_MESSAGE,
 								{
 									message: strings['emptyMessage']
 								}
@@ -423,20 +424,21 @@ AUI.add(
 						var calendars = instance.get('calendars');
 						var contentBox = instance.get('contentBox');
 
-						if (calendars.length > 0) {
-							instance.items = A.NodeList.create(
-								TPL_CALENDAR_LIST_ITEM.parse(
-									{
-										calendars: calendars
-									}
-								)
-							);
-
-							contentBox.setContent(instance.items);
-						}
-						else {
+						if (calendars.length === 0) {
 							contentBox.setContent(instance.emptyMessageNode);
+
+							return;
 						}
+
+						instance.items = A.NodeList.create(
+							TPL_CALENDAR_LIST_ITEM.parse(
+								{
+									calendars: calendars
+								}
+							)
+						);
+
+						contentBox.setContent(instance.items);
 					},
 
 					_setCalendarColor: function(calendar, val) {
