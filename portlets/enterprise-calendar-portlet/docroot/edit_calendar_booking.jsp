@@ -188,7 +188,7 @@ if ((userDefaultCalendar != null) && (acceptedCalendarsJSONArray.length() == 0))
 		calendarList.remove(calendar);
 
 		if (menu) {
-			menu.set('visible', false);
+			menu.hide();
 		}
 	}
 
