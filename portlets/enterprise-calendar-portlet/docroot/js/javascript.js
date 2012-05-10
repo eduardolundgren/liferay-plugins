@@ -148,16 +148,14 @@
 							return A.Array.map(
 								results, function (result) {
 									var calendar = result.raw;
-									var text = '';
+									var name = calendar.name;
+									var calendarResourceName = calendar.calendarResourceName;
 
-									if (calendar.global) {
-										text = [calendar.calendarResourceName, STR_DASH, calendar.name].join(STR_SPACE);
-									}
-									else {
-										text = calendar.name;
+									if (name !== calendarResourceName) {
+										name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
 									}
 
-									return A.Highlight.words(text, query);
+									return A.Highlight.words(name, query);
 								}
 							);
 						},
