@@ -218,37 +218,41 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 					return false;
 				},
 				id: 'check-availability'
-			},
-			{
-				caption: '<liferay-ui:message key="remove" />',
-				fn: function(event) {
+			}
+			<c:if test="<%= canInvite %>">
+				,{
+					caption: '<liferay-ui:message key="remove" />',
+					fn: function(event) {
+						var instance = this;
+
+						var calendarList = instance.get('host');
+
+						removeCalendarResource(calendarList, calendarList.activeItem, instance);
+					},
+					id: 'remove'
+				}
+			</c:if>
+		],
+		<c:if test="<%= canInvite %>">
+			on: {
+				visibleChange: function(event) {
 					var instance = this;
 
-					var calendarList = instance.get('host');
+					if (event.newVal) {
+						var calendarList = instance.get('host');
+						var calendar = calendarList.activeItem;
 
-					removeCalendarResource(calendarList, calendarList.activeItem, instance);
-				},
-				id: 'remove'
-			}
-		],
-		on: {
-			visibleChange: function(event) {
-				var instance = this;
+						var hiddenItems = [];
 
-				if (event.newVal) {
-					var calendarList = instance.get('host');
-					var calendar = calendarList.activeItem;
+						if (calendar.get('calendarId') === <%= calendarId %>) {
+							hiddenItems.push('remove');
+						}
 
-					var hiddenItems = [];
-
-					if (<%= !canInvite %> || (calendar.get('calendarId') === <%= calendarId %>)) {
-						hiddenItems.push('remove');
+						instance.set('hiddenItems', hiddenItems);
 					}
-
-					instance.set('hiddenItems', hiddenItems);
 				}
 			}
-		}
+		</c:if>
 	}
 
 	window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
