@@ -57,17 +57,17 @@ if (calendarBooking != null) {
 
 	acceptedCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSON(
 		request, CalendarBookingServiceUtil.findByP_S(
-			calendarBookingId,
+			calendarBooking.getParentCalendarBookingId(),
 			CalendarBookingWorkflowConstants.STATUS_APPROVED));
 
 	declinedCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSON(
 		request, CalendarBookingServiceUtil.findByP_S(
-			calendarBookingId,
+			calendarBooking.getParentCalendarBookingId(),
 			CalendarBookingWorkflowConstants.STATUS_DENIED));
 
 	pendingCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSON(
 		request, CalendarBookingServiceUtil.findByP_S(
-			calendarBookingId,
+			calendarBooking.getParentCalendarBookingId(),
 			CalendarBookingWorkflowConstants.STATUS_PENDING));
 
 	if (!calendarBooking.isMasterBooking()) {
@@ -211,6 +211,15 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 	var calendarsMenu = {
 		items: [
 			{
+				caption: '<liferay-ui:message key="check-availability" />',
+				fn: function(event) {
+					var instance = this;
+
+					return false;
+				},
+				id: 'check-availability'
+			},
+			{
 				caption: '<liferay-ui:message key="remove" />',
 				fn: function(event) {
 					var instance = this;
@@ -221,7 +230,25 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 				},
 				id: 'remove'
 			}
-		]
+		],
+		on: {
+			visibleChange: function(event) {
+				var instance = this;
+
+				if (event.newVal) {
+					var calendarList = instance.get('host');
+					var calendar = calendarList.activeItem;
+
+					var hiddenItems = [];
+
+					if (<%= !canInvite %> || (calendar.get('calendarId') === <%= calendarId %>)) {
+						hiddenItems.push('remove');
+					}
+
+					instance.set('hiddenItems', hiddenItems);
+				}
+			}
+		}
 	}
 
 	window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
