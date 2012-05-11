@@ -777,7 +777,9 @@
 						var evt = instance.get('event') || instance;
 						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
 
-						var permissions = {};
+						var permissions = {
+							MANAGE_BOOKINGS: true
+						};
 
 						if (calendar) {
 							permissions = calendar.get('permissions');
@@ -908,7 +910,9 @@
 						var status = evt.get('status');
 						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
 
-						var permissions = {};
+						var permissions = {
+							MANAGE_BOOKINGS: true
+						};
 
 						if (calendar) {
 							permissions = calendar.get('permissions');
@@ -984,6 +988,10 @@
 							toolbar.remove('deleteBtn');
 							toolbar.remove('editDetailsBtn');
 							toolbar.remove('saveBtn');
+						}
+
+						if (!calendar) {
+							toolbar.remove('deleteBtn');
 						}
 
 						if (status === Liferay.Workflow.STATUS_DRAFT) {
