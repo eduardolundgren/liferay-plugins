@@ -207,6 +207,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 
 	window.<portlet:namespace />recorder = new Liferay.SchedulerEventRecorder(
 		{
+			calendarId: <%= userDefaultCalendar.getCalendarId() %>,
 			duration: 30,
 			editCalendarBookingURL: '<%= editCalendarBookingURL %>',
 			portletNamespace: '<portlet:namespace />',
