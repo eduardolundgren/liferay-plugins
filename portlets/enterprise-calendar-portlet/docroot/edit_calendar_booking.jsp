@@ -193,8 +193,6 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 
 <aui:script use="json,liferay-calendar-list,liferay-calendar-simple-menu">
 	var removeCalendarResource = function(calendarList, calendar, menu) {
-		var instance = this;
-
 		calendarList.remove(calendar);
 
 		if (menu) {

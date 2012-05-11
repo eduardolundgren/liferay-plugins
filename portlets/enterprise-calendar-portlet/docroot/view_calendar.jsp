@@ -255,8 +255,6 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 		}
 	);
 
-	/* Toggler */
-
 	window.<portlet:namespace />toggler = new A.TogglerDelegate(
 		{
 			animated: true,
@@ -265,8 +263,6 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 			header: '.calendar-portlet-list-header'
 		}
 	);
-
-	/* Auto Complete */
 
 	<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarResources" var="calendarResourcesURL"></liferay-portlet:resourceURL>
 

@@ -17,15 +17,11 @@
 	AUI.add(
 		'liferay-scheduler',
 		function(A) {
-
 		var DateMath = A.DataType.DateMath;
-
 		var Lang = A.Lang;
 
-		var isArray = Lang.isArray;
 		var isBoolean = Lang.isBoolean;
 		var isDate = Lang.isDate;
-		var isObject = Lang.isObject;
 		var isString = Lang.isString;
 
 		var jsonParse = function(val) {
@@ -45,57 +41,55 @@
 			USER_TIMEZONE_OFFSET: 0,
 
 			dataSource: null,
-
 			invokerURL: '/api/secure/jsonws/invoke',
-
 			visibleCalendars: {},
 
-			addEvent: function(evt) {
+			addEvent: function(event) {
 				var instance = this;
 
 				instance.invoke(
 					{
-						"/enterprise-calendar-portlet/calendarbooking/add-calendar-booking": {
-							allDay: evt.get('allDay'),
-							calendarId: evt.get('calendarId'),
-							descriptionMap: instance.getLocalizationMap(evt.get('description')),
-							endDate: CalendarUtil.toUTCTimeZone(evt.get('endDate')).getTime(),
+						'/enterprise-calendar-portlet/calendarbooking/add-calendar-booking': {
+							allDay: event.get('allDay'),
+							calendarId: event.get('calendarId'),
+							descriptionMap: instance.getLocalizationMap(event.get('description')),
+							endDate: CalendarUtil.toUTCTimeZone(event.get('endDate')).getTime(),
 							firstReminder: 0,
-							location: evt.get('location'),
-							recurrence: evt.get('repeat'),
+							location: event.get('location'),
+							recurrence: event.get('repeat'),
 							secondReminder: 0,
-							startDate: CalendarUtil.toUTCTimeZone(evt.get('startDate')).getTime(),
-							titleMap: instance.getLocalizationMap(evt.get('content')),
+							startDate: CalendarUtil.toUTCTimeZone(event.get('startDate')).getTime(),
+							titleMap: instance.getLocalizationMap(event.get('content')),
 							userId: USER_ID
 						}
 					},
 					{
 						failure: function() {
-							CalendarUtil.destroyEvent(evt);
+							CalendarUtil.destroyEvent(event);
 						},
 
 						start: function() {
-							evt.set('loading', true);
+							event.set('loading', true);
 						},
 
 						success: function(data) {
-							evt.set('loading', false);
+							event.set('loading', false);
 
 							if (data) {
 								if (data.exception) {
-									CalendarUtil.destroyEvent(evt);
-									return;
+									CalendarUtil.destroyEvent(event);
 								}
+								else {
+									event.set('calendarBookingId', data.calendarBookingId);
+									event.set('calendarResourceId', data.calendarResourceId);
+									event.set('parentCalendarBookingId', data.parentCalendarBookingId);
+									event.set('status', data.status);
 
-								evt.set('calendarBookingId', data.calendarBookingId);
-								evt.set('calendarResourceId', data.calendarResourceId);
-								evt.set('parentCalendarBookingId', data.parentCalendarBookingId);
-								evt.set('status', data.status);
+									var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
 
-								var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
-
-								if (calendar) {
-									calendar.addEvent(evt);
+									if (calendar) {
+										calendar.addEvent(event);
+									}
 								}
 							}
 						}
@@ -146,7 +140,8 @@
 						},
 						resultFormatter: function(query, results) {
 							return A.Array.map(
-								results, function (result) {
+								results,
+								function (result) {
 									var calendar = result.raw;
 									var name = calendar.name;
 									var calendarResourceName = calendar.calendarResourceName;
@@ -166,29 +161,29 @@
 				);
 			},
 
-			deleteEvent: function(evt) {
+			deleteEvent: function(event) {
 				var instance = this;
 
 				instance.invoke(
 					{
 						'/enterprise-calendar-portlet/calendarbooking/delete-calendar-booking': {
-							calendarBookingId: evt.get('calendarBookingId')
+							calendarBookingId: event.get('calendarBookingId')
 						}
 					},
 					{
 						success: function() {
-							evt.get('scheduler').loadCalendarBookings();
+							event.get('scheduler').loadCalendarBookings();
 						}
 					}
 				);
 			},
 
-			destroyEvent: function(evt) {
+			destroyEvent: function(event) {
 				var instance = this;
 
-				var scheduler = evt.get('scheduler');
+				var scheduler = event.get('scheduler');
 
-				scheduler.removeEvent(evt);
+				scheduler.removeEvent(event);
 				scheduler.syncEventsUI();
 			},
 
@@ -228,25 +223,6 @@
 				return instance.dataSource;
 			},
 
-			getStatusLabel: function(statusId) {
-				var status = String.valueOf(statusId);
-
-				if (Liferay.Workflow.STATUS_APPROVED === statusId) {
-					status = Liferay.Language.get('accepted');
-				}
-				else if (Liferay.Workflow.STATUS_DRAFT === statusId) {
-					status = Liferay.Language.get('draft');
-				}
-				else if (Liferay.Workflow.STATUS_PENDING === statusId) {
-					status = Liferay.Language.get('pending');
-				}
-				else if (Liferay.Workflow.STATUS_DENIED === statusId) {
-					status = Liferay.Language.get('declined');
-				}
-
-				return status;
-			},
-
 			getEvents: function(startDate, endDate, status, success, failure) {
 				var instance = this;
 
@@ -254,7 +230,7 @@
 
 				instance.invoke(
 					{
-						"$booking = /enterprise-calendar-portlet/calendarbooking/search": {
+						'$booking = /enterprise-calendar-portlet/calendarbooking/search': {
 							calendarIds: calendarIds.join(','),
 							calendarResourceIds: '',
 							companyId: COMPANY_ID,
@@ -286,49 +262,23 @@
 				return A.JSON.stringify(map);
 			},
 
-			invokeTransition: function(evt, status) {
-				var instance = this;
+			getStatusLabel: function(statusId) {
+				var status = String.valueOf(statusId);
 
-				var scheduler = evt.get('scheduler');
+				if (Liferay.Workflow.STATUS_APPROVED === statusId) {
+					status = Liferay.Language.get('accepted');
+				}
+				else if (Liferay.Workflow.STATUS_DRAFT === statusId) {
+					status = Liferay.Language.get('draft');
+				}
+				else if (Liferay.Workflow.STATUS_PENDING === statusId) {
+					status = Liferay.Language.get('pending');
+				}
+				else if (Liferay.Workflow.STATUS_DENIED === statusId) {
+					status = Liferay.Language.get('declined');
+				}
 
-				instance.invoke(
-					{
-						"/enterprise-calendar-portlet/calendarbooking/invoke-transition": {
-							calendarBookingId: evt.get('calendarBookingId'),
-							transitionName: CalendarUtil.getStatusLabel(status).toLowerCase(),
-							userId: USER_ID
-						}
-					},
-					{
-						start: function() {
-							evt.set('loading', true);
-						},
-
-						success: function(data) {
-							evt.set('loading', false);
-
-							if (data) {
-								if (data.exception) {
-									return;
-								}
-
-								if (scheduler) {
-									var eventRecorder = scheduler.get('eventRecorder');
-
-									eventRecorder.hideOverlay();
-
-									scheduler.loadCalendarBookings();
-								}
-							}
-						}
-					}
-				);
-			},
-
-			message: function(msg) {
-				var instance = this;
-
-				A.one('#' + instance.PORTLET_NAMESPACE + 'message').html(msg);
+				return status;
 			},
 
 			invoke: function(service, callback) {
@@ -367,43 +317,43 @@
 				);
 			},
 
-			toUserTimeZone: function(utc) {
+			invokeTransition: function(event, status) {
 				var instance = this;
 
-				if (!isDate(utc)) {
-					utc = new Date(utc);
-				}
+				var scheduler = event.get('scheduler');
 
-				return DateMath.add(utc, DateMath.MINUTES, utc.getTimezoneOffset() + instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
-			},
-
-			toUTCTimeZone: function(date) {
-				var instance = this;
-
-				if (!isDate(date)) {
-					date = new Date(date);
-				}
-
-				return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
-			},
-
-			toSchedulerEvent: function(calendarBooking) {
-				var instance = this;
-
-				return new Liferay.SchedulerEvent(
+				instance.invoke(
 					{
-						allDay: calendarBooking.allDay,
-						calendarBookingId: calendarBooking.calendarBookingId,
-						calendarId: calendarBooking.calendarId,
-						content: calendarBooking.titleCurrentValue,
-						description: calendarBooking.descriptionCurrentValue,
-						endDate: CalendarUtil.toUserTimeZone(calendarBooking.endDate),
-						location: calendarBooking.location,
-						parentCalendarBookingId: calendarBooking.parentCalendarBookingId,
-						startDate: CalendarUtil.toUserTimeZone(calendarBooking.startDate),
-						status: calendarBooking.status
+						'/enterprise-calendar-portlet/calendarbooking/invoke-transition': {
+							calendarBookingId: event.get('calendarBookingId'),
+							transitionName: CalendarUtil.getStatusLabel(status).toLowerCase(),
+							userId: USER_ID
+						}
+					},
+					{
+						start: function() {
+							event.set('loading', true);
+						},
+
+						success: function(data) {
+							event.set('loading', false);
+
+							if (data && !data.exception && scheduler) {
+								var eventRecorder = scheduler.get('eventRecorder');
+
+								eventRecorder.hideOverlay();
+
+								scheduler.loadCalendarBookings();
+							}
+						}
 					}
 				);
+			},
+
+			message: function(msg) {
+				var instance = this;
+
+				A.oneNS(instance.PORTLET_NAMESPACE, '#message').html(msg);
 			},
 
 			syncVisibleCalendarsMap: function() {
@@ -428,34 +378,73 @@
 				return visibleCalendars;
 			},
 
-			updateEvent: function(evt) {
+			toSchedulerEvent: function(calendarBooking) {
+				var instance = this;
+
+				return new Liferay.SchedulerEvent(
+					{
+						allDay: calendarBooking.allDay,
+						calendarBookingId: calendarBooking.calendarBookingId,
+						calendarId: calendarBooking.calendarId,
+						content: calendarBooking.titleCurrentValue,
+						description: calendarBooking.descriptionCurrentValue,
+						endDate: CalendarUtil.toUserTimeZone(calendarBooking.endDate),
+						location: calendarBooking.location,
+						parentCalendarBookingId: calendarBooking.parentCalendarBookingId,
+						startDate: CalendarUtil.toUserTimeZone(calendarBooking.startDate),
+						status: calendarBooking.status
+					}
+				);
+			},
+
+			toUserTimeZone: function(utc) {
+				var instance = this;
+
+				if (!isDate(utc)) {
+					utc = new Date(utc);
+				}
+
+				return DateMath.add(utc, DateMath.MINUTES, utc.getTimezoneOffset() + instance.USER_TIMEZONE_OFFSET/DateMath.ONE_MINUTE_MS);
+			},
+
+			toUTCTimeZone: function(date) {
+				var instance = this;
+
+				if (!isDate(date)) {
+					date = new Date(date);
+				}
+
+				return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
+			},
+
+			updateEvent: function(event) {
 				var instance = this;
 
 				instance.invoke(
 					{
-						"/enterprise-calendar-portlet/calendarbooking/update-calendar-booking": {
-							allDay: evt.get('allDay'),
-							calendarBookingId: evt.get('calendarBookingId'),
-							calendarId: evt.get('calendarId'),
-							descriptionMap: instance.getLocalizationMap(evt.get('description')),
-							endDate: CalendarUtil.toUTCTimeZone(evt.get('endDate')).getTime(),
+						'/enterprise-calendar-portlet/calendarbooking/update-calendar-booking': {
+							allDay: event.get('allDay'),
+							calendarBookingId: event.get('calendarBookingId'),
+							calendarId: event.get('calendarId'),
+							descriptionMap: instance.getLocalizationMap(event.get('description')),
+							endDate: CalendarUtil.toUTCTimeZone(event.get('endDate')).getTime(),
 							firstReminder: 0,
-							location: evt.get('location'),
-							recurrence: evt.get('repeat'),
+							location: event.get('location'),
+							recurrence: event.get('repeat'),
 							secondReminder: 0,
-							startDate: CalendarUtil.toUTCTimeZone(evt.get('startDate')).getTime(),
-							status: evt.get('status'),
-							titleMap: instance.getLocalizationMap(evt.get('content')),
+							startDate: CalendarUtil.toUTCTimeZone(event.get('startDate')).getTime(),
+							status: event.get('status'),
+							titleMap: instance.getLocalizationMap(event.get('content')),
 							userId: USER_ID
 						}
 					},
 					{
 						start: function() {
-							evt.set('loading', true);
+							event.set('loading', true);
 						},
 
 						success: function(data) {
-							evt.set('loading', false);
+							event.set('loading', false);
 
 							if (data) {
 								if (data.exception) {
@@ -466,15 +455,12 @@
 					}
 				);
 			}
-
 		};
 
 		Liferay.CalendarUtil = CalendarUtil;
 
 		var Scheduler = A.Component.create(
 			{
-				NAME: 'scheduler-base',
-
 				ATTRS: {
 					currentMonth: {
 						setter: toNumber,
@@ -492,6 +478,8 @@
 				},
 
 				EXTENDS: A.Scheduler,
+
+				NAME: 'scheduler-base',
 
 				UI_ATTRS: ['currentMonth'],
 
@@ -577,14 +565,14 @@
 					_onDeleteEvent: function(event) {
 						var instance = this;
 
-						var evt = event.schedulerEvent;
+						var schedulerEvent = event.schedulerEvent;
 
-						if (evt.isMasterBooking() && !confirm(Liferay.Language.get('deleting-this-event-will-cancel-the-meeting-with-your-guests-would-you-like-to-delete'))) {
+						if (schedulerEvent.isMasterBooking() && !confirm(Liferay.Language.get('deleting-this-event-will-cancel-the-meeting-with-your-guests-would-you-like-to-delete'))) {
 							event.preventDefault();
 							return;
 						}
 
-						CalendarUtil.deleteEvent(evt);
+						CalendarUtil.deleteEvent(schedulerEvent);
 					},
 
 					_onSaveEvent: function(event) {
@@ -604,129 +592,128 @@
 
 		Liferay.Scheduler = Scheduler;
 
+		var SchedulerEvent = A.Component.create(
+			{
+				ATTRS: {
+					allDay: {
+						setter: A.DataType.Boolean.parse,
+						value: false
+					},
 
-		var SchedulerEvent = A.Component.create({
-			NAME: 'scheduler-event',
+					calendarBookingId: {
+						setter: toNumber,
+						value: 0
+					},
 
-			ATTRS: {
-				allDay: {
-					setter: A.DataType.Boolean.parse,
-					value: false
-				},
+					calendarId: {
+						setter: toNumber,
+						value: 0
+					},
 
-				calendarBookingId: {
-					setter: toNumber,
-					value: 0
-				},
+					description: {
+						validator: isString,
+						value: STR_BLANK
+					},
 
-				calendarId: {
-					setter: toNumber,
-					value: 0
-				},
+					loading: {
+						validator: isBoolean,
+						value: false
+					},
 
-				description: {
-					validator: isString,
-					value: STR_BLANK
-				},
+					location: {
+						validator: isString,
+						value: STR_BLANK
+					},
 
-				loading: {
-					validator: isBoolean,
-					value: false
-				},
+					parentCalendarBookingId: {
+						setter: toNumber,
+						value: 0
+					},
 
-				location: {
-					validator: isString,
-					value: STR_BLANK
-				},
-
-				parentCalendarBookingId: {
-					setter: toNumber,
-					value: 0
-				},
-
-				status: {
-					setter: toNumber,
-					value: 0
-				}
-			},
-
-			EXTENDS: A.SchedulerEvent,
-
-			prototype: {
-				initializer: function() {
-					var instance = this;
-
-					instance._uiSetLoading(instance.get('loading'));
-					instance._uiSetStatus(instance.get('status'));
-
-					instance.on('loadingChange', instance._onLoadingChange);
-					instance.on('statusChange', instance._onStatusChange);
-				},
-
-				isMasterBooking: function() {
-					var instance = this;
-
-					return (instance.get('parentCalendarBookingId') === instance.get('calendarBookingId'));
-				},
-
-				syncNodeColorUI: function() {
-					var instance = this;
-
-					Liferay.SchedulerEvent.superclass.syncNodeColorUI.apply(instance, arguments);
-
-					var node = instance.get('node');
-					var scheduler = instance.get('scheduler');
-
-					if (scheduler) {
-						var activeViewName = scheduler.get('activeView').get('name');
-
-						if ((activeViewName === 'month') && !instance.get('allDay')) {
-							node.setStyles(
-								{
-									backgroundColor: '#f8f8f8',
-									border: 'none',
-									color: instance.get('color')
-								}
-							);
-						}
+					status: {
+						setter: toNumber,
+						value: 0
 					}
 				},
 
-				_onLoadingChange: function(event) {
-					var instance = this;
+				EXTENDS: A.SchedulerEvent,
 
-					instance._uiSetLoading(event.newVal);
-				},
+				NAME: 'scheduler-event',
 
-				_onStatusChange: function(event) {
-					var instance = this;
+				prototype: {
+					initializer: function() {
+						var instance = this;
 
-					instance._uiSetStatus(event.newVal);
-				},
+						instance._uiSetLoading(instance.get('loading'));
+						instance._uiSetStatus(instance.get('status'));
 
-				_uiSetLoading: function(val) {
-					var instance = this;
+						instance.on('loadingChange', instance._onLoadingChange);
+						instance.on('statusChange', instance._onStatusChange);
+					},
 
-					instance.get('node').toggleClass('calendar-portlet-event-loading', val);
-				},
+					isMasterBooking: function() {
+						var instance = this;
 
-				_uiSetStatus: function(val) {
-					var instance = this;
+						return (instance.get('parentCalendarBookingId') === instance.get('calendarBookingId'));
+					},
 
-					var node = instance.get('node');
+					syncNodeColorUI: function() {
+						var instance = this;
 
-					node.toggleClass('calendar-portlet-event-pending', (val === Workflow.STATUS_PENDING));
-					node.toggleClass('calendar-portlet-event-approved', (val === Workflow.STATUS_APPROVED));
+						Liferay.SchedulerEvent.superclass.syncNodeColorUI.apply(instance, arguments);
+
+						var node = instance.get('node');
+						var scheduler = instance.get('scheduler');
+
+						if (scheduler) {
+							var activeViewName = scheduler.get('activeView').get('name');
+
+							if ((activeViewName === 'month') && !instance.get('allDay')) {
+								node.setStyles(
+									{
+										backgroundColor: '#f8f8f8',
+										border: 'none',
+										color: instance.get('color')
+									}
+								);
+							}
+						}
+					},
+
+					_onLoadingChange: function(event) {
+						var instance = this;
+
+						instance._uiSetLoading(event.newVal);
+					},
+
+					_onStatusChange: function(event) {
+						var instance = this;
+
+						instance._uiSetStatus(event.newVal);
+					},
+
+					_uiSetLoading: function(val) {
+						var instance = this;
+
+						instance.get('node').toggleClass('calendar-portlet-event-loading', val);
+					},
+
+					_uiSetStatus: function(val) {
+						var instance = this;
+
+						var node = instance.get('node');
+
+						node.toggleClass('calendar-portlet-event-pending', (val === Workflow.STATUS_PENDING));
+						node.toggleClass('calendar-portlet-event-approved', (val === Workflow.STATUS_APPROVED));
+					}
 				}
 			}
-		});
+		);
 
 		Liferay.SchedulerEvent = SchedulerEvent;
 
 		var SchedulerEventRecorder = A.Component.create(
 			{
-				NAME: 'scheduler-event-recorder',
-
 				ATTRS: {
 					allDay: {
 						setter: A.DataType.Boolean.parse,
@@ -751,6 +738,8 @@
 
 				EXTENDS: A.SchedulerEventRecorder,
 
+				NAME: 'scheduler-event-recorder',
+
 				prototype: {
 					getEventCopy: function() {
 						var instance = this;
@@ -768,13 +757,13 @@
 					getTemplateData: function() {
 						var instance = this;
 
-						var evt = instance.get('event') || instance;
+						var event = instance.get('event') || instance;
 
 						return A.merge(
 							SchedulerEventRecorder.superclass.getTemplateData.apply(this, arguments),
 							{
-								allDay: evt.get('allDay'),
-								status: CalendarUtil.getStatusLabel(evt.get('status'))
+								allDay: event.get('allDay'),
+								status: CalendarUtil.getStatusLabel(event.get('status'))
 							}
 						);
 					},
@@ -796,20 +785,20 @@
 					_handleAcceptEvent: function(event) {
 						var instance = this;
 
-						var evt = instance.get('event');
+						var eventObj = instance.get('event');
 
-						if (evt) {
-							CalendarUtil.invokeTransition(evt, Liferay.Workflow.STATUS_APPROVED);
+						if (eventObj) {
+							CalendarUtil.invokeTransition(eventObj, Liferay.Workflow.STATUS_APPROVED);
 						}
 					},
 
 					_handleDeclineEvent: function(event) {
 						var instance = this;
 
-						var evt = instance.get('event');
+						var eventObj = instance.get('event');
 
-						if (evt) {
-							CalendarUtil.invokeTransition(evt, Liferay.Workflow.STATUS_DENIED);
+						if (eventObj) {
+							CalendarUtil.invokeTransition(eventObj, Liferay.Workflow.STATUS_DENIED);
 						}
 					},
 
@@ -820,7 +809,7 @@
 						var activeViewName = scheduler.get('activeView').get('name');
 						var currentDate = scheduler.get('currentDate');
 
-						var evt = instance.get('event');
+						var eventObj = instance.get('event');
 						var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 						var data = instance.serializeForm();
 
@@ -830,12 +819,12 @@
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);
 
-						if (evt) {
-							data.allDay = evt.get('allDay');
-							data.calendarBookingId = evt.get('calendarBookingId');
+						if (eventObj) {
+							data.allDay = eventObj.get('allDay');
+							data.calendarBookingId = eventObj.get('calendarBookingId');
 						}
 
-						window.location.href = A.Lang.sub(editCalendarBookingURL, data);
+						A.config.win.location.href = A.Lang.sub(editCalendarBookingURL, data);
 					},
 
 					_onOverlayVisibleChange: function(event) {
@@ -843,25 +832,83 @@
 
 						SchedulerEventRecorder.superclass._onOverlayVisibleChange.apply(this, arguments);
 
-						var evt = instance.get('event');
+						var eventObj = instance.get('event');
 						var overlayBB = instance.overlay.get('boundingBox');
 						var portletNamespace = instance.get('portletNamespace');
 
-						overlayBB.toggleClass('calendar-portlet-event-recorder-editing', !!evt);
+						overlayBB.toggleClass('calendar-portlet-event-recorder-editing', !!eventObj);
 
 						var eventRecorderCalendar = A.one('#' + portletNamespace + 'eventRecorderCalendar');
 
 						if (eventRecorderCalendar) {
 							var calendarId = CalendarUtil.DEFAULT_CALENDAR.calendarId;
 
-							if (evt) {
-								calendarId = evt.get('calendarId');
+							if (eventObj) {
+								calendarId = eventObj.get('calendarId');
 							}
 
 							eventRecorderCalendar.val(calendarId);
 						}
 
 						instance._syncToolbarButtons(event.newVal);
+					},
+
+					_syncToolbarButtons: function(overlayVisible) {
+						var instance = this;
+
+						if (overlayVisible) {
+							var event = instance.get('event') || instance;
+							var status = event.get('status');
+
+							var overlay = instance.overlay;
+							var toolbar = instance.toolbar;
+
+							toolbar.add(
+								{
+									handler: A.bind(instance._handleEditDetailsEvent, instance),
+									id: 'editDetailsBtn',
+									label: Liferay.Language.get('edit-details')
+								}
+							);
+
+							if (status === Liferay.Workflow.STATUS_DRAFT) {
+								toolbar.remove('declineBtn');
+							}
+
+							if (status === Liferay.Workflow.STATUS_APPROVED ||
+								status === Liferay.Workflow.STATUS_DRAFT) {
+
+								toolbar.remove('acceptBtn');
+							}
+
+							if (status === Liferay.Workflow.STATUS_PENDING) {
+								toolbar.add(
+									{
+										handler: A.bind(instance._handleAcceptEvent, instance),
+										icon: 'circle-check',
+										id: 'acceptBtn',
+										label: Liferay.Language.get('accept')
+									}
+								);
+							}
+
+							if (status === Liferay.Workflow.STATUS_PENDING ||
+								status === Liferay.Workflow.STATUS_APPROVED) {
+
+								toolbar.add(
+									{
+										handler: A.bind(instance._handleDeclineEvent, instance),
+										icon: 'circle-close',
+										id: 'declineBtn',
+										label: Liferay.Language.get('decline')
+									}
+								);
+							}
+
+							var estimatedOverlayWidth = 50 + toolbar.get('boundingBox').get('offsetWidth');
+
+							overlay.set('width', Math.max(300, estimatedOverlayWidth));
+						}
 					},
 
 					_syncViewDefData: function() {
@@ -876,66 +923,6 @@
 						else {
 							instance.set('allDay', false);
 						}
-					},
-
-					_syncToolbarButtons: function(overlayVisible) {
-						var instance = this;
-
-						if (!overlayVisible) {
-							return;
-						}
-
-						var evt = instance.get('event') || instance;
-						var status = evt.get('status');
-
-						var overlay = instance.overlay;
-						var toolbar = instance.toolbar;
-
-						toolbar.add(
-							{
-								handler: A.bind(instance._handleEditDetailsEvent, instance),
-								id: 'editDetailsBtn',
-								label: Liferay.Language.get('edit-details')
-							}
-						);
-
-						if (status === Liferay.Workflow.STATUS_DRAFT) {
-							toolbar.remove('declineBtn');
-						}
-
-						if (status === Liferay.Workflow.STATUS_APPROVED ||
-							status === Liferay.Workflow.STATUS_DRAFT) {
-
-							toolbar.remove('acceptBtn');
-						}
-
-						if (status === Liferay.Workflow.STATUS_PENDING) {
-							toolbar.add(
-								{
-									handler: A.bind(instance._handleAcceptEvent, instance),
-									icon: 'circle-check',
-									id: 'acceptBtn',
-									label: Liferay.Language.get('accept')
-								}
-							);
-						}
-
-						if (status === Liferay.Workflow.STATUS_PENDING ||
-							status === Liferay.Workflow.STATUS_APPROVED) {
-
-							toolbar.add(
-								{
-									handler: A.bind(instance._handleDeclineEvent, instance),
-									icon: 'circle-close',
-									id: 'declineBtn',
-									label: Liferay.Language.get('decline')
-								}
-							);
-						}
-
-						var estimatedOverlayWidth = 50 + toolbar.get('boundingBox').get('offsetWidth');
-
-						overlay.set('width', Math.max(300, estimatedOverlayWidth));
 					}
 				}
 			}
@@ -943,86 +930,86 @@
 
 		Liferay.SchedulerEventRecorder = SchedulerEventRecorder;
 
-		var Calendar = A.Component.create({
-			NAME: 'scheduler-calendar',
+		var Calendar = A.Component.create(
+			{
+				ATTRS: {
+					calendarId: {
+						value: 0,
+						setter: toNumber
+					},
 
-			ATTRS: {
-				calendarId: {
-					value: 0,
-					setter: toNumber
-				},
+					calendarResourceId: {
+						value: 0,
+						setter: toNumber
+					},
 
-				calendarResourceId: {
-					value: 0,
-					setter: toNumber
-				},
+					calendarResourceName: {
+						value: '',
+						validator: isString
+					},
 
-				calendarResourceName: {
-					value: '',
-					validator: isString
-				},
+					classNameId: {
+						value: 0,
+						setter: toNumber
+					},
 
-				classNameId: {
-					value: 0,
-					setter: toNumber
-				},
+					classPK: {
+						value: 0,
+						setter: toNumber
+					},
 
-				classPK: {
-					value: 0,
-					setter: toNumber
-				},
+					defaultCalendar: {
+						setter: A.DataType.Boolean.parse,
+						value: false
+					},
 
-				defaultCalendar: {
-					setter: A.DataType.Boolean.parse,
-					value: false
-				},
-
-				global: {
-					setter: A.DataType.Boolean.parse,
-					value: false
-				}
-			},
-
-			prototype: {
-				getDisplayName: function() {
-					var instance = this;
-
-					var displayName = instance.get('name');
-					var calendarResourceName = instance.get('calendarResourceName');
-
-					if (displayName !== calendarResourceName) {
-						displayName = [calendarResourceName, STR_DASH, displayName].join(STR_SPACE);
+					global: {
+						setter: A.DataType.Boolean.parse,
+						value: false
 					}
-
-					return displayName;
 				},
 
-				_afterColorChange: function(event) {
-					var instance = this;
+				EXTENDS: A.SchedulerCalendar,
 
-					Calendar.superclass._afterColorChange.apply(instance, arguments);
+				NAME: 'scheduler-calendar',
 
-					CalendarUtil.invoke(
-						{
-							"/enterprise-calendar-portlet/calendar/update-calendar-color": {
-								calendarId: instance.get('calendarId'),
-								color: parseInt(event.newVal.substr(1), 16)
-							}
+				prototype: {
+					getDisplayName: function() {
+						var instance = this;
+
+						var displayName = instance.get('name');
+						var calendarResourceName = instance.get('calendarResourceName');
+
+						if (displayName !== calendarResourceName) {
+							displayName = [calendarResourceName, STR_DASH, displayName].join(STR_SPACE);
 						}
-					);
-				}
-			},
 
-			EXTENDS: A.SchedulerCalendar
-		});
+						return displayName;
+					},
+
+					_afterColorChange: function(event) {
+						var instance = this;
+
+						Calendar.superclass._afterColorChange.apply(instance, arguments);
+
+						CalendarUtil.invoke(
+							{
+								'/enterprise-calendar-portlet/calendar/update-calendar-color': {
+									calendarId: instance.get('calendarId'),
+									color: parseInt(event.newVal.substr(1), 16)
+								}
+							}
+						);
+					}
+				}
+			}
+		);
 
 		Liferay.SchedulerCalendar = Calendar;
-
 	},
 	'' ,
 	{
-		requires: ['aui-scheduler', 'aui-io', 'autocomplete', 'autocomplete-highlighters', 'datasource-get', 'datasource-cache', 'liferay-portlet-url', 'liferay-store']
+		requires: ['aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'datasource-cache', 'datasource-get', 'liferay-portlet-url', 'liferay-store']
 	}
 );
-
 }());

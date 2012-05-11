@@ -19,7 +19,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 %>
 
 <div class="calendar-portlet-event-recorder">
-	<div class="aui-scheduler-event-recorder-overlay-arrow-shadow aui-scheduler-event-recorder-overlay-arrow"></div>
+	<div class="aui-scheduler-event-recorder-overlay-arrow aui-scheduler-event-recorder-overlay-arrow-shadow"></div>
+
 	<div class="aui-scheduler-event-recorder-overlay-arrow"></div>
 
 	<input name="allDay" type="hidden" value="{allDay}" />

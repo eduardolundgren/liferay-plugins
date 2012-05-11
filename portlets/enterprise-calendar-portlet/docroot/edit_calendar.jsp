@@ -76,13 +76,15 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 </aui:script>
 
 <aui:script use="liferay-calendar-simple-color-picker">
-	window.<portlet:namespace />colorPicker = new Liferay.SimpleColorPicker({
-		color: '<%= ColorUtil.toHexString((calendar != null) ? calendar.getColor() : PortletPropsValues.CALENDAR_COLOR_DEFAULT) %>',
-		render: '#<portlet:namespace />colorPicker',
-		on: {
-			colorChange: function(event) {
-				A.one('#<portlet:namespace />color').val(parseInt(event.newVal.substring(1), 16));
-			}
+	window.<portlet:namespace />colorPicker = new Liferay.SimpleColorPicker(
+		{
+			color: '<%= ColorUtil.toHexString((calendar != null) ? calendar.getColor() : PortletPropsValues.CALENDAR_COLOR_DEFAULT) %>',
+			on: {
+				colorChange: function(event) {
+					A.one('#<portlet:namespace />color').val(parseInt(event.newVal.substring(1), 16));
+				}
+			},
+			render: '#<portlet:namespace />colorPicker'
 		}
-	});
+	);
 </aui:script>
