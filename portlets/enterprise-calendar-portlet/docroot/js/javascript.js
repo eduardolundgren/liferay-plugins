@@ -46,51 +46,51 @@
 			invokerURL: '/api/secure/jsonws/invoke',
 			visibleCalendars: {},
 
-			addEvent: function(event) {
+			addEvent: function(schedulerEvent) {
 				var instance = this;
 
 				instance.invoke(
 					{
 						'/enterprise-calendar-portlet/calendarbooking/add-calendar-booking': {
-							allDay: event.get('allDay'),
-							calendarId: event.get('calendarId'),
-							descriptionMap: instance.getLocalizationMap(event.get('description')),
-							endDate: CalendarUtil.toUTCTimeZone(event.get('endDate')).getTime(),
+							allDay: schedulerEvent.get('allDay'),
+							calendarId: schedulerEvent.get('calendarId'),
+							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
+							endDate: CalendarUtil.toUTCTimeZone(schedulerEvent.get('endDate')).getTime(),
 							firstReminder: 0,
-							location: event.get('location'),
-							recurrence: event.get('repeat'),
+							location: schedulerEvent.get('location'),
+							recurrence: schedulerEvent.get('repeat'),
 							secondReminder: 0,
-							startDate: CalendarUtil.toUTCTimeZone(event.get('startDate')).getTime(),
-							titleMap: instance.getLocalizationMap(event.get('content')),
+							startDate: CalendarUtil.toUTCTimeZone(schedulerEvent.get('startDate')).getTime(),
+							titleMap: instance.getLocalizationMap(schedulerEvent.get('content')),
 							userId: USER_ID
 						}
 					},
 					{
 						failure: function() {
-							CalendarUtil.destroyEvent(event);
+							CalendarUtil.destroyEvent(schedulerEvent);
 						},
 
 						start: function() {
-							event.set('loading', true);
+							schedulerEvent.set('loading', true);
 						},
 
 						success: function(data) {
-							event.set('loading', false);
+							schedulerEvent.set('loading', false);
 
 							if (data) {
 								if (data.exception) {
-									CalendarUtil.destroyEvent(event);
+									CalendarUtil.destroyEvent(schedulerEvent);
 								}
 								else {
-									event.set('calendarBookingId', data.calendarBookingId);
-									event.set('calendarResourceId', data.calendarResourceId);
-									event.set('parentCalendarBookingId', data.parentCalendarBookingId);
-									event.set('status', data.status);
+									schedulerEvent.set('calendarBookingId', data.calendarBookingId);
+									schedulerEvent.set('calendarResourceId', data.calendarResourceId);
+									schedulerEvent.set('parentCalendarBookingId', data.parentCalendarBookingId);
+									schedulerEvent.set('status', data.status);
 
-									var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
+									var calendar = CalendarUtil.visibleCalendars[schedulerEvent.get('calendarId')];
 
 									if (calendar) {
-										calendar.addEvent(event);
+										calendar.addEvent(schedulerEvent);
 									}
 								}
 							}
@@ -163,29 +163,29 @@
 				);
 			},
 
-			deleteEvent: function(event) {
+			deleteEvent: function(schedulerEvent) {
 				var instance = this;
 
 				instance.invoke(
 					{
 						'/enterprise-calendar-portlet/calendarbooking/delete-calendar-booking': {
-							calendarBookingId: event.get('calendarBookingId')
+							calendarBookingId: schedulerEvent.get('calendarBookingId')
 						}
 					},
 					{
 						success: function() {
-							event.get('scheduler').loadCalendarBookings();
+							schedulerEvent.get('scheduler').loadCalendarBookings();
 						}
 					}
 				);
 			},
 
-			destroyEvent: function(event) {
+			destroyEvent: function(schedulerEvent) {
 				var instance = this;
 
-				var scheduler = event.get('scheduler');
+				var scheduler = schedulerEvent.get('scheduler');
 
-				scheduler.removeEvent(event);
+				scheduler.removeEvent(schedulerEvent);
 				scheduler.syncEventsUI();
 			},
 
@@ -319,26 +319,26 @@
 				);
 			},
 
-			invokeTransition: function(event, status) {
+			invokeTransition: function(schedulerEvent, status) {
 				var instance = this;
 
-				var scheduler = event.get('scheduler');
+				var scheduler = schedulerEvent.get('scheduler');
 
 				instance.invoke(
 					{
 						'/enterprise-calendar-portlet/calendarbooking/invoke-transition': {
-							calendarBookingId: event.get('calendarBookingId'),
+							calendarBookingId: schedulerEvent.get('calendarBookingId'),
 							transitionName: CalendarUtil.getStatusLabel(status).toLowerCase(),
 							userId: USER_ID
 						}
 					},
 					{
 						start: function() {
-							event.set('loading', true);
+							schedulerEvent.set('loading', true);
 						},
 
 						success: function(data) {
-							event.set('loading', false);
+							schedulerEvent.set('loading', false);
 
 							if (data && !data.exception && scheduler) {
 								var eventRecorder = scheduler.get('eventRecorder');
@@ -419,34 +419,34 @@
 				return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
 			},
 
-			updateEvent: function(event) {
+			updateEvent: function(schedulerEvent) {
 				var instance = this;
 
 				instance.invoke(
 					{
 						'/enterprise-calendar-portlet/calendarbooking/update-calendar-booking': {
-							allDay: event.get('allDay'),
-							calendarBookingId: event.get('calendarBookingId'),
-							calendarId: event.get('calendarId'),
-							descriptionMap: instance.getLocalizationMap(event.get('description')),
-							endDate: CalendarUtil.toUTCTimeZone(event.get('endDate')).getTime(),
+							allDay: schedulerEvent.get('allDay'),
+							calendarBookingId: schedulerEvent.get('calendarBookingId'),
+							calendarId: schedulerEvent.get('calendarId'),
+							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
+							endDate: CalendarUtil.toUTCTimeZone(schedulerEvent.get('endDate')).getTime(),
 							firstReminder: 0,
-							location: event.get('location'),
-							recurrence: event.get('repeat'),
+							location: schedulerEvent.get('location'),
+							recurrence: schedulerEvent.get('repeat'),
 							secondReminder: 0,
-							startDate: CalendarUtil.toUTCTimeZone(event.get('startDate')).getTime(),
-							status: event.get('status'),
-							titleMap: instance.getLocalizationMap(event.get('content')),
+							startDate: CalendarUtil.toUTCTimeZone(schedulerEvent.get('startDate')).getTime(),
+							status: schedulerEvent.get('status'),
+							titleMap: instance.getLocalizationMap(schedulerEvent.get('content')),
 							userId: USER_ID
 						}
 					},
 					{
 						start: function() {
-							event.set('loading', true);
+							schedulerEvent.set('loading', true);
 						},
 
 						success: function(data) {
-							event.set('loading', false);
+							schedulerEvent.set('loading', false);
 
 							if (data) {
 								if (data.exception) {
@@ -756,39 +756,39 @@
 				prototype: {
 					getEventCopy: function() {
 						var instance = this;
-						var newEvt = instance.get('event');
+						var newSchedulerEvent = instance.get('event');
 
-						if (!newEvt) {
-							newEvt = new (instance.get('eventClass'))();
+						if (!newSchedulerEvent) {
+							newSchedulerEvent = new (instance.get('eventClass'))();
 						}
 
-						newEvt.setAttrs(instance.serializeForm());
+						newSchedulerEvent.setAttrs(instance.serializeForm());
 
-						return newEvt;
+						return newSchedulerEvent;
 					},
 
 					getTemplateData: function() {
 						var instance = this;
 
 						var editing = false;
-						var event = instance.get('event');
+						var schedulerEvent = instance.get('event');
 
-						if (!event) {
-							event = instance;
+						if (!schedulerEvent) {
+							schedulerEvent = instance;
 							editing = true;
 						}
 
-						var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
+						var calendar = CalendarUtil.visibleCalendars[schedulerEvent.get('calendarId')];
 						var permissions = calendar.get('permissions');
 
 						return A.merge(
 							SchedulerEventRecorder.superclass.getTemplateData.apply(this, arguments),
 							{
-								allDay: event.get('allDay'),
+								allDay: schedulerEvent.get('allDay'),
 								calendar: calendar,
 								editing: editing,
 								permissions: permissions,
-								status: CalendarUtil.getStatusLabel(event.get('status'))
+								status: CalendarUtil.getStatusLabel(schedulerEvent.get('status'))
 							}
 						);
 					},
@@ -810,20 +810,20 @@
 					_handleAcceptEvent: function(event) {
 						var instance = this;
 
-						var eventObj = instance.get('event');
+						var schedulerEvent = instance.get('event');
 
-						if (eventObj) {
-							CalendarUtil.invokeTransition(eventObj, Liferay.Workflow.STATUS_APPROVED);
+						if (schedulerEvent) {
+							CalendarUtil.invokeTransition(schedulerEvent, Liferay.Workflow.STATUS_APPROVED);
 						}
 					},
 
 					_handleDeclineEvent: function(event) {
 						var instance = this;
 
-						var eventObj = instance.get('event');
+						var schedulerEvent = instance.get('event');
 
-						if (eventObj) {
-							CalendarUtil.invokeTransition(eventObj, Liferay.Workflow.STATUS_DENIED);
+						if (schedulerEvent) {
+							CalendarUtil.invokeTransition(schedulerEvent, Liferay.Workflow.STATUS_DENIED);
 						}
 					},
 
@@ -834,7 +834,7 @@
 						var activeViewName = scheduler.get('activeView').get('name');
 						var currentDate = scheduler.get('currentDate');
 
-						var eventObj = instance.get('event');
+						var schedulerEvent = instance.get('event');
 						var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 						var data = instance.serializeForm();
 
@@ -844,9 +844,9 @@
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);
 
-						if (eventObj) {
-							data.allDay = eventObj.get('allDay');
-							data.calendarBookingId = eventObj.get('calendarBookingId');
+						if (schedulerEvent) {
+							data.allDay = schedulerEvent.get('allDay');
+							data.calendarBookingId = schedulerEvent.get('calendarBookingId');
 						}
 
 						A.config.win.location.href = A.Lang.sub(editCalendarBookingURL, data);
