@@ -1047,6 +1047,14 @@
 					},
 
 					permissions: {
+						lazyAdd: false,
+						setter: function(val) {
+							var instance = this;
+
+							instance.set('disabled', !val.MANAGE_BOOKINGS);
+
+							return val;
+						},
 						value: {},
 						validator: isObject
 					}
