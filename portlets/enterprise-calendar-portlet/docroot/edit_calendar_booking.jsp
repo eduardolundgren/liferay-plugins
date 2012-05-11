@@ -56,19 +56,19 @@ if (calendarBooking != null) {
 	endDateCal.setTime(calendarBooking.getEndDate());
 
 	acceptedCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSON(
-		CalendarBookingServiceUtil.findByP_S(
+		request, CalendarBookingServiceUtil.findByP_S(
 			calendarBookingId,
-			CalendarBookingWorkflowConstants.STATUS_APPROVED), locale);
+			CalendarBookingWorkflowConstants.STATUS_APPROVED));
 
 	declinedCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSON(
-		CalendarBookingServiceUtil.findByP_S(
+		request, CalendarBookingServiceUtil.findByP_S(
 			calendarBookingId,
-			CalendarBookingWorkflowConstants.STATUS_DENIED), locale);
+			CalendarBookingWorkflowConstants.STATUS_DENIED));
 
 	pendingCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSON(
-		CalendarBookingServiceUtil.findByP_S(
+		request, CalendarBookingServiceUtil.findByP_S(
 			calendarBookingId,
-			CalendarBookingWorkflowConstants.STATUS_PENDING), locale);
+			CalendarBookingWorkflowConstants.STATUS_PENDING));
 
 	if (!calendarBooking.isMasterBooking()) {
 		canInvite = false;
@@ -79,7 +79,7 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
 
 	if (calendar != null) {
-		acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSON(calendar, locale));
+		acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSON(request, calendar));
 	}
 }
 %>

@@ -44,9 +44,9 @@ for (long calendarId : calendarIds) {
 	}
 }
 
-JSONArray groupCalendarsJSON = CalendarUtil.toCalendarsJSON(groupCalendars, locale);
-JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(userCalendars, locale);
-JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, locale);
+JSONArray groupCalendarsJSON = CalendarUtil.toCalendarsJSON(request, groupCalendars);
+JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(request, userCalendars);
+JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalendars);
 %>
 
 <aui:fieldset cssClass="calendar-portlet-column-parent">
@@ -98,7 +98,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(otherCalendars, loca
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 
 	<c:if test="<%= userCalendars != null %>">
-		Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(userCalendars.get(0), locale) %>;
+		Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(request, userCalendars.get(0)) %>;
 	</c:if>
 
 	var syncVisibleCalendarsMap = function() {

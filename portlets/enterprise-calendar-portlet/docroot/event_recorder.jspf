@@ -28,7 +28,13 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<input name="endDate" type="hidden" value="{endDate}" />
 
 	<div class="aui-scheduler-event-recorder-overlay-header">
-		<input class="aui-scheduler-event-recorder-overlay-content" name="content" value="{content}" />
+		<tpl if="values.permissions.MANAGE_BOOKINGS">
+			<input class="aui-scheduler-event-recorder-overlay-content" name="content" value="{content}" />
+		</tpl>
+		<tpl if="!values.permissions.MANAGE_BOOKINGS">
+			<input name="content" type="hidden" value="{content}" />
+			<div class="aui-scheduler-event-recorder-overlay-content">{content}</div>
+		</tpl>
 	</div>
 
 	<div class="aui-scheduler-event-recorder-overlay-body">

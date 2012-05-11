@@ -17,6 +17,7 @@ package com.liferay.calendar.util;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
+import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.comparator.CalendarNameComparator;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -28,6 +29,8 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.util.UniqueList;
 
 import java.util.Calendar;
@@ -35,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Eduardo Lundgren
@@ -197,7 +202,7 @@ public class CalendarUtil {
 	}
 
 	public static JSONArray toCalendarBookingsJSON(
-			List<CalendarBooking> calendarBookings, Locale locale)
+			HttpServletRequest request, List<CalendarBooking> calendarBookings)
 		throws PortalException, SystemException {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
@@ -205,7 +210,7 @@ public class CalendarUtil {
 		if (calendarBookings != null) {
 			for (CalendarBooking calendarBooking : calendarBookings) {
 				jsonArray.put(
-					toCalendarJSON(calendarBooking.getCalendar(), locale));
+					toCalendarJSON(request, calendarBooking.getCalendar()));
 			}
 		}
 
@@ -213,7 +218,16 @@ public class CalendarUtil {
 	}
 
 	public static JSONObject toCalendarJSON(
-		com.liferay.calendar.model.Calendar calendar, Locale locale) {
+		HttpServletRequest request,
+		com.liferay.calendar.model.Calendar calendar) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		Locale locale = themeDisplay.getLocale();
+
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
@@ -233,6 +247,24 @@ public class CalendarUtil {
 			jsonObject.put("classPK", calendarResource.getClassPK());
 			jsonObject.put("global", calendarResource.isGlobal());
 			jsonObject.put("name", calendar.getName(locale));
+
+			JSONObject jsonPermissions = JSONFactoryUtil.createJSONObject();
+
+			jsonPermissions.put(
+				"VIEW", CalendarPermission.contains(
+					permissionChecker, calendar, ActionKeys.VIEW));
+
+			jsonPermissions.put(
+				"VIEW_BOOKING_DETAILS", CalendarPermission.contains(
+					permissionChecker, calendar,
+					ActionKeys.VIEW_BOOKING_DETAILS));
+
+			jsonPermissions.put(
+				"MANAGE_BOOKINGS",
+				CalendarPermission.contains(
+					permissionChecker, calendar, ActionKeys.MANAGE_BOOKINGS));
+
+			jsonObject.put("permissions", jsonPermissions);
 		}
 		catch (Exception e) {
 		}
@@ -241,13 +273,14 @@ public class CalendarUtil {
 	}
 
 	public static JSONArray toCalendarsJSON(
-		List<com.liferay.calendar.model.Calendar> calendars, Locale locale) {
+		HttpServletRequest request,
+		List<com.liferay.calendar.model.Calendar> calendars) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		if (calendars != null) {
 			for (com.liferay.calendar.model.Calendar calendar : calendars) {
-				jsonArray.put(toCalendarJSON(calendar, locale));
+				jsonArray.put(toCalendarJSON(request, calendar));
 			}
 		}
 

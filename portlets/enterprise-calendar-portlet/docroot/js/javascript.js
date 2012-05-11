@@ -733,6 +733,12 @@
 					status: {
 						setter: toNumber,
 						value: Liferay.Workflow.STATUS_DRAFT
+					},
+
+					toolbar: {
+						value: {
+							children: []
+						}
 					}
 				},
 
@@ -758,11 +764,19 @@
 						var instance = this;
 
 						var event = instance.get('event') || instance;
+						var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
+
+						var permissions = {};
+
+						if (calendar) {
+							permissions = calendar.get('permissions');
+						}
 
 						return A.merge(
 							SchedulerEventRecorder.superclass.getTemplateData.apply(this, arguments),
 							{
 								allDay: event.get('allDay'),
+								permissions: permissions,
 								status: CalendarUtil.getStatusLabel(event.get('status'))
 							}
 						);
@@ -856,73 +870,110 @@
 					_syncToolbarButtons: function(overlayVisible) {
 						var instance = this;
 
-						if (overlayVisible) {
-							var event = instance.get('event') || instance;
-							var status = event.get('status');
+						var overlay = instance.overlay;
+						var toolbar = instance.toolbar;
 
-							var overlay = instance.overlay;
-							var toolbar = instance.toolbar;
+						if (!overlayVisible) {
+							toolbar.removeAll();
 
-							toolbar.add(
-								{
-									handler: A.bind(instance._handleEditDetailsEvent, instance),
-									id: 'editDetailsBtn',
-									label: Liferay.Language.get('edit-details')
-								}
-							);
-
-							if (status === Liferay.Workflow.STATUS_DRAFT) {
-								toolbar.remove('declineBtn');
-							}
-
-							if (status === Liferay.Workflow.STATUS_APPROVED ||
-								status === Liferay.Workflow.STATUS_DRAFT) {
-
-								toolbar.remove('acceptBtn');
-							}
-
-							if (status === Liferay.Workflow.STATUS_PENDING) {
-								toolbar.add(
-									{
-										handler: A.bind(instance._handleAcceptEvent, instance),
-										icon: 'circle-check',
-										id: 'acceptBtn',
-										label: Liferay.Language.get('accept')
-									}
-								);
-							}
-
-							if (status === Liferay.Workflow.STATUS_PENDING ||
-								status === Liferay.Workflow.STATUS_APPROVED) {
-
-								toolbar.add(
-									{
-										handler: A.bind(instance._handleDeclineEvent, instance),
-										icon: 'circle-close',
-										id: 'declineBtn',
-										label: Liferay.Language.get('decline')
-									}
-								);
-							}
-
-							var estimatedOverlayWidth = 50 + toolbar.get('boundingBox').get('offsetWidth');
-
-							overlay.set('width', Math.max(300, estimatedOverlayWidth));
+							return;
 						}
-					},
 
-					_syncViewDefData: function() {
-						var instance = this;
+						var evt = instance.get('event') || instance;
+						var status = evt.get('status');
+						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
 
-						var scheduler = instance.get('scheduler');
-						var activeViewName = scheduler.get('activeView').get('name');
+						var permissions = {};
 
-						if (activeViewName === 'month') {
-							instance.set('allDay', true);
+						if (calendar) {
+							permissions = calendar.get('permissions');
 						}
-						else {
-							instance.set('allDay', false);
+
+						toolbar.add(
+							{
+								handler: A.bind(instance._handleCancelEvent, instance),
+								id: 'cancelBtn',
+								label: Liferay.Language.get('close')
+							}
+						);
+
+						toolbar.add(
+							{
+								id: 'toolbarSpacer1',
+								type: 'ToolbarSpacer'
+							}
+						);
+
+						toolbar.add(
+							{
+								handler: A.bind(instance._handleSaveEvent, instance),
+								id: 'saveBtn',
+								label: Liferay.Language.get('save')
+							}
+						);
+
+						toolbar.add(
+							{
+								handler: A.bind(instance._handleEditDetailsEvent, instance),
+								id: 'editDetailsBtn',
+								label: Liferay.Language.get('edit-details')
+							}
+						);
+
+						toolbar.add(
+							{
+								handler: A.bind(instance._handleDeleteEvent, instance),
+								id: 'deleteBtn',
+								label: Liferay.Language.get('delete')
+							}
+						);
+
+						toolbar.add(
+							{
+								id: 'toolbarSpacer2',
+								type: 'ToolbarSpacer'
+							}
+						);
+
+						toolbar.add(
+							{
+								handler: A.bind(instance._handleAcceptEvent, instance),
+								icon: 'circle-check',
+								id: 'acceptBtn',
+								label: Liferay.Language.get('accept')
+							}
+						);
+
+						toolbar.add(
+							{
+								handler: A.bind(instance._handleDeclineEvent, instance),
+								icon: 'circle-close',
+								id: 'declineBtn',
+								label: Liferay.Language.get('decline')
+							}
+						);
+
+						if (!permissions.MANAGE_BOOKINGS) {
+							toolbar.remove('acceptBtn');
+							toolbar.remove('declineBtn');
+							toolbar.remove('deleteBtn');
+							toolbar.remove('editDetailsBtn');
+							toolbar.remove('saveBtn');
 						}
+
+						if (status === Liferay.Workflow.STATUS_DRAFT) {
+							toolbar.remove('declineBtn');
+						}
+
+						if (status === Liferay.Workflow.STATUS_APPROVED ||
+							status === Liferay.Workflow.STATUS_DRAFT) {
+
+							toolbar.remove('acceptBtn');
+						}
+
+						var estimatedOverlayWidth = 50 + toolbar.get('boundingBox').get('offsetWidth');
+
+						overlay.set('width', Math.max(300, estimatedOverlayWidth));
 					}
 				}
 			}
@@ -966,6 +1017,11 @@
 					global: {
 						setter: A.DataType.Boolean.parse,
 						value: false
+					},
+
+					permissions: {
+						value: {},
+						validator: isObject
 					}
 				},
 

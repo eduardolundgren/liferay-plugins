@@ -479,7 +479,7 @@ public class CalendarPortlet extends MVCPortlet {
 						permissionChecker, calendar, ActionKeys.VIEW)) {
 
 					JSONObject jsonObject = CalendarUtil.toCalendarJSON(
-						calendar, locale);
+						request, calendar);
 
 					jsonArray.put(jsonObject);
 				}
