@@ -768,9 +768,15 @@
 					getTemplateData: function() {
 						var instance = this;
 
-						var event = instance.get('event') || instance;
-						var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
+						var editing = false;
+						var event = instance.get('event');
 
+						if (!event) {
+							event = instance;
+							editing = true;
+						}
+
+						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
 						var permissions = calendar.get('permissions');
 
 						return A.merge(
@@ -778,6 +784,7 @@
 							{
 								allDay: event.get('allDay'),
 								calendar: calendar,
+								editing: editing,
 								permissions: permissions,
 								status: CalendarUtil.getStatusLabel(event.get('status'))
 							}
