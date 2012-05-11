@@ -20,8 +20,10 @@
 		var DateMath = A.DataType.DateMath;
 		var Lang = A.Lang;
 
+		var isArray = Lang.isArray;
 		var isBoolean = Lang.isBoolean;
 		var isDate = Lang.isDate;
+		var isObject = Lang.isObject;
 		var isString = Lang.isString;
 
 		var jsonParse = function(val) {
@@ -776,7 +778,7 @@
 							editing = true;
 						}
 
-						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
+						var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
 						var permissions = calendar.get('permissions');
 
 						return A.merge(
@@ -855,19 +857,19 @@
 
 						SchedulerEventRecorder.superclass._onOverlayVisibleChange.apply(this, arguments);
 
-						var eventObj = instance.get('event');
+						var schedulerEvent = instance.get('event');
 						var overlayBB = instance.overlay.get('boundingBox');
 						var portletNamespace = instance.get('portletNamespace');
 
-						overlayBB.toggleClass('calendar-portlet-event-recorder-editing', !!eventObj);
+						overlayBB.toggleClass('calendar-portlet-event-recorder-editing', !!schedulerEvent);
 
 						var eventRecorderCalendar = A.one('#' + portletNamespace + 'eventRecorderCalendar');
 
 						if (eventRecorderCalendar) {
 							var calendarId = CalendarUtil.DEFAULT_CALENDAR.calendarId;
 
-							if (eventObj) {
-								calendarId = eventObj.get('calendarId');
+							if (schedulerEvent) {
+								calendarId = schedulerEvent.get('calendarId');
 							}
 
 							eventRecorderCalendar.val(calendarId);
@@ -888,9 +890,9 @@
 							return;
 						}
 
-						var evt = instance.get('event') || instance;
-						var status = evt.get('status');
-						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
+						var schedulerEvent = instance.get('event') || instance;
+						var status = schedulerEvent.get('status');
+						var calendar = CalendarUtil.visibleCalendars[schedulerEvent.get('calendarId')];
 
 						var permissions = calendar.get('permissions');
 
@@ -925,7 +927,7 @@
 							}
 						);
 
-						if (evt.isMasterBooking()) {
+						if (schedulerEvent.isMasterBooking()) {
 							toolbar.add(
 								{
 									handler: A.bind(instance._handleDeleteEvent, instance),
@@ -985,6 +987,20 @@
 						var estimatedOverlayWidth = 50 + toolbar.get('boundingBox').get('offsetWidth');
 
 						overlay.set('width', Math.max(300, estimatedOverlayWidth));
+					},
+
+					_syncViewDefData: function() {
+						var instance = this;
+
+						var scheduler = instance.get('scheduler');
+						var activeViewName = scheduler.get('activeView').get('name');
+
+						if (activeViewName === 'month') {
+							instance.set('allDay', true);
+						}
+						else {
+							instance.set('allDay', false);
+						}
 					}
 				}
 			}
