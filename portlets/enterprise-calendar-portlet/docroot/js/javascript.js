@@ -720,6 +720,11 @@
 						value: false
 					},
 
+					calendarId: {
+						setter: toNumber,
+						value: 0
+					},
+
 					editCalendarBookingURL: {
 						validator: isString,
 						value: STR_BLANK
@@ -766,18 +771,13 @@
 						var event = instance.get('event') || instance;
 						var calendar = CalendarUtil.visibleCalendars[event.get('calendarId')];
 
-						var permissions = {
-							MANAGE_BOOKINGS: true
-						};
-
-						if (calendar) {
-							permissions = calendar.get('permissions');
-						}
+						var permissions = calendar.get('permissions');
 
 						return A.merge(
 							SchedulerEventRecorder.superclass.getTemplateData.apply(this, arguments),
 							{
 								allDay: event.get('allDay'),
+								calendar: calendar,
 								permissions: permissions,
 								status: CalendarUtil.getStatusLabel(event.get('status'))
 							}
@@ -885,13 +885,7 @@
 						var status = evt.get('status');
 						var calendar = CalendarUtil.visibleCalendars[evt.get('calendarId')];
 
-						var permissions = {
-							MANAGE_BOOKINGS: true
-						};
-
-						if (calendar) {
-							permissions = calendar.get('permissions');
-						}
+						var permissions = calendar.get('permissions');
 
 						toolbar.add(
 							{
@@ -924,13 +918,15 @@
 							}
 						);
 
-						toolbar.add(
-							{
-								handler: A.bind(instance._handleDeleteEvent, instance),
-								id: 'deleteBtn',
-								label: Liferay.Language.get('delete')
-							}
-						);
+						if (evt.isMasterBooking()) {
+							toolbar.add(
+								{
+									handler: A.bind(instance._handleDeleteEvent, instance),
+									id: 'deleteBtn',
+									label: Liferay.Language.get('delete')
+								}
+							);
+						}
 
 						toolbar.add(
 							{

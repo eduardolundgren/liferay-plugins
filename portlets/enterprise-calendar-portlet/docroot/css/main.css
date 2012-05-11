@@ -33,10 +33,6 @@
 	@include opacity(0.8);
 }
 
-.calendar-portlet-event-recorder-editing .calendar-portlet-event-recorder-calendar-row {
-	display: none;
-}
-
 .calendar-portlet-invite-resources-input {
 	margin: 2px 0;
 	width: 350px;
