@@ -39,7 +39,7 @@ long[] calendarIds = StringUtil.split(SessionClicks.get(request, "otherCalendars
 for (long calendarId : calendarIds) {
 	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
 
-	if (calendar != null) {
+	if ((calendar != null) && (CalendarPermission.contains(permissionChecker, calendar, ActionKeys.VIEW))) {
 		otherCalendars.add(calendar);
 	}
 }
@@ -73,7 +73,10 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 				<a class="aui-toggler-header-expanded calendar-portlet-list-header" href="javascript:void(0);">
 					<span class="calendar-portlet-list-arrow"></span>
 					<span class="calendar-portlet-list-text"><liferay-ui:message key="current-site-calendars" /></span>
-					<span class="aui-calendar-list-item-arrow" data-calendarResourceId="<%= groupCalendarResource.getCalendarResourceId() %>" tabindex="0"></span>
+
+					<c:if test="<%= CalendarResourcePermission.contains(permissionChecker, groupCalendarResource, ActionKeys.VIEW) %>">
+						<span class="aui-calendar-list-item-arrow" data-calendarResourceId="<%= groupCalendarResource.getCalendarResourceId() %>" tabindex="0"></span>
+					</c:if>
 				</a>
 				<div class="calendar-portlet-calendar-list" id="<portlet:namespace />siteCalendarList"></div>
 			</c:if>
