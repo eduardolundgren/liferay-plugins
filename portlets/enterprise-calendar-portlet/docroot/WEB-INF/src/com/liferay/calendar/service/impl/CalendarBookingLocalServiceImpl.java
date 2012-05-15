@@ -150,7 +150,8 @@ public class CalendarBookingLocalServiceImpl
 			secondReminder, serviceContext);
 	}
 
-	public int countByC_P(long calendarId, long parentCalendarBookingId)
+	public int countByParentCalendarBookingId(
+			long calendarId, long parentCalendarBookingId)
 		throws PortalException, SystemException {
 
 		return calendarBookingPersistence.countByC_P(

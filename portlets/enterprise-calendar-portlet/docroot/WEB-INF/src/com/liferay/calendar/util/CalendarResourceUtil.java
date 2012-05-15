@@ -160,33 +160,6 @@ public class CalendarResourceUtil {
 		return calendarResource;
 	}
 
-	public static long getGlobalResourceGroupId(long companyId)
-		throws PortalException, SystemException {
-
-		Group companyGroup = GroupLocalServiceUtil.getCompanyGroup(companyId);
-
-		return companyGroup.getGroupId();
-	}
-
-	public static long getGlobalResourceUserId(long classNameId, long classPK)
-		throws PortalException, SystemException {
-
-		long userId = 0;
-		long userClassNameId = PortalUtil.getClassNameId(User.class);
-		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
-
-		if (classNameId == groupClassNameId) {
-			Group group = GroupLocalServiceUtil.getGroup(classPK);
-
-			userId = group.getCreatorUserId();
-		}
-		else if (classNameId == userClassNameId) {
-			userId = classPK;
-		}
-
-		return userId;
-	}
-
 	public static OrderByComparator getOrderByComparator(
 		String orderByCol, String orderByType) {
 
@@ -206,19 +179,6 @@ public class CalendarResourceUtil {
 		}
 
 		return orderByComparator;
-	}
-
-	public static boolean isGlobalResource(long classNameId) {
-		long userClassNameId = PortalUtil.getClassNameId(User.class);
-		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
-
-		if ((classNameId == groupClassNameId) ||
-			(classNameId == userClassNameId)) {
-
-			return true;
-		}
-
-		return false;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(CalendarResourceUtil.class);

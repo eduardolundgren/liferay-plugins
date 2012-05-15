@@ -433,8 +433,10 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		for (long calendarId : invitedCalendarIds) {
-			int total = CalendarBookingLocalServiceUtil.countByC_P(
-				calendarId, parentCalendarBooking.getCalendarBookingId());
+			int total =
+				CalendarBookingLocalServiceUtil.countByParentCalendarBookingId(
+						calendarId,
+						parentCalendarBooking.getCalendarBookingId());
 
 			if (total == 0) {
 				CalendarBookingLocalServiceUtil.addCalendarBooking(
