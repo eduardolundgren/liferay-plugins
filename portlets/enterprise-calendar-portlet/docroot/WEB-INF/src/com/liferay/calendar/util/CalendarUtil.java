@@ -150,14 +150,30 @@ public class CalendarUtil {
 		if (calendarBookings != null) {
 			for (CalendarBooking calendarBooking : calendarBookings) {
 				jsonArray.put(
-					toCalendarJSON(request, calendarBooking.getCalendar()));
+					toCalendarJSONObject(
+						request, calendarBooking.getCalendar()));
 			}
 		}
 
 		return jsonArray;
 	}
 
-	public static JSONObject toCalendarJSON(
+	public static JSONArray toCalendarJSONArray(
+		HttpServletRequest request,
+		List<com.liferay.calendar.model.Calendar> calendars) {
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		if (calendars != null) {
+			for (com.liferay.calendar.model.Calendar calendar : calendars) {
+				jsonArray.put(toCalendarJSONObject(request, calendar));
+			}
+		}
+
+		return jsonArray;
+	}
+
+	public static JSONObject toCalendarJSONObject(
 		HttpServletRequest request,
 		com.liferay.calendar.model.Calendar calendar) {
 
@@ -188,43 +204,29 @@ public class CalendarUtil {
 			jsonObject.put("global", calendarResource.isGlobal());
 			jsonObject.put("name", calendar.getName(locale));
 
-			JSONObject jsonPermissions = JSONFactoryUtil.createJSONObject();
+			JSONObject permissionsJSONObject =
+				JSONFactoryUtil.createJSONObject();
 
-			jsonPermissions.put(
+			permissionsJSONObject.put(
 				"VIEW", CalendarPermission.contains(
 					permissionChecker, calendar, ActionKeys.VIEW));
 
-			jsonPermissions.put(
+			permissionsJSONObject.put(
 				"VIEW_BOOKING_DETAILS", CalendarPermission.contains(
 					permissionChecker, calendar,
 					ActionKeys.VIEW_BOOKING_DETAILS));
 
-			jsonPermissions.put(
+			permissionsJSONObject.put(
 				"MANAGE_BOOKINGS",
 				CalendarPermission.contains(
 					permissionChecker, calendar, ActionKeys.MANAGE_BOOKINGS));
 
-			jsonObject.put("permissions", jsonPermissions);
+			jsonObject.put("permissions", permissionsJSONObject);
 		}
 		catch (Exception e) {
 		}
 
 		return jsonObject;
-	}
-
-	public static JSONArray toCalendarsJSON(
-		HttpServletRequest request,
-		List<com.liferay.calendar.model.Calendar> calendars) {
-
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		if (calendars != null) {
-			for (com.liferay.calendar.model.Calendar calendar : calendars) {
-				jsonArray.put(toCalendarJSON(request, calendar));
-			}
-		}
-
-		return jsonArray;
 	}
 
 	public static Calendar toLastHour(Calendar cal) {

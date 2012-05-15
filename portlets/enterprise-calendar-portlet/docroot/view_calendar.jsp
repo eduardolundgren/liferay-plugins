@@ -44,9 +44,9 @@ for (long calendarId : calendarIds) {
 	}
 }
 
-JSONArray groupCalendarsJSON = CalendarUtil.toCalendarsJSON(request, groupCalendars);
-JSONArray userCalendarsJSON = CalendarUtil.toCalendarsJSON(request, userCalendars);
-JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalendars);
+JSONArray groupCalendarsJSONArray = CalendarUtil.toCalendarJSONArray(request, groupCalendars);
+JSONArray userCalendarsJSONArray = CalendarUtil.toCalendarJSONArray(request, userCalendars);
+JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarJSONArray(request, otherCalendars);
 %>
 
 <aui:fieldset cssClass="calendar-portlet-column-parent">
@@ -101,7 +101,7 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= CalendarUtil.getTimeZoneOffset(timeZone) %>;
 
 	<c:if test="<%= userCalendars != null %>">
-		Liferay.CalendarUtil.DEFAULT_CALENDAR = <%= CalendarUtil.toCalendarJSON(request, userCalendars.get(0)) %>;
+		Liferay.CalendarUtil.DEFAULT_CALENDAR = <%=CalendarUtil.toCalendarJSONObject(request, userCalendars.get(0)) %>;
 	</c:if>
 
 	var syncVisibleCalendarsMap = function() {
@@ -120,10 +120,10 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 			boundingBox: '#<portlet:namespace />myCalendarList',
 
 			<%
-			updateCalendarsJSONVisibility(request, userCalendarsJSON);
+			updateCalendarsJSONArrayVisibility(request, userCalendarsJSONArray);
 			%>
 
-			calendars: <%= userCalendarsJSON %>,
+			calendars: <%= userCalendarsJSONArray %>,
 			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
@@ -144,10 +144,10 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 			boundingBox: '#<portlet:namespace />otherCalendarList',
 
 			<%
-			updateCalendarsJSONVisibility(request, otherCalendarsJSON);
+			updateCalendarsJSONArrayVisibility(request, otherCalendarsJSONArray);
 			%>
 
-			calendars: <%= otherCalendarsJSON %>,
+			calendars: <%= otherCalendarsJSONArray %>,
 			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
@@ -160,10 +160,10 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 			boundingBox: '#<portlet:namespace />siteCalendarList',
 
 			<%
-			updateCalendarsJSONVisibility(request, groupCalendarsJSON);
+			updateCalendarsJSONArrayVisibility(request, groupCalendarsJSONArray);
 			%>
 
-			calendars: <%= groupCalendarsJSON %>,
+			calendars: <%= groupCalendarsJSONArray %>,
 			simpleMenu: window.<portlet:namespace />calendarsMenu
 		}
 	).render();
@@ -276,9 +276,9 @@ JSONArray otherCalendarsJSON = CalendarUtil.toCalendarsJSON(request, otherCalend
 </aui:script>
 
 <%!
-protected void updateCalendarsJSONVisibility(HttpServletRequest request, JSONArray calendarsJSON) {
-	for (int i = 0; i < calendarsJSON.length(); i++) {
-		JSONObject jsonObject = calendarsJSON.getJSONObject(i);
+protected void updateCalendarsJSONArrayVisibility(HttpServletRequest request, JSONArray calendarsJSONArray) {
+	for (int i = 0; i < calendarsJSONArray.length(); i++) {
+		JSONObject jsonObject = calendarsJSONArray.getJSONObject(i);
 
 		long calendarId = jsonObject.getLong("calendarId");
 

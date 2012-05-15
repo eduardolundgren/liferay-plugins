@@ -79,7 +79,7 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
 
 	if (calendar != null) {
-		acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSON(request, calendar));
+		acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSONObject(request, calendar));
 	}
 }
 %>

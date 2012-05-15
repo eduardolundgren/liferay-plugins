@@ -478,7 +478,7 @@ public class CalendarPortlet extends MVCPortlet {
 				if (CalendarPermission.contains(
 						permissionChecker, calendar, ActionKeys.VIEW)) {
 
-					JSONObject jsonObject = CalendarUtil.toCalendarJSON(
+					JSONObject jsonObject = CalendarUtil.toCalendarJSONObject(
 						request, calendar);
 
 					jsonArray.put(jsonObject);
