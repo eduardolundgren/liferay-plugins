@@ -326,10 +326,13 @@ public class CalendarBookingLocalServiceUtil {
 			firstReminder, secondReminder, serviceContext);
 	}
 
-	public static int countByC_P(long calendarId, long parentCalendarBookingId)
+	public static int countByParentCalendarBookingId(long calendarId,
+		long parentCalendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService().countByC_P(calendarId, parentCalendarBookingId);
+		return getService()
+				   .countByParentCalendarBookingId(calendarId,
+			parentCalendarBookingId);
 	}
 
 	public static void deleteCalendarBookings(long calendarId)

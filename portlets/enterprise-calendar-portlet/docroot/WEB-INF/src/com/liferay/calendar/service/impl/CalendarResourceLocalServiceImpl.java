@@ -19,14 +19,15 @@ import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.base.CalendarResourceLocalServiceBaseImpl;
-import com.liferay.calendar.util.CalendarResourceUtil;
 import com.liferay.calendar.util.PortletPropsValues;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Group;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 
@@ -62,12 +63,10 @@ public class CalendarResourceLocalServiceImpl
 
 		long globalUserId = 0;
 
-		if (CalendarResourceUtil.isGlobalResource(classNameId)) {
-			globalUserId = CalendarResourceUtil.getGlobalResourceUserId(
-				classNameId, classPK);
+		if (isGlobalResource(classNameId)) {
+			globalUserId = getGlobalResourceUserId(classNameId, classPK);
 
-			groupId = CalendarResourceUtil.getGlobalResourceGroupId(
-				serviceContext.getCompanyId());
+			groupId = getGlobalResourceGroupId(serviceContext.getCompanyId());
 		}
 
 		if (globalUserId > 0) {
@@ -272,6 +271,46 @@ public class CalendarResourceLocalServiceImpl
 		return updateCalendarResource(
 			calendarResourceId, calendarResource.getDefaultCalendarId(), code,
 			nameMap, descriptionMap, type, active, serviceContext);
+	}
+
+	protected long getGlobalResourceGroupId(long companyId)
+		throws PortalException, SystemException {
+
+		Group companyGroup = GroupLocalServiceUtil.getCompanyGroup(companyId);
+
+		return companyGroup.getGroupId();
+	}
+
+	protected long getGlobalResourceUserId(long classNameId, long classPK)
+		throws PortalException, SystemException {
+
+		long userId = 0;
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
+
+		if (classNameId == groupClassNameId) {
+			Group group = GroupLocalServiceUtil.getGroup(classPK);
+
+			userId = group.getCreatorUserId();
+		}
+		else if (classNameId == userClassNameId) {
+			userId = classPK;
+		}
+
+		return userId;
+	}
+
+	protected boolean isGlobalResource(long classNameId) {
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
+
+		if ((classNameId == groupClassNameId) ||
+			(classNameId == userClassNameId)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	protected void validate(long classNameId, long classPK)

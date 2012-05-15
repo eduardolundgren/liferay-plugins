@@ -134,7 +134,7 @@ public class CalendarBookingLocalServiceClpInvoker {
 				"com.liferay.portal.service.ServiceContext"
 			};
 
-		_methodName63 = "countByC_P";
+		_methodName63 = "countByParentCalendarBookingId";
 
 		_methodParameterTypes63 = new String[] { "long", "long" };
 
@@ -367,7 +367,7 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		if (_methodName63.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes63, parameterTypes)) {
-			return CalendarBookingLocalServiceUtil.countByC_P(((Long)arguments[0]).longValue(),
+			return CalendarBookingLocalServiceUtil.countByParentCalendarBookingId(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue());
 		}
 

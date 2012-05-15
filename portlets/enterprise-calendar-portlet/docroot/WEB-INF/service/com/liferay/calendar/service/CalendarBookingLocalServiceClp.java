@@ -136,7 +136,7 @@ public class CalendarBookingLocalServiceClp
 				"com.liferay.portal.service.ServiceContext"
 			};
 
-		_methodName22 = "countByC_P";
+		_methodName22 = "countByParentCalendarBookingId";
 
 		_methodParameterTypes22 = new String[] { "long", "long" };
 
@@ -917,7 +917,8 @@ public class CalendarBookingLocalServiceClp
 		return (com.liferay.calendar.model.CalendarBooking)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public int countByC_P(long calendarId, long parentCalendarBookingId)
+	public int countByParentCalendarBookingId(long calendarId,
+		long parentCalendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
