@@ -48,66 +48,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CalendarUtil {
 
-	public static final String AM_SUFFIX = "am";
-
-	public static final String HOUR_SUFFIX = "h";
-
-	public static final String PM_SUFFIX = "pm";
-
-	public static String formatHour(int isoHour) {
-		return formatHour(isoHour, true, true, true);
-	}
-
-	public static String formatHour(int isoHour, boolean isoFormat) {
-		return formatHour(isoHour, isoFormat, true, true);
-	}
-
-	public static String formatHour(
-		int isoHour, boolean isoFormat, boolean padHours) {
-
-		return formatHour(isoHour, isoFormat, padHours, true);
-	}
-
-	public static String formatHour(
-		int isoHour, boolean isoFormat, boolean padHours, boolean showSuffix) {
-
-		int hour = isoHour;
-		String formatted = StringPool.BLANK;
-		String suffix = StringPool.BLANK;
-
-		if (isoFormat) {
-			if (showSuffix) {
-				suffix = CalendarUtil.HOUR_SUFFIX;
-			}
-		}
-		else {
-			if (isoHour == 0) {
-				hour = 12;
-			}
-			else if (isoHour > 12) {
-				hour -= 12;
-			}
-
-			if (showSuffix) {
-				if (isoHour < 12) {
-					suffix = CalendarUtil.AM_SUFFIX;
-				}
-				else {
-					suffix = CalendarUtil.PM_SUFFIX;
-				}
-			}
-		}
-
-		if (padHours) {
-			formatted = String.format("%02d", hour);
-		}
-		else {
-			formatted = String.valueOf(hour);
-		}
-
-		return formatted.concat(suffix);
-	}
-
 	public static Calendar getCalendar(Calendar cal, TimeZone tz) {
 		return getCalendar(
 			tz, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
