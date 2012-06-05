@@ -84,6 +84,7 @@
 								}
 								else {
 									schedulerEvent.set('calendarBookingId', data.calendarBookingId);
+									schedulerEvent.set('calendarId', data.calendarId);
 									schedulerEvent.set('calendarResourceId', data.calendarResourceId);
 									schedulerEvent.set('parentCalendarBookingId', data.parentCalendarBookingId);
 									schedulerEvent.set('status', data.status);
@@ -117,7 +118,7 @@
 				return events;
 			},
 
-			createCalendarListAutoComplete: function(resourceURL, calendarList, input) {
+			createCalendarsAutoComplete: function(resourceURL, input, afterSelectFn) {
 				var instance = this;
 
 				input.plug(
@@ -125,11 +126,7 @@
 					{
 						activateFirstItem: true,
 						after: {
-							select: function(event) {
-								calendarList.add(event.result.raw);
-
-								input.val(STR_BLANK);
-							}
+							select: afterSelectFn
 						},
 						maxResults: 20,
 						requestTemplate: '&' + Liferay.CalendarUtil.PORTLET_NAMESPACE + 'keywords={query}',
@@ -452,6 +449,26 @@
 							if (data) {
 								if (data.exception) {
 									return;
+								}
+								else {
+									schedulerEvent.set('calendarBookingId', data.calendarBookingId);
+									schedulerEvent.set('calendarResourceId', data.calendarResourceId);
+									schedulerEvent.set('parentCalendarBookingId', data.parentCalendarBookingId);
+									schedulerEvent.set('status', data.status);
+
+									var oldCalendar = CalendarUtil.visibleCalendars[schedulerEvent.get('calendarId')];
+
+									if (oldCalendar) {
+										oldCalendar.removeEvent(schedulerEvent);
+									}
+
+									var newCalendar = CalendarUtil.visibleCalendars[data.calendarId];
+
+									if (newCalendar) {
+										newCalendar.addEvent(schedulerEvent);
+									}
+
+									schedulerEvent.set('calendarId', data.calendarId);
 								}
 							}
 						}
@@ -1052,14 +1069,22 @@
 
 						Calendar.superclass._afterColorChange.apply(instance, arguments);
 
-						CalendarUtil.invoke(
-							{
-								'/calendar-portlet/calendar/update-color': {
-									calendarId: instance.get('calendarId'),
-									color: parseInt(event.newVal.substr(1), 16)
+						var calendarId = instance.get('calendarId');
+						var color = event.newVal;
+
+						if (instance.get('permissions.UPDATE')) {
+							CalendarUtil.invoke(
+								{
+									'/calendar-portlet/calendar/update-color': {
+										calendarId: calendarId,
+										color: parseInt(color.substr(1), 16)
+									}
 								}
-							}
-						);
+							);
+						}
+						else {
+							Liferay.Store('calendar-portlet-calendar-' + calendarId + '-color', color);
+						}
 					}
 				}
 			}

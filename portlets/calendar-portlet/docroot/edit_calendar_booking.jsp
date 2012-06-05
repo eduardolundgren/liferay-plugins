@@ -59,6 +59,8 @@ JSONArray pendingCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 
 boolean invitable = true;
 
+Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
+
 if (calendarBooking != null) {
 	startDateJCalendar.setTime(calendarBooking.getStartDate());
 	endDateJCalendar.setTime(calendarBooking.getEndDate());
@@ -71,14 +73,18 @@ if (calendarBooking != null) {
 		invitable = false;
 	}
 }
+else if (calendar != null) {
+	JSONObject calendarJSONObject = CalendarUtil.toCalendarJSONObject(themeDisplay, calendar);
 
-if (acceptedCalendarsJSONArray.length() == 0) {
-	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
-
-	if (calendar != null) {
-		acceptedCalendarsJSONArray.put(CalendarUtil.toCalendarJSONObject(themeDisplay, calendar));
+	if (calendar.getUserId() == themeDisplay.getUserId()) {
+		acceptedCalendarsJSONArray.put(calendarJSONObject);
+	}
+	else {
+		pendingCalendarsJSONArray.put(calendarJSONObject);
 	}
 }
+
+List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, null, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarNameComparator(true), ActionKeys.MANAGE_BOOKINGS);
 %>
 
 <liferay-ui:header
@@ -95,17 +101,36 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 	<aui:model-context bean="<%= calendarBooking %>" model="<%= CalendarBooking.class %>" />
 
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
-	<aui:input name="calendarId" type="hidden" value="<%= calendarId %>" />
 	<aui:input name="childCalendarIds" type="hidden" />
 
 	<aui:fieldset>
 		<aui:input name="title" />
 
+		<aui:select label="calendar" name="calendarId">
+
+			<%
+			for (Calendar curCalendar : manageableCalendars) {
+				if ((calendarBooking != null) && (curCalendar.getCalendarId() != calendarId) && (CalendarBookingLocalServiceUtil.getCalendarBookingsCount(curCalendar.getCalendarId(), calendarBooking.getParentCalendarBookingId()) > 0)) {
+					continue;
+				}
+			%>
+
+				<aui:option selected="<%= curCalendar.getCalendarId() == calendarId %>" value="<%= curCalendar.getCalendarId() %>"><%= curCalendar.getName(locale) %></aui:option>
+
+			<%
+			}
+			%>
+
+		</aui:select>
+
 		<aui:input name="startDate" value="<%= startDateJCalendar %>" />
 
-		<aui:input name="endDate" value="<%= endDateJCalendar %>" />
-
 		<aui:input name="allDay" />
+
+		<div id="<portlet:namespace />endDateContainer">
+			<aui:input name="endDate" value="<%= endDateJCalendar %>" />
+		</div>
+
 	</aui:fieldset>
 
 	<aui:fieldset>
@@ -170,7 +195,12 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 			var A = AUI();
 
 			<c:if test="<%= invitable %>">
-				A.one('#<portlet:namespace />childCalendarIds').val(A.JSON.stringify(A.Object.keys(Liferay.CalendarUtil.visibleCalendars)));
+				var calendarId = A.one('#<portlet:namespace />calendarId').val();
+				var childCalendarIds = A.Object.keys(Liferay.CalendarUtil.visibleCalendars);
+
+				A.Array.remove(childCalendarIds, A.Array.indexOf(childCalendarIds, calendarId));
+
+				A.one('#<portlet:namespace />childCalendarIds').val(A.JSON.stringify(childCalendarIds));
 			</c:if>
 
 			submitForm(document.<portlet:namespace />fm);
@@ -179,6 +209,7 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 	);
 
 	Liferay.Util.focusFormField(document.<portlet:namespace />fm.<portlet:namespace />title);
+	Liferay.Util.toggleBoxes('<portlet:namespace />allDayCheckbox','<portlet:namespace />endDateContainer', true);
 
 	<c:if test="<%= calendarBooking == null %>">
 		document.<portlet:namespace />fm.<portlet:namespace />title_<%= LanguageUtil.getLanguageId(request) %>.value = decodeURIComponent('<%= HtmlUtil.escapeURL(title) %>');
@@ -186,6 +217,8 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 </aui:script>
 
 <aui:script use="json,liferay-calendar-list,liferay-calendar-simple-menu">
+	var ownerCalendarId = <%= calendarId %>;
+
 	var removeCalendarResource = function(calendarList, calendar, menu) {
 		calendarList.remove(calendar);
 
@@ -238,7 +271,7 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 
 						var hiddenItems = [];
 
-						if (calendar.get('calendarId') === <%= calendarId %>) {
+						if (calendar.get('calendarId') === ownerCalendarId) {
 							hiddenItems.push('remove');
 						}
 
@@ -312,10 +345,72 @@ if (acceptedCalendarsJSONArray.length() == 0) {
 	syncVisibleCalendarsMap();
 
 	<c:if test="<%= invitable %>">
+		var autoInvitedOwner = true;
+		var ownerCalendarList = window.<portlet:namespace />calendarListPending;
+
+		<c:if test="<%= (calendar != null) && (calendar.getUserId() == themeDisplay.getUserId()) %>">
+			ownerCalendarList = window.<portlet:namespace />calendarListAccepted;
+		</c:if>
+
+		A.one('#<portlet:namespace />calendarId').on(
+			'valueChange',
+			function(event) {
+				var calendarId = parseInt(event.target.val(), 10);
+
+				var calendar = A.Array.find(
+					<%= CalendarUtil.toCalendarsJSONArray(themeDisplay, manageableCalendars) %>,
+					function(item, index, collection) {
+						return item.calendarId === calendarId;
+					}
+				);
+
+				if (autoInvitedOwner) {
+					ownerCalendarList.remove(ownerCalendarList.getCalendar(ownerCalendarId));
+				}
+
+				if (calendar.userId === <%= themeDisplay.getUserId() %>) {
+					ownerCalendarList = window.<portlet:namespace />calendarListAccepted;
+				}
+				else {
+					ownerCalendarList = window.<portlet:namespace />calendarListPending;
+				}
+
+				if (ownerCalendarList.getCalendar(calendarId)) {
+					autoInvitedOwner = false;
+				}
+				else {
+					autoInvitedOwner = true;
+
+					ownerCalendarList.add(calendar);
+				}
+
+				ownerCalendarId = calendarId;
+			}
+		);
+
 		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarResources" var="calendarResourcesURL"></liferay-portlet:resourceURL>
 
 		var inviteResourcesInput = A.one('#<portlet:namespace />inviteResource');
 
-		Liferay.CalendarUtil.createCalendarListAutoComplete('<%= calendarResourcesURL %>', <portlet:namespace />calendarListPending, inviteResourcesInput);
+		Liferay.CalendarUtil.createCalendarsAutoComplete(
+			'<%= calendarResourcesURL %>',
+			inviteResourcesInput,
+			function(event) {
+				var calendar = event.result.raw;
+
+				var calendarList;
+
+				if (calendar.userId === <%= themeDisplay.getUserId() %>) {
+					calendarList = window.<portlet:namespace />calendarListAccepted;
+				}
+				else {
+					calendarList = window.<portlet:namespace />calendarListPending;
+				}
+
+				calendarList.add(calendar);
+
+				inviteResourcesInput.val('');
+			}
+		);
 	</c:if>
 </aui:script>
