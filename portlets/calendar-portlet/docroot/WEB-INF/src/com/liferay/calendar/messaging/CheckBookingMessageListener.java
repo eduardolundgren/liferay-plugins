@@ -12,24 +12,20 @@
  * details.
  */
 
-package com.liferay.calendar.model;
+package com.liferay.calendar.messaging;
 
-import com.liferay.portal.kernel.util.Time;
+import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
+import com.liferay.portal.kernel.messaging.BaseMessageListener;
+import com.liferay.portal.kernel.messaging.Message;
 
 /**
- * @author Brian Wing Shun Chan
  * @author Fabio Pezzutto
  */
-public class CalendarBookingConstants {
+public class CheckBookingMessageListener extends BaseMessageListener {
 
-	public static final long PARENT_CALENDAR_BOOKING_ID_DEFAULT = 0;
-
-	public static final long[] REMINDERS = {
-		Time.MINUTE * 5, Time.MINUTE * 15, Time.MINUTE * 30, Time.HOUR,
-		Time.HOUR * 2, Time.HOUR * 3, Time.HOUR * 6, Time.HOUR * 12, Time.DAY,
-		Time.DAY * 2, Time.DAY * 3, Time.DAY * 4, Time.DAY * 5, Time.DAY * 6,
-		Time.DAY * 7, Time.DAY * 8, Time.DAY * 9, Time.DAY * 10, Time.DAY * 11,
-		Time.DAY * 12, Time.DAY * 13, Time.DAY * 14
-	};
+	@Override
+	protected void doReceive(Message message) throws Exception{
+		CalendarBookingLocalServiceUtil.checkBookings();
+	}
 
 }
