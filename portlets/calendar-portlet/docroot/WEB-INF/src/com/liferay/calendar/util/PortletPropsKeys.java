@@ -17,11 +17,15 @@ package com.liferay.calendar.util;
 /**
  * @author Eduardo Lundgren
  * @author Fabio Pezzutto
+ * @author Bruno Basto
  */
 public class PortletPropsKeys {
 
 	public static final String CALENDAR_COLOR_DEFAULT =
 		"calendar.color.default";
+
+	public static final String CALENDAR_RESOURCE_FORCE_AUTOGENERATE_CODE =
+		"calendar.resource.force.autogenerate.code";
 
 	public static final String CALENDAR_RESOURCE_TYPES =
 		"calendar.resource.types";
