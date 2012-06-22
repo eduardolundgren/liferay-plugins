@@ -122,8 +122,8 @@ public class CalendarResourceLocalServiceClp
 
 		_methodParameterTypes20 = new String[] {
 				"long", "long", "java.lang.String", "long", "java.lang.String",
-				"long", "java.lang.String", "java.util.Map", "java.util.Map",
-				"java.lang.String", "boolean",
+				"long", "java.lang.String", "boolean", "java.util.Map",
+				"java.util.Map", "java.lang.String", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -165,17 +165,16 @@ public class CalendarResourceLocalServiceClp
 		_methodName26 = "updateCalendarResource";
 
 		_methodParameterTypes26 = new String[] {
-				"long", "long", "java.lang.String", "java.util.Map",
-				"java.util.Map", "java.lang.String", "boolean",
+				"long", "long", "java.util.Map", "java.util.Map",
+				"java.lang.String", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
 		_methodName27 = "updateCalendarResource";
 
 		_methodParameterTypes27 = new String[] {
-				"long", "java.lang.String", "java.util.Map", "java.util.Map",
-				"java.lang.String", "boolean",
-				"com.liferay.portal.service.ServiceContext"
+				"long", "java.util.Map", "java.util.Map", "java.lang.String",
+				"boolean", "com.liferay.portal.service.ServiceContext"
 			};
 	}
 
@@ -755,7 +754,7 @@ public class CalendarResourceLocalServiceClp
 	public com.liferay.calendar.model.CalendarResource addCalendarResource(
 		long userId, long groupId, java.lang.String className, long classPK,
 		java.lang.String classUuid, long defaultCalendarId,
-		java.lang.String code,
+		java.lang.String code, boolean autoGenerateCode,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -781,6 +780,8 @@ public class CalendarResourceLocalServiceClp
 					defaultCalendarId,
 						
 					ClpSerializer.translateInput(code),
+						
+					autoGenerateCode,
 						
 					ClpSerializer.translateInput(nameMap),
 						
@@ -1041,7 +1042,7 @@ public class CalendarResourceLocalServiceClp
 	}
 
 	public com.liferay.calendar.model.CalendarResource updateCalendarResource(
-		long calendarResourceId, long defaultCalendarId, java.lang.String code,
+		long calendarResourceId, long defaultCalendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -1057,8 +1058,6 @@ public class CalendarResourceLocalServiceClp
 						calendarResourceId,
 						
 					defaultCalendarId,
-						
-					ClpSerializer.translateInput(code),
 						
 					ClpSerializer.translateInput(nameMap),
 						
@@ -1095,7 +1094,7 @@ public class CalendarResourceLocalServiceClp
 	}
 
 	public com.liferay.calendar.model.CalendarResource updateCalendarResource(
-		long calendarResourceId, java.lang.String code,
+		long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -1109,8 +1108,6 @@ public class CalendarResourceLocalServiceClp
 					_methodParameterTypes27,
 					new Object[] {
 						calendarResourceId,
-						
-					ClpSerializer.translateInput(code),
 						
 					ClpSerializer.translateInput(nameMap),
 						

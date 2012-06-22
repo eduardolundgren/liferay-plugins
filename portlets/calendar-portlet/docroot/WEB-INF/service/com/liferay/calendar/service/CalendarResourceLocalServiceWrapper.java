@@ -294,7 +294,7 @@ public class CalendarResourceLocalServiceWrapper
 	public com.liferay.calendar.model.CalendarResource addCalendarResource(
 		long userId, long groupId, java.lang.String className, long classPK,
 		java.lang.String classUuid, long defaultCalendarId,
-		java.lang.String code,
+		java.lang.String code, boolean autoGenerateCode,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -303,7 +303,8 @@ public class CalendarResourceLocalServiceWrapper
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarResourceLocalService.addCalendarResource(userId,
 			groupId, className, classPK, classUuid, defaultCalendarId, code,
-			nameMap, descriptionMap, type, active, serviceContext);
+			autoGenerateCode, nameMap, descriptionMap, type, active,
+			serviceContext);
 	}
 
 	public com.liferay.calendar.model.CalendarResource fetchCalendarResource(
@@ -353,7 +354,7 @@ public class CalendarResourceLocalServiceWrapper
 	}
 
 	public com.liferay.calendar.model.CalendarResource updateCalendarResource(
-		long calendarResourceId, long defaultCalendarId, java.lang.String code,
+		long calendarResourceId, long defaultCalendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -361,12 +362,12 @@ public class CalendarResourceLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarResourceLocalService.updateCalendarResource(calendarResourceId,
-			defaultCalendarId, code, nameMap, descriptionMap, type, active,
+			defaultCalendarId, nameMap, descriptionMap, type, active,
 			serviceContext);
 	}
 
 	public com.liferay.calendar.model.CalendarResource updateCalendarResource(
-		long calendarResourceId, java.lang.String code,
+		long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -374,7 +375,7 @@ public class CalendarResourceLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarResourceLocalService.updateCalendarResource(calendarResourceId,
-			code, nameMap, descriptionMap, type, active, serviceContext);
+			nameMap, descriptionMap, type, active, serviceContext);
 	}
 
 	/**
