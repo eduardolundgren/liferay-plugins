@@ -1,5 +1,7 @@
 (function() {
 	var STR_BLANK = '';
+	var STR_COMMA = ',';
+	var STR_COMMA_SPACE = ', ';
 	var STR_DASH = '-';
 	var STR_SPACE = ' ';
 
@@ -41,6 +43,38 @@
 		var CalendarUtil = {
 			PORTLET_NAMESPACE: STR_BLANK,
 			USER_TIMEZONE_OFFSET: 0,
+
+			FREQUENCY: {
+				DAILY: 'DAILY',
+				WEEKLY: 'WEEKLY',
+				MONTHLY: 'MONTHLY',
+				YEARLY: 'YEARLY'
+			},
+
+			MONTHS: {
+				0: Liferay.Language.get('january'),
+				1: Liferay.Language.get('frebruary'),
+				2: Liferay.Language.get('march'),
+				3: Liferay.Language.get('april'),
+				4: Liferay.Language.get('may'),
+				5: Liferay.Language.get('june'),
+				6: Liferay.Language.get('july'),
+				7: Liferay.Language.get('august'),
+				8: Liferay.Language.get('september'),
+				9: Liferay.Language.get('october'),
+				10: Liferay.Language.get('november'),
+				11: Liferay.Language.get('december')
+			},
+
+			WEEKDAYS: {
+				SU: Liferay.Language.get('sunday'),
+				MO: Liferay.Language.get('monday'),
+				TU: Liferay.Language.get('tuesday'),
+				WE: Liferay.Language.get('wednesday'),
+				TH: Liferay.Language.get('thursday'),
+				FR: Liferay.Language.get('friday'),
+				SA: Liferay.Language.get('saturday')
+			},
 
 			dataSource: null,
 			invokerURL: '/api/secure/jsonws/invoke',
@@ -354,6 +388,46 @@
 				);
 			},
 
+			linkDatePickerToEvent: function(formNode, dateAttrName, schedulerEvent) {
+				var instance = this;
+
+				var selectNodes = formNode.all('select[name*=' + dateAttrName + ']');
+
+				selectNodes.on(
+					'change',
+					function(event) {
+						var target = event.target;
+
+						var date = schedulerEvent.get(dateAttrName);
+						var name = target.attr('name');
+						var value = toNumber(target.val());
+
+						if (Lang.String.endsWith(name, 'Year')) {
+							date.setFullYear(value);
+						}
+						else if (Lang.String.endsWith(name, 'Month')) {
+							date.setMonth(value);
+						}
+						else if (Lang.String.endsWith(name, 'Day')) {
+							date.setDate(value);
+						}
+						else if (Lang.String.endsWith(name, 'Hour')) {
+							date.setHours(value + (date.getHours() > 12 ? 12 : 0));
+						}
+						else if (Lang.String.endsWith(name, 'Minute')) {
+							date.setMinutes(value);
+						}
+						else if (Lang.String.endsWith(name, 'AmPm')) {
+							date.setHours(date.getHours() + (value === 1 ? 12 : -12));
+						}
+
+						schedulerEvent.set(dateAttrName, date);
+
+						schedulerEvent.get('scheduler').syncEventsUI();
+					}
+				);
+			},
+
 			message: function(msg) {
 				var instance = this;
 
@@ -386,6 +460,50 @@
 				}
 
 				schedulerEvent.set('calendarId', newCalendarId);
+			},
+
+			syncDatePickerFields: function(formNode, name, date) {
+				var instance = this;
+
+				var amPmNode = formNode.one('select[name$=' + name + 'AmPm]');
+				var dayNode = formNode.one('select[name$=' + name + 'Day]');
+				var hourNode = formNode.one('select[name$=' + name + 'Hour]');
+				var minuteNode = formNode.one('select[name$=' + name + 'Minute]');
+				var monthNode = formNode.one('select[name$=' + name + 'Month]');
+				var yearNode = formNode.one('select[name$=' + name + 'Year]');
+
+				var selectOption = function(node, value) {
+					node.all('option').attr('selected', false);
+
+					var optionNode = node.one('option[value=' + value + ']');
+
+					if (optionNode) {
+						optionNode.attr('selected', true);
+					}
+				};
+
+				var datePicker = window[instance.PORTLET_NAMESPACE + name + 'LiferayInputDateDatePickerComponent']();
+
+				datePicker.calendar.set('dates', [date]);
+				datePicker.syncUI();
+
+				var hours = date.getHours();
+				var amPm = 0;
+
+				if (hours >= 12) {
+					amPm = 1;
+
+					if (hours > 12) {
+						hours -= 12;
+					}
+				}
+				else if (hours === 0) {
+					hours = 12;
+				}
+
+				selectOption(hourNode, hours);
+				selectOption(minuteNode, date.getMinutes());
+				selectOption(amPmNode, amPm);
 			},
 
 			syncVisibleCalendarsMap: function() {

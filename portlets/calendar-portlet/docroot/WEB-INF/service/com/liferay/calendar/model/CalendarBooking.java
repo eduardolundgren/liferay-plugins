@@ -43,6 +43,8 @@ public interface CalendarBooking extends CalendarBookingModel, PersistedModel {
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
+	public com.liferay.calendar.recurrence.Recurrence getRecurrenceObj();
+
 	public java.util.Date getUTCEndDate()
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
@@ -52,4 +54,6 @@ public interface CalendarBooking extends CalendarBookingModel, PersistedModel {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	public boolean isMasterBooking();
+
+	public boolean isRecurring();
 }
