@@ -72,7 +72,8 @@ public class CalendarResourceServiceSoap {
 	public static com.liferay.calendar.model.CalendarResourceSoap addCalendarResource(
 		long groupId, java.lang.String className, long classPK,
 		java.lang.String classUuid, long defaultCalendarId,
-		java.lang.String code, java.lang.String[] nameMapLanguageIds,
+		java.lang.String code, boolean autoGenerateCode,
+		java.lang.String[] nameMapLanguageIds,
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
 		java.lang.String[] descriptionMapValues, java.lang.String type,
@@ -86,7 +87,8 @@ public class CalendarResourceServiceSoap {
 
 			com.liferay.calendar.model.CalendarResource returnValue = CalendarResourceServiceUtil.addCalendarResource(groupId,
 					className, classPK, classUuid, defaultCalendarId, code,
-					nameMap, descriptionMap, type, active, serviceContext);
+					autoGenerateCode, nameMap, descriptionMap, type, active,
+					serviceContext);
 
 			return com.liferay.calendar.model.CalendarResourceSoap.toSoapModel(returnValue);
 		}
@@ -218,7 +220,7 @@ public class CalendarResourceServiceSoap {
 	}
 
 	public static com.liferay.calendar.model.CalendarResourceSoap updateCalendarResource(
-		long calendarResourceId, long defaultCalendarId, java.lang.String code,
+		long calendarResourceId, long defaultCalendarId,
 		java.lang.String[] nameMapLanguageIds,
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
@@ -232,8 +234,8 @@ public class CalendarResourceServiceSoap {
 					descriptionMapValues);
 
 			com.liferay.calendar.model.CalendarResource returnValue = CalendarResourceServiceUtil.updateCalendarResource(calendarResourceId,
-					defaultCalendarId, code, nameMap, descriptionMap, type,
-					active, serviceContext);
+					defaultCalendarId, nameMap, descriptionMap, type, active,
+					serviceContext);
 
 			return com.liferay.calendar.model.CalendarResourceSoap.toSoapModel(returnValue);
 		}

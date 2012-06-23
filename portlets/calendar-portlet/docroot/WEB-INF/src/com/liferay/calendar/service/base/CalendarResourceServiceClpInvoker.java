@@ -35,7 +35,7 @@ public class CalendarResourceServiceClpInvoker {
 
 		_methodParameterTypes42 = new String[] {
 				"long", "java.lang.String", "long", "java.lang.String", "long",
-				"java.lang.String", "java.util.Map", "java.util.Map",
+				"java.lang.String", "boolean", "java.util.Map", "java.util.Map",
 				"java.lang.String", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
@@ -86,8 +86,8 @@ public class CalendarResourceServiceClpInvoker {
 		_methodName50 = "updateCalendarResource";
 
 		_methodParameterTypes50 = new String[] {
-				"long", "long", "java.lang.String", "java.util.Map",
-				"java.util.Map", "java.lang.String", "boolean",
+				"long", "long", "java.util.Map", "java.util.Map",
+				"java.lang.String", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -120,11 +120,12 @@ public class CalendarResourceServiceClpInvoker {
 				(java.lang.String)arguments[3],
 				((Long)arguments[4]).longValue(),
 				(java.lang.String)arguments[5],
-				(java.util.Map<java.util.Locale, java.lang.String>)arguments[6],
+				((Boolean)arguments[6]).booleanValue(),
 				(java.util.Map<java.util.Locale, java.lang.String>)arguments[7],
-				(java.lang.String)arguments[8],
-				((Boolean)arguments[9]).booleanValue(),
-				(com.liferay.portal.service.ServiceContext)arguments[10]);
+				(java.util.Map<java.util.Locale, java.lang.String>)arguments[8],
+				(java.lang.String)arguments[9],
+				((Boolean)arguments[10]).booleanValue(),
+				(com.liferay.portal.service.ServiceContext)arguments[11]);
 		}
 
 		if (_methodName43.equals(name) &&
@@ -190,12 +191,11 @@ public class CalendarResourceServiceClpInvoker {
 				Arrays.deepEquals(_methodParameterTypes50, parameterTypes)) {
 			return CalendarResourceServiceUtil.updateCalendarResource(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue(),
-				(java.lang.String)arguments[2],
+				(java.util.Map<java.util.Locale, java.lang.String>)arguments[2],
 				(java.util.Map<java.util.Locale, java.lang.String>)arguments[3],
-				(java.util.Map<java.util.Locale, java.lang.String>)arguments[4],
-				(java.lang.String)arguments[5],
-				((Boolean)arguments[6]).booleanValue(),
-				(com.liferay.portal.service.ServiceContext)arguments[7]);
+				(java.lang.String)arguments[4],
+				((Boolean)arguments[5]).booleanValue(),
+				(com.liferay.portal.service.ServiceContext)arguments[6]);
 		}
 
 		if (_methodName51.equals(name) &&

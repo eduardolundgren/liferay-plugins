@@ -65,7 +65,7 @@ public class CalendarResourceServiceUtil {
 	public static com.liferay.calendar.model.CalendarResource addCalendarResource(
 		long groupId, java.lang.String className, long classPK,
 		java.lang.String classUuid, long defaultCalendarId,
-		java.lang.String code,
+		java.lang.String code, boolean autoGenerateCode,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -74,8 +74,8 @@ public class CalendarResourceServiceUtil {
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .addCalendarResource(groupId, className, classPK, classUuid,
-			defaultCalendarId, code, nameMap, descriptionMap, type, active,
-			serviceContext);
+			defaultCalendarId, code, autoGenerateCode, nameMap, descriptionMap,
+			type, active, serviceContext);
 	}
 
 	public static com.liferay.calendar.model.CalendarResource deleteCalendarResource(
@@ -142,7 +142,7 @@ public class CalendarResourceServiceUtil {
 	}
 
 	public static com.liferay.calendar.model.CalendarResource updateCalendarResource(
-		long calendarResourceId, long defaultCalendarId, java.lang.String code,
+		long calendarResourceId, long defaultCalendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -151,7 +151,7 @@ public class CalendarResourceServiceUtil {
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .updateCalendarResource(calendarResourceId,
-			defaultCalendarId, code, nameMap, descriptionMap, type, active,
+			defaultCalendarId, nameMap, descriptionMap, type, active,
 			serviceContext);
 	}
 
