@@ -294,7 +294,7 @@ public class CalendarResourceLocalServiceWrapper
 	public com.liferay.calendar.model.CalendarResource addCalendarResource(
 		long userId, long groupId, java.lang.String className, long classPK,
 		java.lang.String classUuid, long defaultCalendarId,
-		java.lang.String code, boolean autoGenerateCode,
+		java.lang.String code,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, boolean active,
@@ -303,8 +303,7 @@ public class CalendarResourceLocalServiceWrapper
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarResourceLocalService.addCalendarResource(userId,
 			groupId, className, classPK, classUuid, defaultCalendarId, code,
-			autoGenerateCode, nameMap, descriptionMap, type, active,
-			serviceContext);
+			nameMap, descriptionMap, type, active, serviceContext);
 	}
 
 	public com.liferay.calendar.model.CalendarResource fetchCalendarResource(

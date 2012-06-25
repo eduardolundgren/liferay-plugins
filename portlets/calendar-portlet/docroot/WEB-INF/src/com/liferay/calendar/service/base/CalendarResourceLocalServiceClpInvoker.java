@@ -120,8 +120,8 @@ public class CalendarResourceLocalServiceClpInvoker {
 
 		_methodParameterTypes59 = new String[] {
 				"long", "long", "java.lang.String", "long", "java.lang.String",
-				"long", "java.lang.String", "boolean", "java.util.Map",
-				"java.util.Map", "java.lang.String", "boolean",
+				"long", "java.lang.String", "java.util.Map", "java.util.Map",
+				"java.lang.String", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -304,12 +304,11 @@ public class CalendarResourceLocalServiceClpInvoker {
 				(java.lang.String)arguments[4],
 				((Long)arguments[5]).longValue(),
 				(java.lang.String)arguments[6],
-				((Boolean)arguments[7]).booleanValue(),
+				(java.util.Map<java.util.Locale, java.lang.String>)arguments[7],
 				(java.util.Map<java.util.Locale, java.lang.String>)arguments[8],
-				(java.util.Map<java.util.Locale, java.lang.String>)arguments[9],
-				(java.lang.String)arguments[10],
-				((Boolean)arguments[11]).booleanValue(),
-				(com.liferay.portal.service.ServiceContext)arguments[12]);
+				(java.lang.String)arguments[9],
+				((Boolean)arguments[10]).booleanValue(),
+				(com.liferay.portal.service.ServiceContext)arguments[11]);
 		}
 
 		if (_methodName60.equals(name) &&
