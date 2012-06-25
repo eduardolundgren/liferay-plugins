@@ -481,8 +481,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					Liferay.CalendarUtil.syncDatePickerFields(formNode, 'startDate', event.newVal);
 				}
 			},
+			borderStyle: 'dashed',
+			borderWidth: '2px',
 			color: '#F8F8F8',
-			content: '',
+			content: '&nbsp;',
+			editingEvent: true,
 			endDate: Liferay.CalendarUtil.toUserTimeZone(new Date(<%= endDate %>)),
 			on: {
 				startDateChange: function(event) {
@@ -517,8 +520,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			}
 		}
 	);
-
-	currentEvent.get('node').addClass('calendar-portlet-editting-event');
 
 	<c:if test="<%= invitable %>">
 		A.one('#<portlet:namespace />calendarId').on(
