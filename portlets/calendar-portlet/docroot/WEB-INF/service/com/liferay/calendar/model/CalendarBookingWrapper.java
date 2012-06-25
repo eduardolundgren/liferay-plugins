@@ -1082,6 +1082,10 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		return _calendarBooking.getParentCalendarBooking();
 	}
 
+	public com.liferay.calendar.recurrence.Recurrence getRecurrenceObj() {
+		return _calendarBooking.getRecurrenceObj();
+	}
+
 	public java.util.Date getUTCEndDate()
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -1096,6 +1100,10 @@ public class CalendarBookingWrapper implements CalendarBooking,
 
 	public boolean isMasterBooking() {
 		return _calendarBooking.isMasterBooking();
+	}
+
+	public boolean isRecurring() {
+		return _calendarBooking.isRecurring();
 	}
 
 	/**
