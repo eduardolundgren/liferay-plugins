@@ -40,6 +40,7 @@ import com.liferay.calendar.util.CalendarUtil;
 import com.liferay.calendar.util.JCalendarUtil;
 import com.liferay.calendar.util.WebKeys;
 import com.liferay.calendar.util.comparator.CalendarResourceNameComparator;
+import com.liferay.calendar.workflow.CalendarBookingWorkflowConstants;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -106,6 +107,16 @@ public class CalendarPortlet extends MVCPortlet {
 		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
 
 		CalendarServiceUtil.deleteCalendar(calendarId);
+	}
+
+	public void deleteCalendarBooking(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long calendarBookingId = ParamUtil.getLong(
+			actionRequest, "calendarBookingId");
+
+		CalendarBookingServiceUtil.deleteCalendarBooking(calendarBookingId);
 	}
 
 	public void deleteCalendarResource(
@@ -255,6 +266,23 @@ public class CalendarPortlet extends MVCPortlet {
 				reminders[0], remindersType[0], reminders[1], remindersType[1],
 				status, serviceContext);
 		}
+	}
+
+	public void updateCalendarBookingStatus(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long calendarBookingId = ParamUtil.getLong(
+			actionRequest, "calendarBookingId");
+		String statusName = ParamUtil.get(
+			actionRequest, "statusName",
+			CalendarBookingWorkflowConstants.LABEL_ACCEPTED);
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			CalendarBooking.class.getName(), actionRequest);
+
+		CalendarBookingServiceUtil.invokeTransition(
+			calendarBookingId, statusName, serviceContext);
 	}
 
 	public void updateCalendarResource(

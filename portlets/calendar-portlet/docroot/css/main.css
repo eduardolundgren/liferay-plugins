@@ -305,3 +305,33 @@
 .calendar-portlet-time-zone-field .aui-field .aui-field-content {
 	margin: 0;
 }
+
+.calendar-portlet .agenda-search-form {
+	.search-inline-field .aui-field-content {
+		margin-top: 4px;
+		margin-left: 10px;
+	}
+}
+
+.calendar-portlet #agenda-events {
+	margin-top: 10px;
+
+	.lfr-search-container {
+
+		.agenda-row-date {
+			font-weight: bold;
+		}
+
+		.eventsSeparator {
+			paddin-top: 12px;
+		}
+
+		.results-row td {
+			border: none;
+		}
+
+		.aui-calendar-list-item {
+			cursor: default;
+		}
+	}
+}

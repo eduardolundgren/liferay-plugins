@@ -107,6 +107,10 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	title='<%= ((calendarBooking != null) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>'
 />
 
+<liferay-ui:asset-categories-error />
+
+<liferay-ui:asset-tags-error />
+
 <liferay-portlet:actionURL name="updateCalendarBooking" var="updateCalendarBookingURL">
 	<liferay-portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />
 	<liferay-portlet:param name="redirect" value="<%= redirect %>" />
@@ -170,7 +174,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	</aui:fieldset>
 
 	<liferay-ui:tabs
-		names="invitations"
+		names="invitations, categorization"
 		refresh="<%= false %>"
 	>
 		<liferay-ui:section>
@@ -231,6 +235,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					</div>
 				</aui:column>
 			</aui:layout>
+		</liferay-ui:section>
+		<liferay-ui:section>
+			<aui:input classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>" name="categories" type="assetCategories" />
+
+			<aui:input classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>" name="tags" type="assetTags" />
 		</liferay-ui:section>
 	</liferay-ui:tabs>
 
@@ -327,7 +336,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	var calendarsMenu = {
 		items: [
 			{
-				caption: '<liferay-ui:message key="check-availability" />',
+				caption: '<%= UnicodeLanguageUtil.get(pageContext, "check-availability") %>',
 				fn: function(event) {
 					var instance = this;
 
@@ -352,7 +361,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			}
 			<c:if test="<%= invitable %>">
 				,{
-					caption: '<liferay-ui:message key="remove" />',
+					caption: '<%= UnicodeLanguageUtil.get(pageContext, "remove") %>',
 					fn: function(event) {
 						var instance = this;
 
