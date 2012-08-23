@@ -64,8 +64,12 @@ page import="com.liferay.portal.kernel.json.JSONArray" %><%@
 page import="com.liferay.portal.kernel.json.JSONFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.json.JSONObject" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
+page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil" %><%@
+page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
 page import="com.liferay.portal.kernel.util.CalendarFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
+page import="com.liferay.portal.kernel.util.FastDateFormatConstants" %><%@
+page import="com.liferay.portal.kernel.util.FastDateFormatFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.HttpUtil" %><%@
@@ -88,7 +92,11 @@ page import="com.liferay.portal.util.comparator.UserScreenNameComparator" %><%@
 page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
 
 <%@ page import="java.util.ArrayList" %><%@
+page import="java.text.Format" %><%@
+page import="java.util.Date" %><%@
+page import="java.util.HashMap"%><%@
 page import="java.util.List" %><%@
+page import="java.util.Map" %><%@
 page import="java.util.TimeZone" %>
 
 <%@ page import="javax.portlet.PortletPreferences" %><%@
@@ -124,6 +132,10 @@ if (themeDisplay.isSignedIn()) {
 
 int defaultDuration = GetterUtil.getInteger(preferences.getValue("defaultDuration", null), 60);
 String defaultView = preferences.getValue("defaultView", "week");
+
+Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale, timeZone);
+Format dateFormatLongDate = FastDateFormatFactoryUtil.getDate(FastDateFormatConstants.LONG, locale, timeZone);
+
 boolean isoTimeFormat = GetterUtil.getBoolean(preferences.getValue("isoTimeFormat", null));
 String timeZoneId = preferences.getValue("timeZoneId", user.getTimeZoneId());
 boolean usePortalTimeZone = GetterUtil.getBoolean(preferences.getValue("usePortalTimeZone", null));
