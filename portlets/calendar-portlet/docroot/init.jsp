@@ -94,7 +94,9 @@ page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
 <%@ page import="java.util.ArrayList" %><%@
 page import="java.text.Format" %><%@
 page import="java.util.Date" %><%@
+page import="java.util.HashMap"%><%@
 page import="java.util.List" %><%@
+page import="java.util.Map" %><%@
 page import="java.util.TimeZone" %>
 
 <%@ page import="javax.portlet.PortletPreferences" %><%@
