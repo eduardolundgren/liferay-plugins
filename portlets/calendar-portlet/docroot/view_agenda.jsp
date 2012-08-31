@@ -17,8 +17,25 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String activeView = ParamUtil.getString(request, "activeView", defaultView);
+
 long currentDate = ParamUtil.getLong(request, "currentDate", now.getTimeInMillis());
+
+java.util.Calendar startDateJCalendar = JCalendarUtil.getJCalendar(currentDate, timeZone);
+
+java.util.Calendar endDateJCalendar = JCalendarUtil.getJCalendar(currentDate, timeZone);
+endDateJCalendar.add(java.util.Calendar.WEEK_OF_MONTH, 1);
+
+int startDateDay = ParamUtil.getInteger(renderRequest, "startDateDay", startDateJCalendar.get(java.util.Calendar.DAY_OF_MONTH));
+int startDateMonth = ParamUtil.getInteger(renderRequest, "startDateMonth", startDateJCalendar.get(java.util.Calendar.MONTH));
+int startDateYear = ParamUtil.getInteger(renderRequest, "startDateYear", startDateJCalendar.get(java.util.Calendar.YEAR));
+
+int endDateDay = ParamUtil.getInteger(renderRequest, "endDateDay", endDateJCalendar.get(java.util.Calendar.DAY_OF_MONTH));
+int endDateMonth = ParamUtil.getInteger(renderRequest, "endDateMonth", endDateJCalendar.get(java.util.Calendar.MONTH));
+int endDateYear = ParamUtil.getInteger(renderRequest, "endDateYear", endDateJCalendar.get(java.util.Calendar.YEAR));
+
+String keywords = ParamUtil.getString(renderRequest, "keywords");
+
+boolean checkPendingRequests = ParamUtil.getBoolean(renderRequest, "checkPendingRequests");
 
 List<Calendar> groupCalendars = null;
 
@@ -95,33 +112,176 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 	</aui:column>
 
 	<aui:column columnWidth="100">
-		<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
-			<liferay-util:param name="activeView" value="<%= activeView %>" />
-			<liferay-util:param name="currentDate" value="<%= String.valueOf(currentDate) %>" />
+		<liferay-portlet:renderURL varImpl="changeDateRangeURL" />
 
-			<portlet:renderURL var="editCalendarBookingURL">
-				<portlet:param name="jspPage" value="/edit_calendar_booking.jsp" />
-				<portlet:param name="redirect" value="<%= String.valueOf(renderResponse.createRenderURL()) %>" />
-				<portlet:param name="activeView" value="{activeView}" />
-				<portlet:param name="allDay" value="{allDay}" />
-				<portlet:param name="calendarBookingId" value="{calendarBookingId}" />
-				<portlet:param name="calendarId" value="{calendarId}" />
-				<portlet:param name="currentDate" value="{currentDate}" />
-				<portlet:param name="endDate" value="{endDate}" />
-				<portlet:param name="startDate" value="{startDate}" />
-				<portlet:param name="titleCurrentValue" value="{titleCurrentValue}" />
-			</portlet:renderURL>
+		<aui:form action="" method="GET" onSubmit="event.preventDefault();" cssClass="agenda-search-form">
+			<liferay-portlet:renderURLParams varImpl="changeDateRangeURL" />
 
-			<liferay-util:param name="editCalendarBookingURL" value="<%= editCalendarBookingURL %>" />
+			<aui:fieldset cssClass="calendar-portlet-date-filtes">
+				<aui:column cssClass="aui-w70">
+					<aui:column>
 
-			<liferay-util:param name="readOnly" value="<%= String.valueOf(false) %>" />
-		</liferay-util:include>
+						<div id="<portlet:namespace />startDateWrapper">
+							<liferay-ui:input-date
+								dayParam="startDateDay"
+								dayValue="<%= startDateDay %>"
+								disabled="<%= false %>"
+								firstDayOfWeek="<%= startDateJCalendar.getFirstDayOfWeek() - 1 %>"
+								monthParam="startDateMonth"
+								monthValue="<%= startDateMonth %>"
+								yearParam="startDateYear"
+								yearRangeEnd="<%= startDateJCalendar.get(java.util.Calendar.YEAR) + 100 %>"
+								yearRangeStart="<%= startDateJCalendar.get(java.util.Calendar.YEAR) - 100 %>"
+								yearValue="<%= startDateYear %>"
+							/>
+						</div>
+
+					</aui:column>
+					<aui:column>
+						-
+					</aui:column>
+					<aui:column>
+
+						<div id="<portlet:namespace />endDateWrapper">
+							<liferay-ui:input-date
+								dayParam="endDateDay"
+								dayValue="<%= endDateDay %>"
+								disabled="<%= false %>"
+								firstDayOfWeek="<%= endDateJCalendar.getFirstDayOfWeek() - 1 %>"
+								monthParam="endDateMonth"
+								monthValue="<%= endDateMonth %>"
+								yearParam="endDateYear"
+								yearRangeEnd="<%= endDateJCalendar.get(java.util.Calendar.YEAR) + 100 %>"
+								yearRangeStart="<%= endDateJCalendar.get(java.util.Calendar.YEAR) - 100 %>"
+								yearValue="<%= endDateYear %>"
+							/>
+						</div>
+
+					</aui:column>
+
+					<aui:column cssClass="search-inline-field">
+						<aui:input id="checkPendingRequests" name="checkPendingRequests" type="checkbox" value="<%= checkPendingRequests %>" />
+					</aui:column>
+				</aui:column>
+
+				<aui:column cssClass="aui-w30 right-field search-inline-field">
+					<aui:input id="keywords" inlineLabel="left" label="keywords" name="keywords" type="text" value="<%= keywords %>" />
+				</aui:column>
+			</aui:fieldset>
+		</aui:form>
+
+		<div id="agenda-events">
+		</div>
 	</aui:column>
 </aui:fieldset>
 
+<liferay-portlet:renderURL var="getAgendaBookingsURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+	<liferay-portlet:param name="mvcPath" value="/agenda_bookings.jsp" />
+</liferay-portlet:renderURL>
+
 <%@ include file="/view_calendar_menus.jspf" %>
 
-<aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
+<aui:script use="aui-base,aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json,widget,aui-io-plugin">
+	var startDateNode = A.one('#<portlet:namespace />startDateWrapper .aui-datepicker-display');
+	var endDateNode = A.one('#<portlet:namespace />endDateWrapper .aui-datepicker-display');
+
+	var eventsContainer = A.one("#p_p_id<portlet:namespace /> #agenda-events");
+
+	function <portlet:namespace />getCalendarIds(calendarList) {
+
+		var calendars = calendarList.get("calendars");
+		var calendarIds = Array();
+
+		var calendar;
+		for (var i=0; i < calendars.length; i++) {
+			calendar = calendars[i];
+			if (calendar.get("visible")) {
+				calendarIds.push(calendar.get("calendarId"));
+			}
+		}
+
+		return calendarIds;
+	}
+
+	var updateAgenda = function updateAgenda() {
+
+		var myCalendarIds = <portlet:namespace />getCalendarIds(window.<portlet:namespace />myCalendarList);
+		var siteCalendarIds = <portlet:namespace />getCalendarIds(window.<portlet:namespace />siteCalendarList);
+		var otherCalendarIds = <portlet:namespace />getCalendarIds(window.<portlet:namespace />otherCalendarList);
+		var calendarIds = myCalendarIds.concat(siteCalendarIds).concat(otherCalendarIds);
+
+		var options = {
+				<portlet:namespace />startDateDay: A.one("#<portlet:namespace />startDateDay").val(),
+				<portlet:namespace />startDateMonth: parseInt(A.one("#<portlet:namespace />startDateMonth").val()) + 1,
+				<portlet:namespace />startDateYear: A.one("#<portlet:namespace />startDateYear").val(),
+				<portlet:namespace />endDateDay: A.one("#<portlet:namespace />endDateDay").val(),
+				<portlet:namespace />endDateMonth: parseInt(A.one("#<portlet:namespace />endDateMonth").val()) + 1,
+				<portlet:namespace />endDateYear: A.one("#<portlet:namespace />endDateYear").val(),
+				<portlet:namespace />calendarIds: calendarIds,
+				<portlet:namespace />checkPendingRequests: A.one("#<portlet:namespace />checkPendingRequests").val(),
+				<portlet:namespace />keywords: A.one("#<portlet:namespace />keywords").val()
+			}
+
+		if (!eventsContainer.io) {
+			eventsContainer.plug(
+				A.Plugin.IO,
+				{
+					data: options,
+					showLoading: true,
+					uri: '<%= getAgendaBookingsURL %>'
+				}
+			);
+		}
+		else {
+			eventsContainer.io.set('data', options)
+			eventsContainer.io.start();
+		}
+	}
+
+	var actOnChange = A.debounce(
+		updateAgenda,
+		1000
+	);
+
+	A.each(
+		[startDateNode, endDateNode],
+		function (target) {
+			target.onceAfter(
+				[ 'click', 'mousemove' ],
+				function () {
+					var datePicker = A.Widget.getByNode(target);
+
+					datePicker.on(
+						'calendar:select',
+						actOnChange
+					);
+				}
+			);
+		}
+	);
+
+	A.one("#<portlet:namespace />checkPendingRequestsCheckbox").on(
+		'change',
+		actOnChange
+	);
+
+	var searchKeyworsText = '<%= keywords %>';
+	A.one("#<portlet:namespace />keywords").on(
+		['change', 'keyup', 'keypress'],
+		function(e) {
+
+			var keywords = e.target.val();
+
+			if (keywords === searchKeyworsText) {
+				return;
+			}
+
+			actOnChange();
+
+			searchKeyworsText = keywords;
+		}
+	);
+
 	Liferay.CalendarUtil.RENDERING_RULES_URL = '<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarRenderingRules" />';
 
 	<c:if test="<%= userCalendars != null %>">
@@ -163,16 +323,9 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 				calendarsChange: function(event) {
 					syncCalendarsMap();
 
-					window.<portlet:namespace />scheduler.loadCalendarBookings();
-
 					var calendarIds = A.Array.invoke(event.newVal, 'get', 'calendarId');
 
 					Liferay.Store('otherCalendars', calendarIds.join());
-				},
-				'scheduler-calendar:visibleChange': function(event) {
-					syncCalendarsMap();
-
-					<portlet:namespace />refreshVisibleCalendarRenderingRules();
 				}
 			},
 			boundingBox: '#<portlet:namespace />otherCalendarList',
@@ -189,12 +342,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 	window.<portlet:namespace />siteCalendarList = new Liferay.CalendarList(
 		{
 			after: {
-				calendarsChange: syncCalendarsMap,
-				'scheduler-calendar:visibleChange': function(event) {
-					syncCalendarsMap();
-
-					<portlet:namespace />refreshVisibleCalendarRenderingRules();
-				}
+				calendarsChange: syncCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />siteCalendarList',
 
@@ -208,18 +356,6 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 	).render();
 
 	syncCalendarsMap();
-
-	<portlet:namespace />scheduler.on(
-		{
-			'scheduler-calendar:visibleChange': function(event) {
-				var instance = this;
-
-				var calendar = event.target;
-
-				Liferay.Store('calendar-portlet-calendar-' + calendar.get('calendarId') + '-visible', event.newVal);
-			}
-		}
-	);
 
 	window.<portlet:namespace />toggler = new A.TogglerDelegate(
 		{
@@ -245,9 +381,24 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 			addOtherCalendarInput.val('');
 		}
 	);
-</aui:script>
 
-<aui:script use="aui-base">
+	window.<portlet:namespace />myCalendarList.on(
+		'scheduler-calendar:visibleChange',
+		A.debounce(updateAgenda, 400)
+	);
+
+	window.<portlet:namespace />siteCalendarList.on(
+		'scheduler-calendar:visibleChange',
+		A.debounce(updateAgenda, 400)
+	);
+
+	window.<portlet:namespace />otherCalendarList.on(
+		'scheduler-calendar:visibleChange',
+		A.debounce(updateAgenda, 400)
+	);
+
+	updateAgenda();
+
 	AUI().use('aui-datatype', 'calendar', function(A) {
 		var DateMath = A.DataType.DateMath;
 
@@ -281,12 +432,17 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 				after: {
 					dateChange: <portlet:namespace />refreshVisibleCalendarRenderingRules,
 					dateClick: function(event) {
-						<portlet:namespace />scheduler.setAttrs(
-							{
-								activeView: <portlet:namespace />dayView,
-								currentDate: event.date
-							}
-						);
+						A.one("#<portlet:namespace />startDateDay").val(event.date.getDate());
+						A.one("#<portlet:namespace />startDateMonth").val(event.date.getMonth());
+						A.one("#<portlet:namespace />startDateYear").val(event.date.getFullYear());
+
+						var endDate = new Date(event.date.getTime() + (7 * 24 * 60 * 60 * 1000));
+
+						A.one("#<portlet:namespace />endDateDay").val(endDate.getDate());
+						A.one("#<portlet:namespace />endDateMonth").val(endDate.getMonth());
+						A.one("#<portlet:namespace />endDateYear").val(endDate.getFullYear());
+
+						updateAgenda();
 					}
 				},
 				date: new Date(<%= String.valueOf(currentDate) %>),
@@ -296,7 +452,6 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 
 		<portlet:namespace />refreshVisibleCalendarRenderingRules();
 
-		<portlet:namespace />scheduler.on('eventsChangeBatch', <portlet:namespace />refreshVisibleCalendarRenderingRules);
 	});
 </aui:script>
 

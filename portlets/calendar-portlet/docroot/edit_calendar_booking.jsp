@@ -107,6 +107,10 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	title='<%= ((calendarBooking != null) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>'
 />
 
+<liferay-ui:asset-categories-error />
+
+<liferay-ui:asset-tags-error />
+
 <liferay-portlet:actionURL name="updateCalendarBooking" var="updateCalendarBookingURL">
 	<liferay-portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />
 	<liferay-portlet:param name="redirect" value="<%= redirect %>" />
@@ -161,6 +165,15 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				<aui:input name="description" />
 
 				<aui:input name="location" />
+
+				<liferay-ui:custom-attributes-available className="<%= CalendarBooking.class.getName() %>">
+					<liferay-ui:custom-attribute-list
+						className="<%= CalendarBooking.class.getName() %>"
+						classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>"
+						editable="<%= true %>"
+						label="<%= true %>"
+					/>
+				</liferay-ui:custom-attributes-available>
 			</liferay-ui:panel>
 
 			<liferay-ui:panel collapsible="<%= true %>" extended="<%= false %>" id="calendarBookingReminderPanel" persistState="<%= true %>" title="reminders">
@@ -170,7 +183,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	</aui:fieldset>
 
 	<liferay-ui:tabs
-		names="invitations"
+		names="invitations,categorization"
 		refresh="<%= false %>"
 	>
 		<liferay-ui:section>
@@ -232,6 +245,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				</aui:column>
 			</aui:layout>
 		</liferay-ui:section>
+		<liferay-ui:section>
+			<aui:input classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>" name="categories" type="assetCategories" />
+
+			<aui:input classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>" name="tags" type="assetTags" />
+		</liferay-ui:section>
 	</liferay-ui:tabs>
 
 	<%@ include file="/calendar_booking_recurrence_container.jspf" %>
@@ -256,7 +274,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 			<c:if test="<%= invitable %>">
 				var calendarId = A.one('#<portlet:namespace />calendarId').val();
-				var childCalendarIds = A.Object.keys(Liferay.CalendarUtil.visibleCalendars);
+				var childCalendarIds = A.Object.keys(Liferay.CalendarUtil.availableCalendars);
 
 				A.Array.remove(childCalendarIds, A.Array.indexOf(childCalendarIds, calendarId));
 
@@ -290,8 +308,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		}
 	}
 
-	var syncVisibleCalendarsMap = function() {
-		Liferay.CalendarUtil.syncVisibleCalendarsMap(
+	var syncCalendarsMap = function() {
+		Liferay.CalendarUtil.syncCalendarsMap(
 			window.<portlet:namespace />calendarListAccepted,
 			window.<portlet:namespace />calendarListDeclined,
 			window.<portlet:namespace />calendarListMaybe,
@@ -299,7 +317,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		);
 
 		A.each(
-			Liferay.CalendarUtil.visibleCalendars,
+			Liferay.CalendarUtil.availableCalendars,
 			function(item, index, collection) {
 				item.set('disabled', true);
 			}
@@ -327,12 +345,12 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	var calendarsMenu = {
 		items: [
 			{
-				caption: '<liferay-ui:message key="check-availability" />',
+				caption: '<%= UnicodeLanguageUtil.get(pageContext, "check-availability") %>',
 				fn: function(event) {
 					var instance = this;
 
 					A.each(
-						Liferay.CalendarUtil.visibleCalendars,
+						Liferay.CalendarUtil.availableCalendars,
 						function(item, index, collection) {
 							item.set('visible', false);
 						}
@@ -352,7 +370,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			}
 			<c:if test="<%= invitable %>">
 				,{
-					caption: '<liferay-ui:message key="remove" />',
+					caption: '<%= UnicodeLanguageUtil.get(pageContext, "remove") %>',
 					fn: function(event) {
 						var instance = this;
 
@@ -394,10 +412,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 					A.one('#<portlet:namespace />pendingCounter').html(event.newVal.length);
 
-					syncVisibleCalendarsMap();
+					syncCalendarsMap();
 
 					scheduler.loadCalendarBookings();
-				}
+				},
+				'scheduler-calendar:visibleChange': syncCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />calendarListPending',
 			calendars: <%= pendingCalendarsJSONArray %>,
@@ -416,10 +435,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 					A.one('#<portlet:namespace />acceptedCounter').html(event.newVal.length);
 
-					syncVisibleCalendarsMap();
+					syncCalendarsMap();
 
 					scheduler.loadCalendarBookings();
-				}
+				},
+				'scheduler-calendar:visibleChange': syncCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />calendarListAccepted',
 			calendars: <%= acceptedCalendarsJSONArray %>,
@@ -438,10 +458,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 					A.one('#<portlet:namespace />declinedCounter').html(event.newVal.length);
 
-					syncVisibleCalendarsMap();
+					syncCalendarsMap();
 
 					scheduler.loadCalendarBookings();
-				}
+				},
+				'scheduler-calendar:visibleChange': syncCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />calendarListDeclined',
 			calendars: <%= declinedCalendarsJSONArray %>,
@@ -460,10 +481,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 					A.one('#<portlet:namespace />maybeCounter').html(event.newVal.length);
 
-					syncVisibleCalendarsMap();
+					syncCalendarsMap();
 
 					scheduler.loadCalendarBookings();
-				}
+				},
+				'scheduler-calendar:visibleChange': syncCalendarsMap
 			},
 			boundingBox: '#<portlet:namespace />calendarListMaybe',
 			calendars: <%= maybeCalendarsJSONArray %>,
@@ -474,7 +496,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		}
 	).render();
 
-	syncVisibleCalendarsMap();
+	syncCalendarsMap();
 
 	var formNode = A.one(document.<portlet:namespace />fm);
 

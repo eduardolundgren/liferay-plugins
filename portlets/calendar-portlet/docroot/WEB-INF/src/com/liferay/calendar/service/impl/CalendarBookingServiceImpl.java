@@ -309,9 +309,6 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 					itr.remove();
 				}
-				else {
-					filterCalendarBooking(calendarBooking);
-				}
 			}
 		}
 
