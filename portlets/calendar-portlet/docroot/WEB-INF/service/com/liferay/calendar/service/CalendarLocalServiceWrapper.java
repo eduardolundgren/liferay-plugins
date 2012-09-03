@@ -295,17 +295,18 @@ public class CalendarLocalServiceWrapper implements CalendarLocalService,
 			defaultCalendar, serviceContext);
 	}
 
-	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
 		long groupId, long calendarResourceId)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return _calendarLocalService.getCalendars(groupId, calendarResourceId);
+		return _calendarLocalService.getCalendarResourceCalendars(groupId,
+			calendarResourceId);
 	}
 
-	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
 		long groupId, long calendarResourceId, boolean defaultCalendar)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return _calendarLocalService.getCalendars(groupId, calendarResourceId,
-			defaultCalendar);
+		return _calendarLocalService.getCalendarResourceCalendars(groupId,
+			calendarResourceId, defaultCalendar);
 	}
 
 	public java.util.List<com.liferay.calendar.model.Calendar> search(

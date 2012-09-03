@@ -304,17 +304,19 @@ public class CalendarLocalServiceUtil {
 			descriptionMap, color, defaultCalendar, serviceContext);
 	}
 
-	public static java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+	public static java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
 		long groupId, long calendarResourceId)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().getCalendars(groupId, calendarResourceId);
+		return getService()
+				   .getCalendarResourceCalendars(groupId, calendarResourceId);
 	}
 
-	public static java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+	public static java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
 		long groupId, long calendarResourceId, boolean defaultCalendar)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService()
-				   .getCalendars(groupId, calendarResourceId, defaultCalendar);
+				   .getCalendarResourceCalendars(groupId, calendarResourceId,
+			defaultCalendar);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.Calendar> search(

@@ -141,11 +141,11 @@ public class CalendarLocalServiceClpInvoker {
 
 		_methodParameterTypes63 = new String[] { "long" };
 
-		_methodName64 = "getCalendars";
+		_methodName64 = "getCalendarResourceCalendars";
 
 		_methodParameterTypes64 = new String[] { "long", "long" };
 
-		_methodName65 = "getCalendars";
+		_methodName65 = "getCalendarResourceCalendars";
 
 		_methodParameterTypes65 = new String[] { "long", "long", "boolean" };
 
@@ -341,13 +341,13 @@ public class CalendarLocalServiceClpInvoker {
 
 		if (_methodName64.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes64, parameterTypes)) {
-			return CalendarLocalServiceUtil.getCalendars(((Long)arguments[0]).longValue(),
+			return CalendarLocalServiceUtil.getCalendarResourceCalendars(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue());
 		}
 
 		if (_methodName65.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes65, parameterTypes)) {
-			return CalendarLocalServiceUtil.getCalendars(((Long)arguments[0]).longValue(),
+			return CalendarLocalServiceUtil.getCalendarResourceCalendars(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue(),
 				((Boolean)arguments[2]).booleanValue());
 		}

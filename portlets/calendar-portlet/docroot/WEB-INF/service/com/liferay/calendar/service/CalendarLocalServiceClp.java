@@ -123,11 +123,11 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 				"boolean", "com.liferay.portal.service.ServiceContext"
 			};
 
-		_methodName21 = "getCalendars";
+		_methodName21 = "getCalendarResourceCalendars";
 
 		_methodParameterTypes21 = new String[] { "long", "long" };
 
-		_methodName22 = "getCalendars";
+		_methodName22 = "getCalendarResourceCalendars";
 
 		_methodParameterTypes22 = new String[] { "long", "long", "boolean" };
 
@@ -799,7 +799,7 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 		return (com.liferay.calendar.model.Calendar)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
 		long groupId, long calendarResourceId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
@@ -828,7 +828,7 @@ public class CalendarLocalServiceClp implements CalendarLocalService {
 		return (java.util.List<com.liferay.calendar.model.Calendar>)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
 		long groupId, long calendarResourceId, boolean defaultCalendar)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
