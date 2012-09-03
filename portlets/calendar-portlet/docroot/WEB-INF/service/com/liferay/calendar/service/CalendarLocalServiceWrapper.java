@@ -295,11 +295,17 @@ public class CalendarLocalServiceWrapper implements CalendarLocalService,
 			defaultCalendar, serviceContext);
 	}
 
-	public java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
 		long groupId, long calendarResourceId)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return _calendarLocalService.getCalendarResourceCalendars(groupId,
-			calendarResourceId);
+		return _calendarLocalService.getCalendars(groupId, calendarResourceId);
+	}
+
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+		long groupId, long calendarResourceId, boolean defaultCalendar)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarLocalService.getCalendars(groupId, calendarResourceId,
+			defaultCalendar);
 	}
 
 	public java.util.List<com.liferay.calendar.model.Calendar> search(
@@ -339,6 +345,12 @@ public class CalendarLocalServiceWrapper implements CalendarLocalService,
 			calendarResourceIds, name, description, andOperator);
 	}
 
+	public void updateCalendar(long calendarId, boolean defaultCalendar)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_calendarLocalService.updateCalendar(calendarId, defaultCalendar);
+	}
+
 	public com.liferay.calendar.model.Calendar updateCalendar(long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -366,12 +378,6 @@ public class CalendarLocalServiceWrapper implements CalendarLocalService,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarLocalService.updateColor(calendarId, color,
 			serviceContext);
-	}
-
-	public void updateDefaultCalendar(
-		com.liferay.calendar.model.Calendar calendar, boolean defaultCalendar)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		_calendarLocalService.updateDefaultCalendar(calendar, defaultCalendar);
 	}
 
 	/**

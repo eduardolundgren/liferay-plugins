@@ -270,8 +270,13 @@ public interface CalendarLocalService extends BaseLocalService,
 			com.liferay.portal.kernel.exception.SystemException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
 		long groupId, long calendarResourceId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars(
+		long groupId, long calendarResourceId, boolean defaultCalendar)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -301,6 +306,10 @@ public interface CalendarLocalService extends BaseLocalService,
 		java.lang.String description, boolean andOperator)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
+	public void updateCalendar(long calendarId, boolean defaultCalendar)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
 	public com.liferay.calendar.model.Calendar updateCalendar(long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -320,8 +329,4 @@ public interface CalendarLocalService extends BaseLocalService,
 		int color, com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
-
-	public void updateDefaultCalendar(
-		com.liferay.calendar.model.Calendar calendar, boolean defaultCalendar)
-		throws com.liferay.portal.kernel.exception.SystemException;
 }
