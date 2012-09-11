@@ -71,13 +71,14 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 	var eventRecorder;
 
-	<c:if test="<%= !readOnly %>">
+	<c:if test="<%= !readOnly && (userDefaultCalendar != null) %>">
 		eventRecorder = new Liferay.SchedulerEventRecorder(
 			{
 				calendarId: <%= userDefaultCalendar.getCalendarId() %>,
 				color: '<%= ColorUtil.toHexString(userDefaultCalendar.getColor()) %>',
 				duration: <%= defaultDuration %>,
 				editCalendarBookingURL: '<%= HtmlUtil.escapeJS(editCalendarBookingURL) %>',
+				minDuration: 30,
 				portletNamespace: '<portlet:namespace />',
 				template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 			}
