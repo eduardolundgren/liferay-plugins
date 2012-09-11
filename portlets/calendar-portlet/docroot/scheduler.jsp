@@ -65,6 +65,7 @@ boolean readOnly = ParamUtil.getBoolean(request, "readOnly");
 				calendarId: <%= userDefaultCalendar.getCalendarId() %>,
 				duration: <%= defaultDuration %>,
 				editCalendarBookingURL: '<%= HtmlUtil.escapeJS(editCalendarBookingURL) %>',
+				minDuration: 30,
 				portletNamespace: '<portlet:namespace />',
 				template: new A.Template(A.one('#<portlet:namespace />eventRecorderTpl').text())
 			}
