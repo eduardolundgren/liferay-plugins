@@ -59,7 +59,7 @@ boolean readOnly = ParamUtil.getBoolean(request, "readOnly");
 
 	var eventRecorder;
 
-	<c:if test="<%= !readOnly %>">
+	<c:if test="<%= !readOnly && (userDefaultCalendar != null) %>">
 		eventRecorder = new Liferay.SchedulerEventRecorder(
 			{
 				calendarId: <%= userDefaultCalendar.getCalendarId() %>,
