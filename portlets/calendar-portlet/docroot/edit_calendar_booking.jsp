@@ -17,15 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String redirect = ParamUtil.getString(request, "redirect");
-
 String activeView = ParamUtil.getString(request, "activeView", defaultView);
 
-redirect = HttpUtil.setParameter(redirect, renderResponse.getNamespace() + "activeView", activeView);
-
-long currentDate = ParamUtil.getLong(request, "currentDate", now.getTimeInMillis());
-
-redirect = HttpUtil.setParameter(redirect, renderResponse.getNamespace() + "currentDate", currentDate);
+long date = ParamUtil.getLong(request, "date", now.getTimeInMillis());
 
 CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
 
@@ -102,14 +96,9 @@ else if (calendar != null) {
 List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, null, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarNameComparator(true), ActionKeys.MANAGE_BOOKINGS);
 %>
 
-<liferay-ui:header
-	backURL="<%= redirect %>"
-	title='<%= ((calendarBooking != null) && Validator.isNotNull(title)) ? title : "new-calendar-booking" %>'
-/>
-
 <liferay-portlet:actionURL name="updateCalendarBooking" var="updateCalendarBookingURL">
 	<liferay-portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />
-	<liferay-portlet:param name="redirect" value="<%= redirect %>" />
+	<liferay-portlet:param name="redirect" value="<%= currentURL %>" />
 </liferay-portlet:actionURL>
 
 <aui:form action="<%= updateCalendarBookingURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "updateCalendarBooking();" %>'>
@@ -164,7 +153,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			</liferay-ui:panel>
 
 			<liferay-ui:panel collapsible="<%= true %>" extended="<%= false %>" id="calendarBookingReminderPanel" persistState="<%= true %>" title="reminders">
-				<div id="<portlet:namespace />reminders"></div>
+				<div class="calendar-booking-reminders" id="<portlet:namespace />reminders"></div>
 			</liferay-ui:panel>
 		</liferay-ui:panel-container>
 	</aui:fieldset>
@@ -175,7 +164,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	>
 		<liferay-ui:section>
 			<c:if test="<%= invitable %>">
-				<aui:input inputCssClass="calendar-portlet-invite-resources-input" label="invite-resource" name="inviteResource" placeholder="add-guests-groups-rooms" type="text" />
+				<aui:input inputCssClass="calendar-portlet-invite-resources-input" label="invite" name="inviteResource" placeholder="add-people-groups-rooms" type="text" />
 
 				<div class="separator"><!-- --></div>
 			</c:if>
@@ -223,7 +212,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 							<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
 								<liferay-util:param name="activeView" value="<%= activeView %>" />
-								<liferay-util:param name="currentDate" value="<%= String.valueOf(currentDate) %>" />
+								<liferay-util:param name="date" value="<%= String.valueOf(date) %>" />
 								<liferay-util:param name="filterCalendarBookings" value='<%= "window." + renderResponse.getNamespace() + "filterCalendarBookings" %>' />
 								<liferay-util:param name="readOnly" value="<%= Boolean.TRUE.toString() %>" />
 							</liferay-util:include>
@@ -239,7 +228,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:button-row>
 		<aui:button type="submit" />
 
-		<aui:button href="<%= redirect %>" type="cancel" />
+		<aui:button type="cancel" value="close" />
 	</aui:button-row>
 </aui:form>
 
@@ -263,9 +252,43 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				A.one('#<portlet:namespace />childCalendarIds').val(childCalendarIds.join(','));
 			</c:if>
 
-			submitForm(document.<portlet:namespace />fm);
+			<c:if test="<%= calendarBooking == null %>">
+				submitForm(document.<portlet:namespace />fm);
+			</c:if>
+
+			<c:if test="<%= (calendarBooking != null) && (calendar != null) %>">
+				<c:choose>
+					<c:when test="<%= calendarBooking.isMasterBooking() %>">
+						submitForm(document.<portlet:namespace />fm);
+					</c:when>
+					<c:otherwise>
+						var content = [
+							'<p class="calendar-portlet-confirmation-text">',
+							A.Lang.sub(
+								Liferay.Language.get('you-are-about-to-make-changes-that-will-only-be-reflected-on-calendar-x'),
+								['<%= calendar.getName(locale) %>']
+							),
+							'</p>'
+						].join('');
+
+						Liferay.CalendarMessageUtil.confirm(
+							content,
+							Liferay.Language.get('continue'),
+							Liferay.Language.get('dont-change-the-event'),
+							function() {
+								submitForm(document.<portlet:namespace />fm);
+
+								this.close();
+							},
+							function() {
+								this.close();
+							}
+						);
+					</c:otherwise>
+				</c:choose>
+			</c:if>
 		},
-		['aui-base', 'json']
+		['liferay-calendar-message-util', 'json']
 	);
 
 	Liferay.Util.focusFormField(document.<portlet:namespace />fm.<portlet:namespace />title);

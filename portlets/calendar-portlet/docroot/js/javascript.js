@@ -110,7 +110,7 @@
 						'/calendar-portlet/calendarbooking/add-calendar-booking': {
 							allDay: schedulerEvent.get('allDay'),
 							calendarId: schedulerEvent.get('calendarId'),
-							childCalendarIds: '',
+							childCalendarIds: STR_BLANK,
 							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
 							endDate: instance.toUTCTimeZone(schedulerEvent.get('endDate')).getTime(),
 							firstReminder: schedulerEvent.get('firstReminder'),
@@ -337,7 +337,7 @@
 					{
 						'$booking = /calendar-portlet/calendarbooking/search': {
 							calendarIds: calendarIds.join(','),
-							calendarResourceIds: '',
+							calendarResourceIds: STR_BLANK,
 							companyId: COMPANY_ID,
 							end: -1,
 							endDate: endDate.getTime(),
@@ -626,7 +626,7 @@
 						valueFn: function(val) {
 							var instance = this;
 
-							return instance.get('currentDate').getMonth();
+							return instance.get('date').getMonth();
 						}
 					},
 
@@ -635,7 +635,7 @@
 					},
 
 					portletNamespace: {
-						value: '',
+						value: STR_BLANK,
 						validator: isString
 					}
 				},
@@ -652,7 +652,7 @@
 
 						instance.after(
 							{
-								'scheduler-base:currentDateChange': instance._afterCurrentDateChange,
+								'scheduler-base:dateChange': instance._afterDateChange,
 								'scheduler-event:startDateChange': instance._afterStartDateChange
 							}
 						);
@@ -674,11 +674,11 @@
 
 						CalendarUtil.message(Liferay.Language.get('loading') + '...');
 
-						var currentDate = instance.get('currentDate');
+						var date = instance.get('date');
 						var firstDayOfWeek = instance.get('firstDayOfWeek');
 
-						var startDate = DateMath.getFirstDayOfWeek(DateMath.findMonthStart(currentDate), firstDayOfWeek);
-						var endDate = DateMath.add(DateMath.getFirstDayOfWeek(DateMath.findMonthEnd(currentDate), firstDayOfWeek), DateMath.DAY, 7);
+						var startDate = DateMath.getFirstDayOfWeek(DateMath.findMonthStart(date), firstDayOfWeek);
+						var endDate = DateMath.add(DateMath.getFirstDayOfWeek(DateMath.findMonthEnd(date), firstDayOfWeek), DateMath.DAY, 7);
 
 						CalendarUtil.getEvents(
 							startDate,
@@ -714,10 +714,10 @@
 							instance.syncEventsUI();
 						}
 
-						CalendarUtil.message('');
+						CalendarUtil.message(STR_BLANK);
 					},
 
-					_afterCurrentDateChange: function(event) {
+					_afterDateChange: function(event) {
 						var instance = this;
 
 						var currentMonth = event.newVal.getMonth();
@@ -730,9 +730,38 @@
 					_afterStartDateChange: function(event) {
 						var instance = this;
 
-						setTimeout(function() {
-							CalendarUtil.updateEvent(event.target);
-						}, 0);
+						var schedulerEvent = event.target;
+
+						if (schedulerEvent.isMasterBooking()) {
+							CalendarUtil.updateEvent(schedulerEvent);
+						}
+						else {
+							var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+							var content = [
+								'<p class="calendar-portlet-confirmation-text">',
+								A.Lang.sub(
+									Liferay.Language.get('you-are-about-to-make-changes-that-will-only-be-reflected-on-calendar-x'),
+									[calendar.get('name')]
+								),
+								'</p>'
+							].join(STR_BLANK);
+
+							Liferay.CalendarMessageUtil.confirm(
+								content,
+								Liferay.Language.get('continue'),
+								Liferay.Language.get('dont-change-the-event'),
+								function() {
+									CalendarUtil.updateEvent(schedulerEvent);
+
+									this.close();
+								},
+								function() {
+									instance.loadCalendarBookings();
+
+									this.close();
+								}
+							);
+						}
 					},
 
 					_deleteEvent: function(schedulerEvent) {
@@ -1087,14 +1116,14 @@
 
 						var scheduler = instance.get('scheduler');
 						var activeViewName = scheduler.get('activeView').get('name');
-						var currentDate = scheduler.get('currentDate');
+						var date = scheduler.get('date');
 
 						var schedulerEvent = instance.get('event');
 						var editCalendarBookingURL = decodeURIComponent(instance.get('editCalendarBookingURL'));
 						var data = instance.serializeForm();
 
 						data.activeView = activeViewName;
-						data.currentDate = currentDate.getTime();
+						data.date = date.getTime();
 						data.endDate = CalendarUtil.toUTCTimeZone(data.endDate).getTime();
 						data.startDate = CalendarUtil.toUTCTimeZone(data.startDate).getTime();
 						data.titleCurrentValue = encodeURIComponent(data.content);
@@ -1104,7 +1133,24 @@
 							data.calendarBookingId = schedulerEvent.get('calendarBookingId');
 						}
 
-						A.config.win.location.href = A.Lang.sub(editCalendarBookingURL, data);
+						Liferay.Util.openWindow(
+							{
+								dialog: {
+									after: {
+										destroy: function(event) {
+											scheduler.loadCalendarBookings();
+										}
+									},
+									destroyOnClose: true,
+									modal: true
+								},
+								refreshWindow: window,
+								title: Liferay.Language.get('edit-details'),
+								uri: A.Lang.sub(editCalendarBookingURL, data)
+							}
+						);
+
+						instance.hideOverlay();
 					},
 
 					_onOverlayVisibleChange: function(event) {
@@ -1311,7 +1357,7 @@
 					},
 
 					calendarResourceName: {
-						value: '',
+						value: STR_BLANK,
 						validator: isString
 					},
 
@@ -1398,7 +1444,7 @@
 	},
 	'' ,
 	{
-		requires: ['aui-dialog', 'aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'datasource-cache', 'datasource-get', 'dd-plugin', 'liferay-portlet-url', 'liferay-calendar-recurrence-util', 'liferay-store', 'resize-plugin']
+		requires: ['aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'datasource-cache', 'datasource-get', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-portlet-url', 'liferay-calendar-recurrence-util', 'liferay-store', 'resize-plugin']
 	}
 );
 }());
