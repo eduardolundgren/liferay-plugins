@@ -5,18 +5,23 @@
 }
 
 .calendar-portlet-wrapper {
+	background: #FFF;
+	font-size: 12px;
 	@include border-radius(5px);
+
+	.aui-scheduler-event-all-day .aui-scheduler-event-title {
+		display: none;
+	}
+
+	.aui-scheduler-event-disabled {
+		@include opacity(0.8);
+	}
 }
 
 .calendar-portlet-list-header .aui-calendar-list-item-arrow,
 .aui-calendar-list-item .aui-calendar-list-item-color,
 .aui-calendar-list-item .aui-calendar-list-item-arrow {
 	@include border-radius(3px);
-}
-
-.calendar-portlet-wrapper {
-	background: #FFF;
-	font-size: 12px;
 }
 
 .calendar-portlet-column-options {
@@ -312,6 +317,10 @@
 
 .yui3-skin-sam .calendar-portlet-mini-calendar {}
 
+.calendar-portlet-confirmation-text {
+	padding: 5px;
+}
+
 .yui3-skin-sam .yui3-calendar-day.lfr-busy-day, .yui3-skin-sam .yui3-calendar-prevmonth-day.lfr-busy-day, .yui3-skin-sam .yui3-calendar-nextmonth-day.lfr-busy-day {
 	text-decoration: underline;
 }
@@ -319,4 +328,16 @@
 .yui3-skin-sam .calendar-portlet-mini-calendar .yui3-calendar-content {
 	background: #ffffff !important;
 	border: 1px solid #DDD
+}
+
+.aui-dialog-iframe-popup .calendar-portlet .aui-fieldset {
+	margin-bottom: 2em;
+}
+
+.calendar-booking-invitations {
+	min-height: 110px;
+}
+
+.calendar-booking-reminders {
+	min-height: 52px;
 }
