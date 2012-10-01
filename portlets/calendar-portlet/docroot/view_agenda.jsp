@@ -123,6 +123,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 								firstDayOfWeek="<%= startDate.getFirstDayOfWeek() - 1 %>"
 								monthParam="startDateMonth"
 								monthValue="<%= startDate.get(java.util.Calendar.MONTH) %>"
+								name="startDate"
 								yearParam="startDateYear"
 								yearRangeEnd="<%= startDate.get(java.util.Calendar.YEAR) + 100 %>"
 								yearRangeStart="<%= startDate.get(java.util.Calendar.YEAR) - 100 %>"
@@ -144,6 +145,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 								firstDayOfWeek="<%= endDate.getFirstDayOfWeek() - 1 %>"
 								monthParam="endDateMonth"
 								monthValue="<%= endDate.get(java.util.Calendar.MONTH) %>"
+								name="endDate"
 								yearParam="endDateYear"
 								yearRangeEnd="<%= endDate.get(java.util.Calendar.YEAR) + 100 %>"
 								yearRangeStart="<%= endDate.get(java.util.Calendar.YEAR) - 100 %>"
@@ -176,9 +178,6 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 <%@ include file="/view_calendar_menus.jspf" %>
 
 <aui:script use="aui-base,aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json,widget,aui-io-plugin">
-	var startDateNode = A.one('#<portlet:namespace />startDateWrapper .aui-datepicker-display');
-	var endDateNode = A.one('#<portlet:namespace />endDateWrapper .aui-datepicker-display');
-
 	var eventsContainer = A.one("#p_p_id<portlet:namespace /> #agenda-events");
 
 	function <portlet:namespace />getCalendarIds(calendarList) {
@@ -243,7 +242,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 	);
 
 	A.each(
-		[startDateNode, endDateNode],
+		A.all(".calendar-portlet-date-filtes .aui-datepicker"),
 		function (target) {
 			target.onceAfter(
 				[ 'click', 'mousemove' ],
@@ -251,7 +250,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 					var datePicker = A.Widget.getByNode(target);
 
 					datePicker.on(
-						'calendar:select',
+						'calendar:selectionChange',
 						actOnChange
 					);
 				}
