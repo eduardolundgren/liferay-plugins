@@ -19,6 +19,8 @@
 <%
 String activeView = ParamUtil.getString(request, "activeView", defaultView);
 
+String redirect = ParamUtil.getString(request, "redirect");
+
 long date = ParamUtil.getLong(request, "date", now.getTimeInMillis());
 
 CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
@@ -228,7 +230,14 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:button-row>
 		<aui:button type="submit" />
 
-		<aui:button type="cancel" value="close" />
+		<c:choose>
+			<c:when test="<%= liferayPortletRequest.getWindowState() == LiferayWindowState.POP_UP %>">
+				<aui:button type="cancel" value="close" />
+			</c:when>
+			<c:otherwise>
+				<aui:button href="<%= redirect %>" type="cancel" value="cancel" />
+			</c:otherwise>
+		</c:choose>
 	</aui:button-row>
 </aui:form>
 

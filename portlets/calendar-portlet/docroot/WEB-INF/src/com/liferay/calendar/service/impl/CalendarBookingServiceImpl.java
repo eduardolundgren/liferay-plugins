@@ -143,11 +143,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			calendarBookingLocalService.getChildCalendarBookings(
 				parentCalendarBookingId);
 
-		for (CalendarBooking calendarBooking : calendarBookings) {
-			filterCalendarBooking(calendarBooking);
-		}
-
-		return calendarBookings;
+		return filterCalendarBookings(calendarBookings, ActionKeys.VIEW);
 	}
 
 	public List<CalendarBooking> getChildCalendarBookings(
@@ -158,11 +154,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			calendarBookingLocalService.getChildCalendarBookings(
 				parentCalendarBookingId, status);
 
-		for (CalendarBooking calendarBooking : calendarBookings) {
-			filterCalendarBooking(calendarBooking);
-		}
-
-		return calendarBookings;
+		return filterCalendarBookings(calendarBookings, ActionKeys.VIEW);
 	}
 
 	public void invokeTransition(
@@ -335,7 +327,6 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 				getPermissionChecker(), calendarBooking.getCalendarId(),
 				ActionKeys.VIEW_BOOKING_DETAILS)) {
 
-			calendarBooking.setTitle(StringPool.BLANK);
 			calendarBooking.setDescription(StringPool.BLANK);
 			calendarBooking.setLocation(StringPool.BLANK);
 		}

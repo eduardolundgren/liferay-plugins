@@ -22,7 +22,7 @@
 			},
 			items: [
 				{
-					caption: '<liferay-ui:message key="manage-calendars" />',
+					caption: '<%= UnicodeLanguageUtil.get(pageContext, "manage-calendars") %>',
 					fn: function(event) {
 						var instance = this;
 
@@ -55,7 +55,7 @@
 	window.<portlet:namespace />calendarsMenu = {
 		items: [
 			{
-				caption: '<liferay-ui:message key="hide-this-calendar-from-the-list" />',
+				caption: '<%= UnicodeLanguageUtil.get(pageContext, "hide-this-calendar-from-the-list") %>',
 				fn: function(event) {
 					var instance = this;
 
@@ -70,7 +70,7 @@
 				id: 'hide'
 			},
 			{
-				caption: '<liferay-ui:message key="calendar-settings" />',
+				caption: '<%= UnicodeLanguageUtil.get(pageContext, "calendar-settings") %>',
 				fn: function(event) {
 					var instance = this;
 

@@ -393,3 +393,91 @@
 		}
 	}
 }
+
+.calendar-portlet .agenda-search-form {
+	.search-inline-field .aui-field-content {
+		margin-top: 4px;
+		margin-left: 10px;
+	}
+
+	.right-field {
+		text-align: right;
+	}
+}
+
+.calendar-portlet {
+
+	.event-view .property-list {
+		margin-left: 0px;
+
+		dt{
+			margin-bottom: 15px;
+		}
+	}
+
+	.folder-icon {
+		text-align: center;
+		margin-bottom:15px;
+	}
+
+	#agenda-events {
+		margin-top: 10px;
+
+		.lfr-search-container {
+
+			.agenda-row-date {
+				font-weight: bold;
+			}
+
+			.eventsSeparator {
+				paddin-top: 12px;
+			}
+
+			.results-row td {
+				border: none;
+			}
+
+			.aui-calendar-list-item {
+				cursor: default;
+			}
+		}
+	}
+}
+
+.calendar-portlet-mini-calendar {
+	padding-bottom: 10px;
+}
+
+.yui3-skin-sam .yui3-calendar-day.lfr-busy-day, .yui3-skin-sam .yui3-calendar-prevmonth-day.lfr-busy-day, .yui3-skin-sam .yui3-calendar-nextmonth-day.lfr-busy-day {
+	text-decoration: underline;
+}
+
+.calendar-portlet .agenda-search-form {
+	.search-inline-field .aui-field-content {
+		margin-top: 4px;
+		margin-left: 10px;
+	}
+}
+
+.calendar-portlet #agenda-events {
+	margin-top: 10px;
+
+	.lfr-search-container {
+
+		.agenda-row-date {
+			font-weight: bold;
+		}
+
+		.eventsSeparator {
+			paddin-top: 12px;
+		}
+
+		.results-row td {
+			border: none;
+		}
+
+		.aui-calendar-list-item {
+			cursor: default;
+		}
+	}
+}
