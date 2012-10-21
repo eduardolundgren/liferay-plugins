@@ -120,6 +120,32 @@ Date endDate = JCalendarUtil.getJCalendar(calendarBooking.getEndDate(), user.get
 						</aui:field-wrapper>
 					</dt>
 				</c:if>
+				<dt>
+					<liferay-ui:custom-attributes-available className="<%= CalendarBooking.class.getName() %>">
+						<liferay-ui:custom-attribute-list
+							className="<%= CalendarBooking.class.getName() %>"
+							classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>"
+							editable="<%= false %>"
+							label="<%= true %>"
+						/>
+					</liferay-ui:custom-attributes-available>
+				</dt>
+				<dt>
+					<div class="lfr-asset-categories">
+						<liferay-ui:asset-categories-summary
+							className="<%= CalendarBooking.class.getName() %>"
+							classPK="<%= calendarBookingId %>"
+						/>
+					</div>
+
+					<div class="lfr-asset-tags">
+						<liferay-ui:asset-tags-summary
+							className="<%= CalendarBooking.class.getName() %>"
+							classPK="<%= calendarBookingId %>"
+							message="tags"
+						/>
+					</div>
+				</dt>
 			</c:if>
 		</dl>
 	</aui:column>
