@@ -1100,6 +1100,11 @@ AUI.add(
 						setter: String,
 						validator: isValue,
 						value: STR_BLANK
+					},
+
+					preventPersistence: {
+						value: false,
+						validator: isBoolean
 					}
 				},
 
@@ -1205,10 +1210,16 @@ AUI.add(
 						if (currentMonth !== instance.get('currentMonth')) {
 							instance.set('currentMonth', currentMonth);
 						}
+
+						console.log('test');
 					},
 
 					_afterSchedulerEventChange: function(event) {
 						var instance = this;
+
+						if (instance.get('preventPersistence')) {
+							return;
+						}
 
 						var changed = event.changed;
 
