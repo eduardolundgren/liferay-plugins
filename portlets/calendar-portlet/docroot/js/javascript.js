@@ -1210,8 +1210,6 @@ AUI.add(
 						if (currentMonth !== instance.get('currentMonth')) {
 							instance.set('currentMonth', currentMonth);
 						}
-
-						console.log('test');
 					},
 
 					_afterSchedulerEventChange: function(event) {
