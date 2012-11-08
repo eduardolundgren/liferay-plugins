@@ -22,8 +22,7 @@ long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 String editCalendarBookingURL = ParamUtil.getString(request, "editCalendarBookingURL");
 String filterCalendarBookings = ParamUtil.getString(request, "filterCalendarBookings", null);
 boolean readOnly = ParamUtil.getBoolean(request, "readOnly");
-
-List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, null, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarNameComparator(true), ActionKeys.MANAGE_BOOKINGS);
+boolean preventPersistence = ParamUtil.getBoolean(request, "preventPersistence");
 %>
 
 <div class="calendar-portlet-wrapper" id="<portlet:namespace />scheduler"></div>
@@ -35,16 +34,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
 	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= JCalendarUtil.getTimeZoneOffset(userTimeZone) %>;
-
-	var manageableCalendars = Liferay.CalendarUtil.manageableCalendars;
-
-	A.each(
-
-		<%= CalendarUtil.toCalendarsJSONArray(themeDisplay, manageableCalendars) %>,
-		function(item, index, collection) {
-			manageableCalendars[item.calendarId] = item;
-		}
-	);
 
 	window.<portlet:namespace />dayView = new A.SchedulerDayView(
 		{
@@ -69,10 +58,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		}
 	);
 
-	var eventRecorder;
-
 	<c:if test="<%= !readOnly && (userDefaultCalendar != null) %>">
-		eventRecorder = new Liferay.SchedulerEventRecorder(
+		window.<portlet:namespace />eventRecorder = new Liferay.SchedulerEventRecorder(
 			{
 				calendarId: <%= userDefaultCalendar.getCalendarId() %>,
 				color: '<%= ColorUtil.toHexString(userDefaultCalendar.getColor()) %>',
@@ -89,10 +76,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			activeView: window.<portlet:namespace /><%= activeView %>View,
 			boundingBox: '#<portlet:namespace />scheduler',
 			date: new Date(<%= date %>),
-			eventRecorder: eventRecorder,
+			eventRecorder: window.<portlet:namespace />eventRecorder,
 			filterCalendarBookings: <%= filterCalendarBookings %>,
 			firstDayOfWeek: <%= weekStartsOn %>,
 			items: A.Object.values(Liferay.CalendarUtil.availableCalendars),
+			preventPersistence: <%= preventPersistence %>,
 			portletNamespace: '<portlet:namespace />',
 			render: true,
 			strings: {

@@ -416,3 +416,7 @@
 		}
 	}
 }
+
+.allday-class-active .lfr-input-time {
+	display: none;
+}

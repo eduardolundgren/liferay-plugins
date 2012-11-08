@@ -88,7 +88,6 @@ AUI.add(
 			USER_TIMEZONE_OFFSET: 0,
 
 			availableCalendars: {},
-			manageableCalendars: {},
 			visibleCalendars: {},
 
 			addEvent: function(schedulerEvent) {
@@ -292,6 +291,16 @@ AUI.add(
 				);
 			},
 
+			getCalendarName: function(name, calendarResourceName) {
+				var instance = this;
+
+				if (name !== calendarResourceName) {
+					name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+				}
+
+				return name;
+			},
+
 			getCalendarRenderingRules: function(calendarIds, startDate, endDate, ruleName, callback) {
 				var instance = this;
 
@@ -318,6 +327,12 @@ AUI.add(
 						}
 					}
 				);
+			},
+
+			getDefaultUserCalendar: function() {
+				var instance = this;
+
+				return instance.availableCalendars[CalendarUtil.DEFAULT_USER_CALENDAR_ID];
 			},
 
 			getEvent: function(calendarBookingId, success, failure) {
@@ -492,10 +507,10 @@ AUI.add(
 
 					if (oldCalendar !== newCalendar) {
 						oldCalendar.remove(schedulerEvent);
+					}
 
-						if (newCalendar) {
-							newCalendar.addEvent(schedulerEvent);
-						}
+					if (newCalendar) {
+						newCalendar.add(schedulerEvent);
 					}
 
 					schedulerEvent.setAttrs(
@@ -985,13 +1000,9 @@ AUI.add(
 						var instance = this;
 
 						var calendarResourceName = instance.get('calendarResourceName');
-						var displayName = instance.get('name');
+						var name = instance.get('name');
 
-						if (displayName !== calendarResourceName) {
-							displayName = [calendarResourceName, STR_DASH, displayName].join(STR_SPACE);
-						}
-
-						return displayName;
+						return CalendarUtil.getCalendarName(name, calendarResourceName);
 					},
 
 					_afterColorChange: function(event) {
@@ -1089,6 +1100,11 @@ AUI.add(
 						setter: String,
 						validator: isValue,
 						value: STR_BLANK
+					},
+
+					preventPersistence: {
+						value: false,
+						validator: isBoolean
 					}
 				},
 
@@ -1198,6 +1214,10 @@ AUI.add(
 
 					_afterSchedulerEventChange: function(event) {
 						var instance = this;
+
+						if (instance.get('preventPersistence')) {
+							return;
+						}
 
 						var changed = event.changed;
 
@@ -1437,7 +1457,9 @@ AUI.add(
 							schedulerEvent = instance;
 						}
 
-						var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+						var availableCalendars = CalendarUtil.availableCalendars;
+
+						var calendar = availableCalendars[schedulerEvent.get('calendarId')];
 
 						var permissions = calendar.get('permissions');
 
@@ -1447,6 +1469,8 @@ AUI.add(
 								allDay: schedulerEvent.get('allDay'),
 								calendar: calendar,
 								editing: editing,
+								calendarIds: AObject.keys(availableCalendars),
+								availableCalendars: availableCalendars,
 								permissions: permissions,
 								status: CalendarUtil.getStatusLabel(schedulerEvent.get('status'))
 							}
@@ -1553,20 +1577,21 @@ AUI.add(
 
 						overlayBB.toggleClass('calendar-portlet-event-recorder-editing', !!schedulerEvent);
 
-						var defaultCalendar = CalendarUtil.DEFAULT_CALENDAR;
+						var defaultUserCalendar = CalendarUtil.getDefaultUserCalendar();
 
-						var calendarId = defaultCalendar.calendarId;
-						var color = defaultCalendar.color;
+						var calendarId = defaultUserCalendar.get('calendarId');
+						var color = defaultUserCalendar.get('color');
+
 
 						var eventInstance = instance;
 
 						if (schedulerEvent) {
 							calendarId = schedulerEvent.get('calendarId');
 
-							var calendar = CalendarUtil.manageableCalendars[calendarId];
+							var calendar = CalendarUtil.availableCalendars[calendarId];
 
 							if (calendar) {
-								color = calendar.color;
+								color = calendar.get('color');
 
 								eventInstance = schedulerEvent;
 							}
@@ -1611,12 +1636,12 @@ AUI.add(
 
 								var calendarId = toInt(event.currentTarget.val());
 
-								var selectedCalendar = CalendarUtil.manageableCalendars[calendarId];
+								var selectedCalendar = CalendarUtil.availableCalendars[calendarId];
 
 								if (selectedCalendar) {
 									schedulerEvent.set(
 										'color',
-										selectedCalendar.color,
+										selectedCalendar.get('color'),
 										{
 											silent: true
 										}
