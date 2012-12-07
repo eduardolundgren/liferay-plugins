@@ -1224,6 +1224,8 @@ AUI.add(
 
 						Scheduler.superclass._afterActiveViewChange.apply(this, arguments);
 
+						instance._setActiveViewCache(instance.get('activeView').get('name'));
+
 						instance.load();
 					},
 
@@ -1369,6 +1371,10 @@ AUI.add(
 							}
 						}
 					},
+					
+					_getActiveViewCache: function () {
+						return A.Cookie.get('calendar-portlet-calendar-activeView');
+					},
 
 					_onDeleteEvent: function(event) {
 						var instance = this;
@@ -1405,6 +1411,12 @@ AUI.add(
 
 					_onLoadSchedulerEvents: function(event) {
 						var instance = this;
+						
+						var activeViewCache = instance._getActiveViewCache();
+												
+						if (activeViewCache !== null) {
+							instance.set('activeView', instance.getViewByName(activeViewCache));
+						}
 
 						instance.plotCalendarBookings(event.parsed);
 					},
@@ -1413,6 +1425,10 @@ AUI.add(
 						var instance = this;
 
 						CalendarUtil.addEvent(event.newSchedulerEvent);
+					},
+					
+					_setActiveViewCache: function(view) {
+						A.Cookie.set('calendar-portlet-calendar-activeView', view);
 					}
 				}
 			}
@@ -1663,7 +1679,7 @@ AUI.add(
 							'#' + instance.get('portletNamespace') + 'eventRecorderCalendar'
 						);
 					},
-
+					
 					_syncInvitees: function() {
 						var instance = this;
 
@@ -1847,6 +1863,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-portlet-url', 'liferay-store', 'resize-plugin']
+		requires: ['aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-portlet-url', 'liferay-store', 'resize-plugin', 'cookie']
 	}
 );
