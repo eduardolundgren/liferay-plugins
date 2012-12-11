@@ -23,6 +23,8 @@ AUI.add(
 
 		var toInt = Lang.toInt;
 
+		var SCHEDULER_EVENT_TOOLTIP_CLASS = '.aui-scheduler-tooltip-name';
+
 		var STR_BLANK = '';
 
 		var STR_COMMA_SPACE = ', ';
@@ -34,6 +36,8 @@ AUI.add(
 		var TPL_INVITEES_URL = '{inviteesURL}&{portletNamespace}parentCalendarBookingId={calendarBookingId}';
 
 		var TPL_RENDERING_RULES_URL = '{renderingRulesURL}&{portletNamespace}calendarIds={calendarIds}&{portletNamespace}startDate={startDate}&{portletNamespace}endDate={endDate}&{portletNamespace}ruleName={ruleName}';
+
+		var TPL_TOOLTIP = '<span class="aui-scheduler-tooltip-name"></span>';
 
 		var COMPANY_GROUP_ID = toInt(themeDisplay.getCompanyGroupId());
 
@@ -1154,6 +1158,8 @@ AUI.add(
 							}
 						);
 
+						instance._handleSchedulerEventTooltip();
+
 						Scheduler.superclass.bindUI.apply(this, arguments);
 					},
 
@@ -1368,6 +1374,76 @@ AUI.add(
 								}
 							}
 						}
+					},
+
+					hideToolTip: function() {
+						var instance = this;
+
+						var toolTip = A.one(SCHEDULER_EVENT_TOOLTIP_CLASS);
+
+						if (toolTip) {
+							toolTip.hide();
+						}
+					},
+
+					showToolTip: function (event) {
+						var instance = this;
+
+						if (instance.get('eventRecorder').overlay.get('visible')) {
+							return;
+						}
+
+						var toolTip = A.one(SCHEDULER_EVENT_TOOLTIP_CLASS);
+
+						if (!toolTip) {
+							toolTip = A.Node.create(TPL_TOOLTIP);
+
+							A.one('body').append(toolTip);
+						}
+
+						var eventNode = event.currentTarget;
+						var schedulerEvent = eventNode.getData('scheduler-event');
+						var calendarResourceName = Liferay.Language.get('calendar') + ': ';
+
+						calendarResourceName += Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')].get('calendarResourceName');
+
+						toolTip.setHTML(calendarResourceName);
+
+						if (!toolTip.get('visible')) {
+							toolTip.show();
+						}
+
+						instance.moveToolTip(event);
+					},
+
+					moveToolTip: function (event) {
+						var instance = this;
+
+						var toolTip = A.one(SCHEDULER_EVENT_TOOLTIP_CLASS);
+
+						if (toolTip) {
+							var X = event.pageX;
+							var Y = event.pageY;
+
+							toolTip.setStyle('left', X + 20);
+							toolTip.setStyle('top', Y);
+						}
+					},
+
+					_handleSchedulerEventTooltip: function() {
+						var instance = this;
+
+						A.one('.aui-scheduler-base-content').delegate('mouseenter', function(event) {
+							instance.showToolTip(event);
+						}, '.aui-scheduler-event');
+
+						A.one('.aui-scheduler-base-content').delegate('mousemove', function(event) {
+							instance.moveToolTip(event);
+						}, '.aui-scheduler-event');
+
+						A.one('.aui-scheduler-base-content').delegate('mouseleave', function(event) {
+							instance.hideToolTip();
+						}, '.aui-scheduler-event');
 					},
 
 					_onDeleteEvent: function(event) {
