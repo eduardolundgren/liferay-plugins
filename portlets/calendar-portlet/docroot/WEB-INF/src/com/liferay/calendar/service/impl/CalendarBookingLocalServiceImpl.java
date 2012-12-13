@@ -135,6 +135,7 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setFirstReminderType(firstReminderType);
 		calendarBooking.setSecondReminder(secondReminder);
 		calendarBooking.setSecondReminderType(secondReminderType);
+		calendarBooking.setExpandoBridgeAttributes(serviceContext);
 
 		int status = CalendarBookingWorkflowConstants.STATUS_PENDING;
 
@@ -526,6 +527,7 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setFirstReminderType(firstReminderType);
 		calendarBooking.setSecondReminder(secondReminder);
 		calendarBooking.setSecondReminderType(secondReminderType);
+		calendarBooking.setExpandoBridgeAttributes(serviceContext);
 
 		calendarBookingPersistence.update(calendarBooking);
 
