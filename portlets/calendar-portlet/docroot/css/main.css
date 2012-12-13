@@ -33,6 +33,19 @@
 	}
 }
 
+.aui-scheduler-tooltip-name {
+	color: #333;
+	display: block;
+	left:0;
+	min-width: 50px;
+	padding: 5px;
+	position: absolute;
+	top:0;
+	z-index: 10000;
+	@include border-radius(4px);
+	@include background-image(linear-gradient(top, #F7F7F7, #CCCCCC));
+}
+
 .calendar-portlet-column-options {
 	margin-left: -235px;
 	width: 235px;
