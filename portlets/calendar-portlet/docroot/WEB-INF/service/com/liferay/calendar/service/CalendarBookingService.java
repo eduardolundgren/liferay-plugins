@@ -120,8 +120,8 @@ public interface CalendarBookingService extends BaseService, InvokableService {
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.lang.String getCalendarBookingsRSS(long calendarId,
-		long rssTimeInterval, int rssDelta, java.lang.String rssDisplayStyle,
-		java.lang.String rssFormat,
+		long startTime, long endTime, int delta, java.lang.String displayStyle,
+		java.lang.String type, double version,
 		com.liferay.portal.theme.ThemeDisplay themeDisplay)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;

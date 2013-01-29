@@ -71,7 +71,8 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 		_methodName11 = "getCalendarBookingsRSS";
 
 		_methodParameterTypes11 = new String[] {
-				"long", "long", "int", "java.lang.String", "java.lang.String",
+				"long", "long", "long", "int", "java.lang.String",
+				"java.lang.String", "double",
 				"com.liferay.portal.theme.ThemeDisplay"
 			};
 
@@ -513,8 +514,8 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 	}
 
 	public java.lang.String getCalendarBookingsRSS(long calendarId,
-		long rssTimeInterval, int rssDelta, java.lang.String rssDisplayStyle,
-		java.lang.String rssFormat,
+		long startTime, long endTime, int delta, java.lang.String displayStyle,
+		java.lang.String type, double version,
 		com.liferay.portal.theme.ThemeDisplay themeDisplay)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -526,13 +527,17 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 					new Object[] {
 						calendarId,
 						
-					rssTimeInterval,
+					startTime,
 						
-					rssDelta,
+					endTime,
 						
-					ClpSerializer.translateInput(rssDisplayStyle),
+					delta,
 						
-					ClpSerializer.translateInput(rssFormat),
+					ClpSerializer.translateInput(displayStyle),
+						
+					ClpSerializer.translateInput(type),
+						
+					version,
 						
 					ClpSerializer.translateInput(themeDisplay)
 					});

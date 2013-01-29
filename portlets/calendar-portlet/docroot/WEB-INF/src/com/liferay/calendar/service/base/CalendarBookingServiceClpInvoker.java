@@ -71,7 +71,8 @@ public class CalendarBookingServiceClpInvoker {
 		_methodName62 = "getCalendarBookingsRSS";
 
 		_methodParameterTypes62 = new String[] {
-				"long", "long", "int", "java.lang.String", "java.lang.String",
+				"long", "long", "long", "int", "java.lang.String",
+				"java.lang.String", "double",
 				"com.liferay.portal.theme.ThemeDisplay"
 			};
 
@@ -244,9 +245,11 @@ public class CalendarBookingServiceClpInvoker {
 				Arrays.deepEquals(_methodParameterTypes62, parameterTypes)) {
 			return CalendarBookingServiceUtil.getCalendarBookingsRSS(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue(),
-				((Integer)arguments[2]).intValue(),
-				(java.lang.String)arguments[3], (java.lang.String)arguments[4],
-				(com.liferay.portal.theme.ThemeDisplay)arguments[5]);
+				((Long)arguments[2]).longValue(),
+				((Integer)arguments[3]).intValue(),
+				(java.lang.String)arguments[4], (java.lang.String)arguments[5],
+				((Double)arguments[6]).doubleValue(),
+				(com.liferay.portal.theme.ThemeDisplay)arguments[7]);
 		}
 
 		if (_methodName63.equals(name) &&

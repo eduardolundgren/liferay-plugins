@@ -135,14 +135,14 @@ public class CalendarBookingServiceUtil {
 	}
 
 	public static java.lang.String getCalendarBookingsRSS(long calendarId,
-		long rssTimeInterval, int rssDelta, java.lang.String rssDisplayStyle,
-		java.lang.String rssFormat,
+		long startTime, long endTime, int delta, java.lang.String displayStyle,
+		java.lang.String type, double version,
 		com.liferay.portal.theme.ThemeDisplay themeDisplay)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
-				   .getCalendarBookingsRSS(calendarId, rssTimeInterval,
-			rssDelta, rssDisplayStyle, rssFormat, themeDisplay);
+				   .getCalendarBookingsRSS(calendarId, startTime, endTime,
+			delta, displayStyle, type, version, themeDisplay);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getChildCalendarBookings(
