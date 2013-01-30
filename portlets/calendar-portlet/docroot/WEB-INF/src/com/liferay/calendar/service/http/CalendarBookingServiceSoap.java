@@ -190,12 +190,12 @@ public class CalendarBookingServiceSoap {
 	}
 
 	public static com.liferay.calendar.model.CalendarBookingSoap[] getCalendarBookings(
-		long calendarId, long startTime, long endTime, int limit)
+		long calendarId, long startTime, long endTime, int max)
 		throws RemoteException {
 		try {
 			java.util.List<com.liferay.calendar.model.CalendarBooking> returnValue =
 				CalendarBookingServiceUtil.getCalendarBookings(calendarId,
-					startTime, endTime, limit);
+					startTime, endTime, max);
 
 			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModels(returnValue);
 		}

@@ -480,7 +480,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 	}
 
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
-		long calendarId, long startTime, long endTime, int limit)
+		long calendarId, long startTime, long endTime, int max)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
@@ -488,7 +488,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 		try {
 			returnObj = _invokableService.invokeMethod(_methodName10,
 					_methodParameterTypes10,
-					new Object[] { calendarId, startTime, endTime, limit });
+					new Object[] { calendarId, startTime, endTime, max });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);

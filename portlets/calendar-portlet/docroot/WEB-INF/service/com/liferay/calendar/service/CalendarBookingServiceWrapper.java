@@ -121,11 +121,11 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	}
 
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
-		long calendarId, long startTime, long endTime, int limit)
+		long calendarId, long startTime, long endTime, int max)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.getCalendarBookings(calendarId,
-			startTime, endTime, limit);
+			startTime, endTime, max);
 	}
 
 	public java.lang.String getCalendarBookingsRSS(long calendarId,
