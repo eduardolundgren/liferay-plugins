@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -61,41 +62,25 @@ import javax.portlet.PortletPreferences;
  * @author Peter Shin
  * @author Brian Wing Shun Chan
  */
-public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
+public class AdminPortletDataHandler extends BasePortletDataHandler {
 
-	@Override
-	public PortletDataHandlerControl[] getExportControls() {
-		return new PortletDataHandlerControl[] {
-			_kbArticles, _kbTemplatesAndKBComments
-		};
-	}
+	public static final String NAMESPACE = "knowledge_base";
 
-	@Override
-	public PortletDataHandlerControl[] getExportMetadataControls() {
-		return new PortletDataHandlerControl[] {
+	public AdminPortletDataHandler() {
+		setAlwaysExportable(true);
+		setExportControls(
 			new PortletDataHandlerBoolean(
-				_NAMESPACE, "kb-articles", true, _metadataControls)
-		};
-	}
-
-	@Override
-	public PortletDataHandlerControl[] getImportControls() {
-		return new PortletDataHandlerControl[] {
-			_kbArticles, _kbTemplatesAndKBComments
-		};
-	}
-
-	@Override
-	public PortletDataHandlerControl[] getImportMetadataControls() {
-		return new PortletDataHandlerControl[] {
+				NAMESPACE, "kb-articles", true, true),
 			new PortletDataHandlerBoolean(
-				_NAMESPACE, "kb-articles", true, _metadataControls)
-		};
-	}
-
-	@Override
-	public boolean isAlwaysExportable() {
-		return _ALWAYS_EXPORTABLE;
+				NAMESPACE, "kb-templates-and-kb-comments", true, true));
+		setExportMetadataControls(
+			new PortletDataHandlerBoolean(
+				NAMESPACE, "kb-articles", true,
+				new PortletDataHandlerControl[] {
+					new PortletDataHandlerBoolean(NAMESPACE, "categories"),
+					new PortletDataHandlerBoolean(NAMESPACE, "ratings"),
+					new PortletDataHandlerBoolean(NAMESPACE, "tags")
+				}));
 	}
 
 	@Override
@@ -104,17 +89,19 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		if (!portletDataContext.addPrimaryKey(
-				AdminPortletDataHandlerImpl.class, "deleteData")) {
+		if (portletDataContext.addPrimaryKey(
+				AdminPortletDataHandler.class, "deleteData")) {
 
-			KBArticleLocalServiceUtil.deleteGroupKBArticles(
-				portletDataContext.getScopeGroupId());
-
-			KBTemplateLocalServiceUtil.deleteGroupKBTemplates(
-				portletDataContext.getScopeGroupId());
+			return portletPreferences;
 		}
 
-		return null;
+		KBArticleLocalServiceUtil.deleteGroupKBArticles(
+			portletDataContext.getScopeGroupId());
+
+		KBTemplateLocalServiceUtil.deleteGroupKBTemplates(
+			portletDataContext.getScopeGroupId());
+
+		return portletPreferences;
 	}
 
 	@Override
@@ -127,9 +114,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			"com.liferay.knowledgebase.admin",
 			portletDataContext.getScopeGroupId());
 
-		Document document = SAXReaderUtil.createDocument();
-
-		Element rootElement = document.addElement("knowledge-base-admin-data");
+		Element rootElement = addExportRootElement();
 
 		rootElement.addAttribute(
 			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
@@ -138,7 +123,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		exportKBTemplates(portletDataContext, rootElement);
 		exportKBComments(portletDataContext, rootElement);
 
-		return document.formattedString();
+		return rootElement.formattedString();
 	}
 
 	@Override
@@ -178,7 +163,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			portletDataContext, kbArticleElement, kbArticle);
 
 		portletDataContext.addClassedModel(
-			kbArticleElement, path, kbArticle, _NAMESPACE);
+			kbArticleElement, path, kbArticle, NAMESPACE);
 	}
 
 	protected void exportKBArticleAttachments(
@@ -274,7 +259,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		Element kbCommentElement = rootElement.addElement("kb-comment");
 
 		portletDataContext.addClassedModel(
-			kbCommentElement, path, kbComment, _NAMESPACE);
+			kbCommentElement, path, kbComment, NAMESPACE);
 	}
 
 	protected void exportKBComments(
@@ -311,7 +296,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		Element kbTemplateElement = rootElement.addElement("kb-template");
 
 		portletDataContext.addClassedModel(
-			kbTemplateElement, path, kbTemplate, _NAMESPACE);
+			kbTemplateElement, path, kbTemplate, NAMESPACE);
 	}
 
 	protected void exportKBTemplates(
@@ -401,7 +386,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			dirNames, String.valueOf(kbArticle.getResourcePrimKey()));
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			kbArticleElement, kbArticle, _NAMESPACE);
+			kbArticleElement, kbArticle, NAMESPACE);
 
 		KBArticle importedKBArticle = null;
 
@@ -438,7 +423,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 
 		portletDataContext.importClassedModel(
-			kbArticle, importedKBArticle, _NAMESPACE);
+			kbArticle, importedKBArticle, NAMESPACE);
 
 		importKBArticleAttachments(
 			portletDataContext, CounterLocalServiceUtil.increment(), dirNames,
@@ -470,17 +455,22 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		serviceContext.setScopeGroupId(portletDataContext.getScopeGroupId());
 
 		for (Element fileElement : fileElements) {
-			String fileName = fileElement.attributeValue("file-name");
-
 			InputStream inputStream =
 				portletDataContext.getZipEntryAsInputStream(
 					fileElement.attributeValue("path"));
 
+			String fileName = fileElement.attributeValue("file-name");
+
+			String mimeType = MimeTypesUtil.getContentType(
+				inputStream, fileName);
+
 			PortletFileRepositoryUtil.addPortletFileEntry(
 				portletDataContext.getScopeGroupId(),
 				portletDataContext.getUserId(kbArticle.getUserUuid()),
+				KBArticle.class.getName(), kbArticle.getClassPK(),
 				PortletKeys.KNOWLEDGE_BASE_ADMIN,
-				kbArticle.getAttachmentsFolderId(), inputStream, fileName);
+				kbArticle.getAttachmentsFolderId(), inputStream, fileName,
+				mimeType);
 		}
 
 		dirNames.put(resourcePrimKey, dirName);
@@ -539,7 +529,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 
 			ServiceContext serviceContext =
 				portletDataContext.createServiceContext(
-					curKBArticleElement, curKBArticle, _NAMESPACE);
+					curKBArticleElement, curKBArticle, NAMESPACE);
 
 			if (importedKBArticle == null) {
 				serviceContext.setUuid(uuid);
@@ -577,7 +567,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		long classPK = MapUtil.getLong(classPKs, kbComment.getClassPK());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			kbCommentElement, kbComment, _NAMESPACE);
+			kbCommentElement, kbComment, NAMESPACE);
 
 		if (portletDataContext.isDataStrategyMirror()) {
 			KBComment existingKBComment = KBCommentUtil.fetchByUUID_G(
@@ -633,7 +623,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		long userId = portletDataContext.getUserId(kbTemplate.getUserUuid());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			kbTemplateElement, kbTemplate, _NAMESPACE);
+			kbTemplateElement, kbTemplate, NAMESPACE);
 
 		KBTemplate importedKBTemplate = null;
 
@@ -663,7 +653,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 
 		portletDataContext.importClassedModel(
-			kbTemplate, importedKBTemplate, _NAMESPACE);
+			kbTemplate, importedKBTemplate, NAMESPACE);
 	}
 
 	protected void importKBTemplates(
@@ -683,23 +673,5 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			importKBTemplate(portletDataContext, kbTemplateElement, kbTemplate);
 		}
 	}
-
-	private static final boolean _ALWAYS_EXPORTABLE = true;
-
-	private static final String _NAMESPACE = "knowledge_base";
-
-	private static PortletDataHandlerBoolean _kbArticles =
-		new PortletDataHandlerBoolean(_NAMESPACE, "kb-articles", true, true);
-
-	private static PortletDataHandlerBoolean _kbTemplatesAndKBComments =
-		new PortletDataHandlerBoolean(
-			_NAMESPACE, "kb-templates-and-kb-comments", true, true);
-
-	private static PortletDataHandlerControl[] _metadataControls =
-		new PortletDataHandlerControl[] {
-			new PortletDataHandlerBoolean(_NAMESPACE, "categories"),
-			new PortletDataHandlerBoolean(_NAMESPACE, "ratings"),
-			new PortletDataHandlerBoolean(_NAMESPACE, "tags")
-		};
 
 }

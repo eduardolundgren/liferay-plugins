@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -397,11 +398,10 @@ public class FileSystemImporter extends BaseImporter {
 
 		setServiceContext(fileName);
 
-		long classNameId = PortalUtil.getClassNameId(JournalArticle.class);
-
 		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.addStructure(
-			userId, groupId, parentDDMStructureKey, classNameId,
-			ddmStructureKey, nameMap, null, xsd,
+			userId, groupId, parentDDMStructureKey,
+			PortalUtil.getClassNameId(JournalArticle.class), ddmStructureKey,
+			nameMap, null, xsd,
 			PropsUtil.get(PropsKeys.JOURNAL_ARTICLE_STORAGE_TYPE),
 			DDMStructureConstants.TYPE_DEFAULT, serviceContext);
 
@@ -433,16 +433,15 @@ public class FileSystemImporter extends BaseImporter {
 		setServiceContext(fileName);
 
 		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
-			groupId, ddmStructureKey);
-
-		long classNameId = PortalUtil.getClassNameId(DDMStructure.class);
+			groupId, PortalUtil.getClassNameId(JournalArticle.class),
+			ddmStructureKey);
 
 		DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.addTemplate(
-			userId, groupId, classNameId, ddmStructure.getStructureId(),
-			ddmTemplateKey, nameMap, null,
+			userId, groupId, PortalUtil.getClassNameId(DDMStructure.class),
+			ddmStructure.getStructureId(), ddmTemplateKey, nameMap, null,
 			DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
 			DDMTemplateConstants.TEMPLATE_MODE_CREATE,
-			DDMTemplateConstants.LANG_TYPE_XSD, xsl, false, false, null, null,
+			TemplateConstants.LANG_TYPE_XSD, xsl, false, false, null, null,
 			serviceContext);
 
 		addJournalArticles(
@@ -704,12 +703,11 @@ public class FileSystemImporter extends BaseImporter {
 	protected void setServiceContext(String name) {
 		JSONObject assetJSONObject = _assetJSONObjectMap.get(name);
 
-		if (assetJSONObject == null) {
-			return;
-		}
+		String[] assetTagNames = null;
 
-		String[] assetTagNames = getJSONArrayAsStringArray(
-			assetJSONObject, "tags");
+		if (assetJSONObject != null) {
+			assetTagNames = getJSONArrayAsStringArray(assetJSONObject, "tags");
+		}
 
 		serviceContext.setAssetTagNames(assetTagNames);
 	}

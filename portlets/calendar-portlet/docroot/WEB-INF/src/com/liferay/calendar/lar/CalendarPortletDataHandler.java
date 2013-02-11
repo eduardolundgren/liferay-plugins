@@ -43,40 +43,24 @@ import javax.portlet.PortletPreferences;
 /**
  * @author Marcellus Tavares
  */
-public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
+public class CalendarPortletDataHandler extends BasePortletDataHandler {
 
-	@Override
-	public String[] getDataPortletPreferences() {
-		return new String[] {
+	public static final String NAMESPACE = "calendar";
+
+	public CalendarPortletDataHandler() {
+		setAlwaysExportable(true);
+		setDataLocalized(true);
+		setDataPortletPreferences(
 			"calendarNotificationBodyEmailInvite",
 			"calendarNotificationBodyEmailReminder",
 			"calendarNotificationSubjectEmailInvite",
 			"calendarNotificationSubjectEmailReminder", "defaultDuration",
 			"defaultView", "emailFromAddress", "emailFromName", "isoTimeFormat",
-			"timeZoneId", "usePortalTimeZone", "weekStartsOn"
-		};
-	}
-
-	@Override
-	public PortletDataHandlerControl[] getExportControls() {
-		return new PortletDataHandlerControl[] {
-			_bookings
-		};
-	}
-
-	@Override
-	public boolean isAlwaysExportable() {
-		return _ALWAYS_EXPORTABLE;
-	}
-
-	@Override
-	public boolean isDataLocalized() {
-		return _DATA_LOCALIZED;
-	}
-
-	@Override
-	public boolean isPublishToLiveByDefault() {
-		return _PUBLISH_TO_LIVE_BY_DEFAULT;
+			"timeZoneId", "usePortalTimeZone", "weekStartsOn");
+		setExportControls(
+			new PortletDataHandlerBoolean(NAMESPACE, "bookings", true, false));
+		setImportControls(new PortletDataHandlerControl[0]);
+		setPublishToLiveByDefault(true);
 	}
 
 	@Override
@@ -85,12 +69,14 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		if (!portletDataContext.addPrimaryKey(
-				CalendarPortletDataHandlerImpl.class, "deleteData")) {
+		if (portletDataContext.addPrimaryKey(
+				CalendarPortletDataHandler.class, "deleteData")) {
 
-			CalendarResourceLocalServiceUtil.deleteCalendarResources(
-				portletDataContext.getScopeGroupId());
+			return portletPreferences;
 		}
+
+		CalendarResourceLocalServiceUtil.deleteCalendarResources(
+			portletDataContext.getScopeGroupId());
 
 		return portletPreferences;
 	}
@@ -105,9 +91,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			"com.liferay.portlet.calendar",
 			portletDataContext.getScopeGroupId());
 
-		Document document = SAXReaderUtil.createDocument();
-
-		Element rootElement = document.addElement("calendar-data");
+		Element rootElement = addExportRootElement();
 
 		rootElement.addAttribute(
 			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
@@ -133,7 +117,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			}
 		}
 
-		return document.formattedString();
+		return rootElement.formattedString();
 	}
 
 	@Override
@@ -169,7 +153,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			importCalendar(portletDataContext, calendarElement);
 		}
 
-		if (portletDataContext.getBooleanParameter(_NAMESPACE, "bookings")) {
+		if (portletDataContext.getBooleanParameter(NAMESPACE, "bookings")) {
 			Element calendarBookingsElement = rootElement.element(
 				"calendar-bookings");
 
@@ -196,7 +180,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			return;
 		}
 
-		if (portletDataContext.getBooleanParameter(_NAMESPACE, "bookings")) {
+		if (portletDataContext.getBooleanParameter(NAMESPACE, "bookings")) {
 			List<CalendarBooking> calendarBookings =
 				CalendarBookingLocalServiceUtil.getCalendarBookings(
 					calendar.getCalendarId());
@@ -211,7 +195,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 		Element calendarElement = calendarsElement.addElement("calendar");
 
 		portletDataContext.addClassedModel(
-			calendarElement, path, calendar, _NAMESPACE);
+			calendarElement, path, calendar, NAMESPACE);
 	}
 
 	protected void exportCalendarBooking(
@@ -230,7 +214,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			"calendar-booking");
 
 		portletDataContext.addClassedModel(
-			bookingElement, path, calendarBooking, _NAMESPACE);
+			bookingElement, path, calendarBooking, NAMESPACE);
 	}
 
 	protected void exportCalendarResource(
@@ -258,7 +242,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			"calendar-resource");
 
 		portletDataContext.addClassedModel(
-			resourceElement, path, calendarResource, _NAMESPACE);
+			resourceElement, path, calendarResource, NAMESPACE);
 	}
 
 	protected String getCalendarBookingPath(
@@ -360,7 +344,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 		long groupId = calendarResource.getGroupId();
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			path, calendar, _NAMESPACE);
+			path, calendar, NAMESPACE);
 
 		Calendar importedCalendar = null;
 
@@ -378,33 +362,29 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 				if (existingCalendar == null) {
 					serviceContext.setUuid(calendar.getUuid());
 
-					importedCalendar =
-						CalendarLocalServiceUtil.addCalendar(
-							userId, groupId, calendarResourceId,
-							calendar.getNameMap(), calendar.getDescriptionMap(),
-							calendar.getColor(), calendar.getDefaultCalendar(),
-							serviceContext);
-				}
-				else {
-					importedCalendar =
-						CalendarLocalServiceUtil.updateCalendar(
-							existingCalendar.getCalendarId(),
-							calendar.getNameMap(), calendar.getDescriptionMap(),
-							calendar.getColor(), serviceContext);
-				}
-			}
-			else {
-				importedCalendar =
-					CalendarLocalServiceUtil.addCalendar(
+					importedCalendar = CalendarLocalServiceUtil.addCalendar(
 						userId, groupId, calendarResourceId,
 						calendar.getNameMap(), calendar.getDescriptionMap(),
 						calendar.getColor(), calendar.getDefaultCalendar(),
 						serviceContext);
+				}
+				else {
+					importedCalendar = CalendarLocalServiceUtil.updateCalendar(
+						existingCalendar.getCalendarId(), calendar.getNameMap(),
+						calendar.getDescriptionMap(), calendar.getColor(),
+						serviceContext);
+				}
+			}
+			else {
+				importedCalendar = CalendarLocalServiceUtil.addCalendar(
+					userId, groupId, calendarResourceId, calendar.getNameMap(),
+					calendar.getDescriptionMap(), calendar.getColor(),
+					calendar.getDefaultCalendar(), serviceContext);
 			}
 		}
 
 		portletDataContext.importClassedModel(
-			calendar, importedCalendar, _NAMESPACE);
+			calendar, importedCalendar, NAMESPACE);
 	}
 
 	protected void importCalendarBooking(
@@ -475,7 +455,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			calendarBookingElement, calendarBooking, _NAMESPACE);
+			calendarBookingElement, calendarBooking, NAMESPACE);
 
 		CalendarBooking importedCalendarBooking = null;
 
@@ -538,7 +518,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 
 		portletDataContext.importClassedModel(
-			calendarBooking, importedCalendarBooking, _NAMESPACE);
+			calendarBooking, importedCalendarBooking, NAMESPACE);
 
 	}
 
@@ -560,7 +540,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 			calendarResource.getUserUuid());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			calendarResourceElement, calendarResource, _NAMESPACE);
+			calendarResourceElement, calendarResource, NAMESPACE);
 
 		CalendarResource importedCalendarResource = null;
 
@@ -604,18 +584,7 @@ public class CalendarPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 
 		portletDataContext.importClassedModel(
-			calendarResource, importedCalendarResource, _NAMESPACE);
+			calendarResource, importedCalendarResource, NAMESPACE);
 	}
-
-	private static final boolean _ALWAYS_EXPORTABLE = true;
-
-	private static final boolean _DATA_LOCALIZED = true;
-
-	private static final String _NAMESPACE = "calendar";
-
-	private static final boolean _PUBLISH_TO_LIVE_BY_DEFAULT = true;
-
-	private static PortletDataHandlerBoolean _bookings =
-		new PortletDataHandlerBoolean(_NAMESPACE, "bookings", true, false);
 
 }

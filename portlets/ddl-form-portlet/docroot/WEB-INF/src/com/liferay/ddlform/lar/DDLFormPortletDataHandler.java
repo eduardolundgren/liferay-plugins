@@ -16,6 +16,7 @@ package com.liferay.ddlform.lar;
 
 import com.liferay.portal.kernel.lar.BasePortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -23,8 +24,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.liferay.portlet.dynamicdatalists.lar.DDLPortletDataHandler;
-import com.liferay.portlet.dynamicdatalists.lar.DDLPortletDataHandlerUtil;
 import com.liferay.portlet.dynamicdatalists.model.DDLRecordSet;
 import com.liferay.portlet.dynamicdatalists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
@@ -36,11 +35,10 @@ import javax.portlet.PortletPreferences;
 /**
  * @author Michael C. Han
  */
-public class DDLFormPortletDataHandlerImpl extends BasePortletDataHandler {
+public class DDLFormPortletDataHandler extends BasePortletDataHandler {
 
-	@Override
-	public boolean isAlwaysExportable() {
-		return _ALWAYS_EXPORTABLE;
+	public DDLFormPortletDataHandler() {
+		setAlwaysExportable(true);
 	}
 
 	@Override
@@ -50,7 +48,7 @@ public class DDLFormPortletDataHandlerImpl extends BasePortletDataHandler {
 		throws Exception {
 
 		if (portletPreferences == null) {
-			return null;
+			return portletPreferences;
 		}
 
 		portletPreferences.setValue("formDDMTemplateId", StringPool.BLANK);
@@ -78,20 +76,15 @@ public class DDLFormPortletDataHandlerImpl extends BasePortletDataHandler {
 			return StringPool.BLANK;
 		}
 
-		Document document = SAXReaderUtil.createDocument();
-
-		Element rootElement = document.addElement("record-sets");
+		Element rootElement = addExportRootElement();
 
 		DDLRecordSet recordSet = DDLRecordSetLocalServiceUtil.getRecordSet(
 			recordSetId);
 
-		DDLPortletDataHandler ddlPortletDataHandler =
-			DDLPortletDataHandlerUtil.getDDLPortletDataHandler();
-
-		ddlPortletDataHandler.exportRecordSet(
+		StagedModelDataHandlerUtil.exportStagedModel(
 			portletDataContext, rootElement, recordSet);
 
-		return document.formattedString();
+		return rootElement.formattedString();
 	}
 
 	@Override
@@ -116,10 +109,7 @@ public class DDLFormPortletDataHandlerImpl extends BasePortletDataHandler {
 		Element recordSetElement = rootElement.element("record-set");
 
 		if (recordSetElement != null) {
-			DDLPortletDataHandler ddlPortletDataHandler =
-				DDLPortletDataHandlerUtil.getDDLPortletDataHandler();
-
-			ddlPortletDataHandler.importRecordSet(
+			StagedModelDataHandlerUtil.importStagedModel(
 				portletDataContext, recordSetElement);
 		}
 
@@ -150,7 +140,5 @@ public class DDLFormPortletDataHandlerImpl extends BasePortletDataHandler {
 
 		return portletPreferences;
 	}
-
-	private static final boolean _ALWAYS_EXPORTABLE = true;
 
 }
