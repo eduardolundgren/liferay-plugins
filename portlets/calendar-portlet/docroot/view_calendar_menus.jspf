@@ -297,12 +297,16 @@
 		function(event) {
 			var target = event.target;
 
-			window.<portlet:namespace />calendarListsMenu.setAttrs(
-				{
-					'align.node': target,
-					visible: !window.<portlet:namespace />calendarListsMenu.get('visible')
-				}
-			);
+			var calendarListsMenuAttrs = {
+				'align.node': target,
+				visible: !window.<portlet:namespace />calendarListsMenu.get('visible')
+			}
+
+			<c:if test="<%= (groupCalendarResource != null) && !CalendarResourcePermission.contains(permissionChecker, groupCalendarResource, ActionKeys.ADD_CALENDAR) %>">
+				calendarListsMenuAttrs['hiddenItems'] = ['add'];
+			</c:if>
+
+			window.<portlet:namespace />calendarListsMenu.setAttrs(calendarListsMenuAttrs);
 
 			window.<portlet:namespace />calendarListsMenu.calendarResourceId = target.getAttribute('data-calendarResourceId');
 
