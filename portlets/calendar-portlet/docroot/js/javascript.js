@@ -576,17 +576,42 @@ AUI.add(
 				return availableCalendars;
 			},
 
+			toFixedDayDate: function(date) {
+				var instance = this;
+
+				if (!isDate(date)) {
+					date = new Date(date);
+				}
+
+				return DateMath.add(date, DateMath.MINUTES, date.getTimezoneOffset());
+			},
+
 			toSchedulerEvent: function(calendarBooking) {
 				var instance = this;
 
+				var allDay = calendarBooking.allDay;
+
+				var startDate;
+				var endDate;
+
+				if (allDay) {
+					startDate = instance.toFixedDayDate(calendarBooking.startTime);
+					endDate = instance.toFixedDayDate(calendarBooking.endTime);
+
+				}
+				else {
+					startDate = instance.toUserTimeZone(calendarBooking.startTime);
+					endDate = instance.toUserTimeZone(calendarBooking.endTime);
+				}
+
 				return new Liferay.SchedulerEvent(
 					{
-						allDay: calendarBooking.allDay,
+						allDay: allDay,
 						calendarBookingId: calendarBooking.calendarBookingId,
 						calendarId: calendarBooking.calendarId,
 						content: calendarBooking.titleCurrentValue,
 						description: calendarBooking.descriptionCurrentValue,
-						endDate: instance.toUserTimeZone(calendarBooking.endTime),
+						endDate: endDate,
 						firstReminder: calendarBooking.firstReminder,
 						firstReminderType: calendarBooking.firstReminderType,
 						location: calendarBooking.location,
@@ -594,7 +619,7 @@ AUI.add(
 						recurrence: calendarBooking.recurrence,
 						secondReminder: calendarBooking.secondReminder,
 						secondReminderType: calendarBooking.secondReminderType,
-						startDate: instance.toUserTimeZone(calendarBooking.startTime),
+						startDate: startDate,
 						status: calendarBooking.status
 					}
 				);
