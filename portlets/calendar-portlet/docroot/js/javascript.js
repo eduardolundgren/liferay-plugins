@@ -1648,6 +1648,11 @@ AUI.add(
 									after: {
 										destroy: function(event) {
 											scheduler.load();
+										},
+										render: function(event) {
+											var zIndexBase = A.DialogManager.get('zIndexBase');
+
+											this.set('zIndex', zIndexBase + 1);
 										}
 									},
 									destroyOnClose: true,
