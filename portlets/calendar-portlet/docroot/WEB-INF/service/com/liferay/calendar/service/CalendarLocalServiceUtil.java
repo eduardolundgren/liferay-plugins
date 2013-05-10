@@ -19,11 +19,12 @@ import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
- * The utility for the calendar local service. This utility wraps {@link com.liferay.calendar.service.impl.CalendarLocalServiceImpl} and is the primary access point for service operations in application layer code running on the local server.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
+ * Provides the local service utility for Calendar. This utility wraps
+ * {@link com.liferay.calendar.service.impl.CalendarLocalServiceImpl} and is the
+ * primary access point for service operations in application layer code running
+ * on the local server. Methods of this service will not have security checks
+ * based on the propagated JAAS credentials because this service can only be
+ * accessed from within the same VM.
  *
  * @author Eduardo Lundgren
  * @see CalendarLocalService
@@ -281,13 +282,15 @@ public class CalendarLocalServiceUtil {
 		long groupId, long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, boolean defaultCalendar,
+		int color, boolean defaultCalendar, boolean enableComments,
+		boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .addCalendar(userId, groupId, calendarResourceId, nameMap,
-			descriptionMap, color, defaultCalendar, serviceContext);
+			descriptionMap, color, defaultCalendar, enableComments,
+			enableRatings, serviceContext);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.Calendar> getCalendarResourceCalendars(
@@ -354,13 +357,14 @@ public class CalendarLocalServiceUtil {
 		long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, boolean defaultCalendar,
+		int color, boolean defaultCalendar, boolean enableComments,
+		boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .updateCalendar(calendarId, nameMap, descriptionMap, color,
-			defaultCalendar, serviceContext);
+			defaultCalendar, enableComments, enableRatings, serviceContext);
 	}
 
 	public static com.liferay.calendar.model.Calendar updateCalendar(

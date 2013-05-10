@@ -26,13 +26,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * <p>
- * This class provides a SOAP utility for the
+ * Provides the SOAP utility for the
  * {@link com.liferay.calendar.service.CalendarServiceUtil} service utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it is difficult for SOAP to
  * support certain types.
- * </p>
  *
  * <p>
  * ServiceBuilder follows certain rules in translating the methods. For example,
@@ -74,7 +72,7 @@ public class CalendarServiceSoap {
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
 		java.lang.String[] descriptionMapValues, int color,
-		boolean defaultCalendar,
+		boolean defaultCalendar, boolean enableComments, boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -85,7 +83,8 @@ public class CalendarServiceSoap {
 
 			com.liferay.calendar.model.Calendar returnValue = CalendarServiceUtil.addCalendar(groupId,
 					calendarResourceId, nameMap, descriptionMap, color,
-					defaultCalendar, serviceContext);
+					defaultCalendar, enableComments, enableRatings,
+					serviceContext);
 
 			return com.liferay.calendar.model.CalendarSoap.toSoapModel(returnValue);
 		}
@@ -291,7 +290,7 @@ public class CalendarServiceSoap {
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
 		java.lang.String[] descriptionMapValues, int color,
-		boolean defaultCalendar,
+		boolean defaultCalendar, boolean enableComments, boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -302,7 +301,7 @@ public class CalendarServiceSoap {
 
 			com.liferay.calendar.model.Calendar returnValue = CalendarServiceUtil.updateCalendar(calendarId,
 					nameMap, descriptionMap, color, defaultCalendar,
-					serviceContext);
+					enableComments, enableRatings, serviceContext);
 
 			return com.liferay.calendar.model.CalendarSoap.toSoapModel(returnValue);
 		}

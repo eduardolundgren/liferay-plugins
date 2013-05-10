@@ -22,13 +22,11 @@ import com.liferay.sampleservicebuilder.service.FooServiceUtil;
 import java.rmi.RemoteException;
 
 /**
- * <p>
- * This class provides a SOAP utility for the
+ * Provides the SOAP utility for the
  * {@link com.liferay.sampleservicebuilder.service.FooServiceUtil} service utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it is difficult for SOAP to
  * support certain types.
- * </p>
  *
  * <p>
  * ServiceBuilder follows certain rules in translating the methods. For example,
@@ -70,6 +68,20 @@ public class FooServiceSoap {
 			com.liferay.portal.model.User returnValue = FooServiceUtil.getUser(userId);
 
 			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.model.Group[] getUserSites()
+		throws RemoteException {
+		try {
+			java.util.List<com.liferay.portal.model.Group> returnValue = FooServiceUtil.getUserSites();
+
+			return returnValue.toArray(new com.liferay.portal.model.Group[returnValue.size()]);
 		}
 		catch (Exception e) {
 			_log.error(e, e);

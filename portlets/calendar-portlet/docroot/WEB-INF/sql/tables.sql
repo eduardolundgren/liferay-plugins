@@ -12,7 +12,9 @@ create table Calendar (
 	name STRING null,
 	description STRING null,
 	color INTEGER,
-	defaultCalendar BOOLEAN
+	defaultCalendar BOOLEAN,
+	enableComments BOOLEAN,
+	enableRatings BOOLEAN
 );
 
 create table CalendarBooking (
@@ -24,6 +26,7 @@ create table CalendarBooking (
 	userName VARCHAR(75) null,
 	createDate DATE null,
 	modifiedDate DATE null,
+	resourceBlockId LONG,
 	calendarId LONG,
 	calendarResourceId LONG,
 	parentCalendarBookingId LONG,
@@ -42,6 +45,23 @@ create table CalendarBooking (
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
 	statusDate DATE null
+);
+
+create table CalendarNotificationTemplate (
+	uuid_ VARCHAR(75) null,
+	calendarNotificationTemplateId LONG not null primary key,
+	groupId LONG,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	calendarId LONG,
+	notificationType VARCHAR(75) null,
+	notificationTypeSettings VARCHAR(75) null,
+	notificationTemplateType VARCHAR(75) null,
+	subject VARCHAR(75) null,
+	body TEXT null
 );
 
 create table CalendarResource (

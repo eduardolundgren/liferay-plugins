@@ -17,9 +17,7 @@ package com.liferay.sampleservicebuilder.service;
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
- * <p>
- * This class is a wrapper for {@link FooService}.
- * </p>
+ * Provides a wrapper for {@link FooService}.
  *
  * @author    Brian Wing Shun Chan
  * @see       FooService
@@ -59,6 +57,12 @@ public class FooServiceWrapper implements FooService,
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _fooService.getUser(userId);
+	}
+
+	public java.util.List<com.liferay.portal.model.Group> getUserSites()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _fooService.getUserSites();
 	}
 
 	/**
