@@ -180,6 +180,6 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 
 			<portlet:namespace />importDialog.show();
 		},
-		['aui-dialog', 'aui-io']
+		['aui-dialog', 'aui-io-deprecated']
 	);
 </aui:script>
