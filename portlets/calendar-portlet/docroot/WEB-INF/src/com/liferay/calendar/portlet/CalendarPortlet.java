@@ -130,6 +130,16 @@ public class CalendarPortlet extends MVCPortlet {
 		CalendarServiceUtil.deleteCalendar(calendarId);
 	}
 
+	public void deleteCalendarBooking(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long calendarBookingId = ParamUtil.getLong(
+			actionRequest, "calendarBookingId");
+
+		CalendarBookingServiceUtil.deleteCalendarBooking(calendarBookingId);
+	}
+
 	public void deleteCalendarResource(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
