@@ -1898,7 +1898,7 @@ AUI.add(
 						var toolbar = instance.toolbar;
 
 						if (!overlayVisible) {
-							toolbar.removeAll();
+							toolbar.clear();
 						}
 						else {
 							var schedulerEvent = instance.get('event');
@@ -2053,6 +2053,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-portlet-url', 'liferay-store', 'resize-plugin']
+		requires: ['aui-io', 'aui-scheduler', 'autocomplete', 'autocomplete-highlighters', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-node', 'liferay-portlet-url', 'liferay-store', 'resize-plugin']
 	}
 );
