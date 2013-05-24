@@ -54,7 +54,9 @@ import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.asset.NoSuchEntryException;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLinkConstants;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
@@ -469,7 +471,9 @@ public class CalendarBookingLocalServiceImpl
 			SocialActivityConstants.TYPE_MOVE_TO_TRASH, StringPool.BLANK, 0);
 	}
 
-	public void restoreCalendarBookingFromTrash(long userId, long calendarBookingId) {
+	public void restoreCalendarBookingFromTrash(
+			long userId, long calendarBookingId)
+		throws PortalException, SystemException {
 
 		// Entry
 
@@ -567,20 +571,7 @@ public class CalendarBookingLocalServiceImpl
 			long[] assetLinkEntryIds)
 		throws PortalException, SystemException {
 
-		long assetGroupId = calendarBooking.getGroupId();
-
-		CalendarResource calendarResource =
-			calendarBooking.getCalendarResource();
-
-		long classNameId = calendarResource.getClassNameId();
-		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
-
-		if (classNameId == groupClassNameId) {
-			Group group = GroupLocalServiceUtil.getGroup(
-				calendarResource.getClassPK());
-
-			assetGroupId = group.getGroupId();
-		}
+		long assetGroupId = calendarBooking.getResourceGroupId();
 
 		boolean visible = false;
 
@@ -826,15 +817,22 @@ public class CalendarBookingLocalServiceImpl
 
 		// Asset
 
-		if (status == CalendarBookingWorkflowConstants.STATUS_APPROVED) {
-			assetEntryLocalService.updateVisible(
-				DLFolder.class.getName(),
-				calendarBooking.getCalendarBookingId(), true);
+		try {
+			if (status == CalendarBookingWorkflowConstants.STATUS_APPROVED) {
+				assetEntryLocalService.updateVisible(
+					DLFolder.class.getName(),
+					calendarBooking.getCalendarBookingId(), true);
+			}
+			else if (
+				status == CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
+
+				assetEntryLocalService.updateVisible(
+					DLFolder.class.getName(),
+					calendarBooking.getCalendarBookingId(), false);
+			}
 		}
-		else if (status == CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
-			assetEntryLocalService.updateVisible(
-				DLFolder.class.getName(),
-				calendarBooking.getCalendarBookingId(), false);
+		catch (NoSuchEntryException nsee) {
+			;
 		}
 
 		// Subscriptions
@@ -850,14 +848,14 @@ public class CalendarBookingLocalServiceImpl
 		if (status == CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
 			if (calendarBooking.isMasterBooking()) {
 				trashEntryLocalService.addTrashEntry(
-					userId, calendarBooking.getGroupId(),
+					userId, getResourceGroupId(calendarBooking),
 					CalendarBooking.class.getName(),
 					calendarBooking.getCalendarBookingId(), oldStatus, null,
 					null);
 			}
 			else {
 				trashEntryLocalService.addTrashEntry(
-					userId, calendarBooking.getGroupId(),
+					userId, getResourceGroupId(calendarBooking),
 					CalendarBooking.class.getName(),
 					calendarBooking.getCalendarBookingId(),
 					CalendarBookingWorkflowConstants.STATUS_PENDING, null,
@@ -968,6 +966,23 @@ public class CalendarBookingLocalServiceImpl
 			"title", calendarBooking.getTitle(serviceContext.getLocale()));
 
 		return jsonObject.toString();
+	}
+
+	protected long getResourceGroupId(CalendarBooking calendarBooking)
+		throws PortalException, SystemException {
+
+		CalendarResource calendarResource =
+			calendarBooking.getCalendarResource();
+
+		if (calendarResource.isUser()) {
+			Group group = GroupLocalServiceUtil.getUserGroup(
+				calendarBooking.getCompanyId(), calendarResource.getClassPK());
+
+			return group.getGroupId();
+		}
+		else {
+			return calendarBooking.getResourceGroupId();
+		}
 	}
 
 	protected void validate(

@@ -152,7 +152,8 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	public void moveCalendarBookingToTrash(
-			ActionRequest actionRequest, ActionResponse actionResponse) {
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
 
 		long calendarBookingId = ParamUtil.getLong(
 			actionRequest, "calendarBookingId");
