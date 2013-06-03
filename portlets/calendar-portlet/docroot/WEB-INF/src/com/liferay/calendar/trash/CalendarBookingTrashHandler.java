@@ -3,6 +3,7 @@ package com.liferay.calendar.trash;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.permission.CalendarPermission;
+import com.liferay.calendar.util.ActionKeys;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.trash.BaseTrashHandler;
@@ -73,7 +74,8 @@ public class CalendarBookingTrashHandler extends BaseTrashHandler {
 		CalendarBooking calendarBooking = getCalendarBooking(classPK);
 
 		return CalendarPermission.contains(
-			permissionChecker, calendarBooking.getCalendar(), actionId);
+			permissionChecker, calendarBooking.getCalendar(),
+			ActionKeys.MANAGE_BOOKINGS);
 	}
 
 }
