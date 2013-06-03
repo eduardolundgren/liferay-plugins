@@ -863,14 +863,6 @@ public class CalendarBookingLocalServiceImpl
 			;
 		}
 
-		// Subscriptions
-
-		// TODO Manage subscriptions
-
-		/*subscriptionLocalService.deleteSubscriptions(
-			calendarBooking.getCompanyId(), CalendarBooking.class.getName(),
-			calendarBooking.getCalendarBookingId());*/
-
 		// Trash
 
 		trashEntryLocalService.deleteEntry(

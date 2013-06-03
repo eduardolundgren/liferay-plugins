@@ -216,7 +216,6 @@ AUI.add(
 
 				instance.invokeService(
 					{
-						//'/calendar-portlet/calendarbooking/delete-calendar-booking': {
 						'/calendar-portlet/calendarbooking/move-calendar-booking-to-trash': {
 							calendarBookingId: schedulerEvent.get('calendarBookingId')
 						}
