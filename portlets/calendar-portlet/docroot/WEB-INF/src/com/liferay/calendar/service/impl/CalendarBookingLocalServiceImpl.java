@@ -802,8 +802,9 @@ public class CalendarBookingLocalServiceImpl
 						serviceContext);
 
 					try {
-						NotificationType notificationType = NotificationType.parse(
-							PortletPropsValues.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
+						NotificationType notificationType =
+							NotificationType.parse(PortletPropsValues
+								.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
 
 						NotificationUtil.notifyCalendarBookingMovedToTrash(
 							childCalendarBooking, notificationType);
