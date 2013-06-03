@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
@@ -32,7 +33,6 @@ import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -54,6 +54,7 @@ import java.util.Map;
  * @author Eduardo Lundgren
  * @author Fabio Pezzutto
  * @author Bruno Basto
+ * @author Pier Paolo Ramon
  */
 public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
@@ -222,6 +223,34 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 		calendarBookingApprovalWorkflow.invokeTransition(
 			getUserId(), calendarBookingId, transitionName, serviceContext);
+	}
+
+	public void moveCalendarBookingToTrash(long calendarBookingId)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
+
+		calendarBookingLocalService.moveCalendarBookingToTrash(
+			getUserId(), calendarBooking.getCalendarBookingId());
+	}
+
+	public void restoreCalendarBookingFromTrash(long calendarBookingId)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
+
+		calendarBookingLocalService.restoreCalendarBookingFromTrash(
+			getUserId(), calendarBooking.getCalendarBookingId());
 	}
 
 	@AccessControlled(guestAccessEnabled = true)
@@ -486,7 +515,25 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			}
 		}
 
+		_enrichCalendarBookingTitles(calendarBookings);
+
 		return calendarBookings;
+	}
+
+	private void _enrichCalendarBookingTitles(
+		List<CalendarBooking> calendarBookings) {
+
+		Locale[] locales = LanguageUtil.getAvailableLocales();
+
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			for (Locale locale : locales) {
+				String title =
+					calendarBooking.getCalendarBookingId() + StringPool.SPACE +
+					calendarBooking.getTitle(locale);
+
+				calendarBooking.setTitle(title, locale);
+			}
+		}
 	}
 
 	@BeanReference(type = CalendarBookingApprovalWorkflow.class)

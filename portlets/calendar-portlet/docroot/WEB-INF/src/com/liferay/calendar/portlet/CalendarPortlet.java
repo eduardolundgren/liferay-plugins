@@ -118,6 +118,7 @@ import javax.portlet.ResourceResponse;
  * @author Andrea Di Giorgi
  * @author Marcellus Tavares
  * @author Bruno Basto
+ * @author Pier Paolo Ramon
  */
 public class CalendarPortlet extends MVCPortlet {
 
@@ -130,6 +131,16 @@ public class CalendarPortlet extends MVCPortlet {
 		CalendarServiceUtil.deleteCalendar(calendarId);
 	}
 
+	public void deleteCalendarBooking(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long calendarBookingId = ParamUtil.getLong(
+			actionRequest, "calendarBookingId");
+
+		CalendarBookingServiceUtil.deleteCalendarBooking(calendarBookingId);
+	}
+
 	public void deleteCalendarResource(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -138,6 +149,17 @@ public class CalendarPortlet extends MVCPortlet {
 			actionRequest, "calendarResourceId");
 
 		CalendarResourceServiceUtil.deleteCalendarResource(calendarResourceId);
+	}
+
+	public void moveCalendarBookingToTrash(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long calendarBookingId = ParamUtil.getLong(
+			actionRequest, "calendarBookingId");
+
+		CalendarBookingServiceUtil.moveCalendarBookingToTrash(
+			calendarBookingId);
 	}
 
 	@Override

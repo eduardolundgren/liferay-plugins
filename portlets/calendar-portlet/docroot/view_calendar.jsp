@@ -65,6 +65,15 @@ JSONArray userCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispla
 JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDisplay, otherCalendars);
 %>
 
+<portlet:actionURL name="deleteCalendarBooking" var="smcDeleteCalendarBookingURL">
+	<portlet:param name="redirect" value="<%= currentURL %>" />
+</portlet:actionURL>
+
+<portlet:renderURL var="smcEditCalendarBookingURL">
+	<portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />
+	<portlet:param name="redirect" value="<%= currentURL %>" />
+</portlet:renderURL>
+
 <aui:fieldset cssClass="calendar-portlet-column-parent">
 	<aui:column cssClass="calendar-portlet-column-options">
 		<div class="calendar-portlet-mini-calendar" id="<portlet:namespace />miniCalendarContainer"></div>
@@ -113,6 +122,14 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 	</aui:column>
 
 	<aui:column columnWidth="100">
+		<aui:button-row>
+			<aui:button href="<%= smcEditCalendarBookingURL %>" value="add" />
+
+			<aui:button onClick='<%= renderResponse.getNamespace() + "smcEditCalendarBooking();" %>' value="edit" />
+
+			<aui:button onClick='<%= renderResponse.getNamespace() + "smcDeleteCalendarBooking();" %>' value="delete" />
+		</aui:button-row>
+
 		<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
 			<liferay-util:param name="activeView" value="<%= activeView %>" />
 			<liferay-util:param name="date" value="<%= String.valueOf(date) %>" />
@@ -155,6 +172,32 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 </aui:fieldset>
 
 <%@ include file="/view_calendar_menus.jspf" %>
+
+<aui:script>
+	function <portlet:namespace />smcDeleteCalendarBooking() {
+		var calendarBookingId = prompt('Calendar Booking ID');
+
+		if (!calendarBookingId) {
+			return;
+		}
+
+		var url = '<%= HtmlUtil.escapeJS(smcDeleteCalendarBookingURL) %>&<portlet:namespace />calendarBookingId=' + calendarBookingId;
+
+		submitForm(document.hrefFm, url);
+	}
+
+	function <portlet:namespace />smcEditCalendarBooking() {
+		var calendarBookingId = prompt('Calendar Booking ID');
+
+		if (!calendarBookingId) {
+			return;
+		}
+
+		var url = '<%= HtmlUtil.escapeJS(smcEditCalendarBookingURL) %>&<portlet:namespace />calendarBookingId=' + calendarBookingId;
+
+		window.location = url;
+	}
+</aui:script>
 
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
 	Liferay.CalendarUtil.USER_CLASS_NAME_ID = <%= PortalUtil.getClassNameId(User.class) %>;
