@@ -54,8 +54,6 @@ import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.NoSuchEntryException;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLinkConstants;
@@ -803,20 +801,20 @@ public class CalendarBookingLocalServiceImpl
 
 					try {
 						NotificationType notificationType =
-							NotificationType.parse(PortletPropsValues
-								.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
+							NotificationType.parse(
+								PortletPropsValues.
+									CALENDAR_NOTIFICATION_DEFAULT_TYPE);
 
 						NotificationUtil.notifyCalendarBookingMovedToTrash(
 							childCalendarBooking, notificationType);
 					}
 					catch (Exception e) {
-						;
 					}
 				}
 			}
 		}
 		else if (oldStatus ==
-			CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
+				CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
 
 			List<CalendarBooking> childCalendarBookings =
 				calendarBooking.getChildCalendarBookings();
@@ -831,14 +829,13 @@ public class CalendarBookingLocalServiceImpl
 					try {
 						NotificationType notificationType =
 							NotificationType.parse(
-								PortletPropsValues
-									.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
+								PortletPropsValues.
+									CALENDAR_NOTIFICATION_DEFAULT_TYPE);
 
 						NotificationUtil.notifyCalendarBookingInvites(
 							childCalendarBooking, notificationType);
 					}
 					catch (Exception e) {
-						;
 					}
 				}
 			}
@@ -852,8 +849,8 @@ public class CalendarBookingLocalServiceImpl
 					DLFolder.class.getName(),
 					calendarBooking.getCalendarBookingId(), true);
 			}
-			else if (
-				status == CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
+			else if (status ==
+					CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
 
 				assetEntryLocalService.updateVisible(
 					DLFolder.class.getName(),
@@ -861,7 +858,6 @@ public class CalendarBookingLocalServiceImpl
 			}
 		}
 		catch (NoSuchEntryException nsee) {
-			;
 		}
 
 		// Trash
