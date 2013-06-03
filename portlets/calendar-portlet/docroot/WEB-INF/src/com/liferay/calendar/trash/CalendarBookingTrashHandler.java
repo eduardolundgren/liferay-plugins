@@ -29,8 +29,7 @@ public class CalendarBookingTrashHandler extends BaseTrashHandler {
 	public boolean isInTrash(long classPK)
 		throws PortalException, SystemException {
 
-		CalendarBooking calendarBooking =
-			CalendarBookingLocalServiceUtil.getCalendarBooking(classPK);
+		CalendarBooking calendarBooking = getCalendarBooking(classPK);
 
 		return calendarBooking.isInTrash();
 	}
@@ -47,15 +46,23 @@ public class CalendarBookingTrashHandler extends BaseTrashHandler {
 	public boolean isRestorable(long classPK)
 		throws PortalException, SystemException {
 
-		CalendarBooking calendarBooking =
-			CalendarBookingLocalServiceUtil.getCalendarBooking(classPK);
+		CalendarBooking calendarBooking = getCalendarBooking(classPK);
 
 		if (calendarBooking.isMasterBooking()) {
 			return true;
 		}
-		else {
+		else if (calendarBooking.isDenied()) {
 			return true;
 		}
+		else {
+			return false;
+		}
+	}
+
+	protected CalendarBooking getCalendarBooking(long classPK)
+		throws PortalException, SystemException {
+
+		return CalendarBookingLocalServiceUtil.getCalendarBooking(classPK);
 	}
 
 	@Override
@@ -63,8 +70,7 @@ public class CalendarBookingTrashHandler extends BaseTrashHandler {
 			PermissionChecker permissionChecker, long classPK, String actionId)
 		throws PortalException, SystemException {
 
-		CalendarBooking calendarBooking =
-			CalendarBookingLocalServiceUtil.getCalendarBooking(classPK);
+		CalendarBooking calendarBooking = getCalendarBooking(classPK);
 
 		return CalendarPermission.contains(
 			permissionChecker, calendarBooking.getCalendar(), actionId);

@@ -449,9 +449,11 @@ public class CalendarBookingLocalServiceImpl
 			long userId, CalendarBooking calendarBooking)
 		throws PortalException, SystemException {
 
-		// Entry
+		if (!calendarBooking.isMasterBooking()) {
+			return;
+		}
 
-		int oldStatus = calendarBooking.getStatus();
+		// Entry
 
 		updateStatus(
 			userId, calendarBooking.getCalendarBookingId(),
@@ -798,19 +800,45 @@ public class CalendarBookingLocalServiceImpl
 						userId, childCalendarBooking.getCalendarBookingId(),
 						CalendarBookingWorkflowConstants.STATUS_IN_TRASH,
 						serviceContext);
+
+					try {
+						NotificationType notificationType = NotificationType.parse(
+							PortletPropsValues.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
+
+						NotificationUtil.notifyCalendarBookingMovedToTrash(
+							childCalendarBooking, notificationType);
+					}
+					catch (Exception e) {
+						;
+					}
 				}
 			}
 		}
-		else if (
-			oldStatus == CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
+		else if (oldStatus ==
+			CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
 
 			List<CalendarBooking> childCalendarBookings =
 				calendarBooking.getChildCalendarBookings();
 
 			for (CalendarBooking childCalendarBooking : childCalendarBookings) {
 				if (!childCalendarBooking.equals(calendarBooking)) {
-					restoreCalendarBookingFromTrash(
-						userId, childCalendarBooking.getCalendarBookingId());
+					updateStatus(
+						userId, childCalendarBooking.getCalendarBookingId(),
+						CalendarBookingWorkflowConstants.STATUS_PENDING,
+						serviceContext);
+
+					try {
+						NotificationType notificationType =
+							NotificationType.parse(
+								PortletPropsValues
+									.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
+
+						NotificationUtil.notifyCalendarBookingInvites(
+							childCalendarBooking, notificationType);
+					}
+					catch (Exception e) {
+						;
+					}
 				}
 			}
 		}
@@ -845,6 +873,10 @@ public class CalendarBookingLocalServiceImpl
 
 		// Trash
 
+		trashEntryLocalService.deleteEntry(
+			CalendarBooking.class.getName(),
+			calendarBooking.getCalendarBookingId());
+
 		if (status == CalendarBookingWorkflowConstants.STATUS_IN_TRASH) {
 			if (calendarBooking.isMasterBooking()) {
 				trashEntryLocalService.addTrashEntry(
@@ -862,10 +894,11 @@ public class CalendarBookingLocalServiceImpl
 					null);
 			}
 		}
-		else {
-			trashEntryLocalService.deleteEntry(
+		else if (status == CalendarBookingWorkflowConstants.STATUS_DENIED) {
+			trashEntryLocalService.addTrashEntry(
+				userId, getResourceGroupId(calendarBooking),
 				CalendarBooking.class.getName(),
-				calendarBooking.getCalendarBookingId());
+				calendarBooking.getCalendarBookingId(), oldStatus, null, null);
 		}
 
 		return calendarBooking;
@@ -958,7 +991,7 @@ public class CalendarBookingLocalServiceImpl
 	}
 
 	protected String getExtraDataJSON(
-		CalendarBooking calendarBooking, ServiceContext serviceContext) {
+			CalendarBooking calendarBooking, ServiceContext serviceContext) {
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
