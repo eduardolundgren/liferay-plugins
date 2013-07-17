@@ -23,14 +23,13 @@
 <%@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 <%@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
-page import="com.liferay.portal.kernel.util.Constants" %><%@
+<%@ page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
+page import="com.liferay.portal.kernel.util.HttpUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.StringBundler" %><%@
 page import="com.liferay.portal.kernel.util.StringPool" %><%@
-page import="com.liferay.portal.kernel.util.Validator" %><%@
-page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
+page import="com.liferay.portal.kernel.util.Validator" %>
 
 <%@ page import="javax.portlet.PortletPreferences" %>
 
@@ -62,7 +61,7 @@ String showTitleBinary = showTitle ? "1" : "0";
 %>
 
 <%!
-private static final String _SWF_URL = "http://vimeo.com/moogaloop.swf";
+private static final String _SWF_URL = "://vimeo.com/moogaloop.swf";
 
-private static final String _WATCH_URL = "http://vimeo.com/";
+private static final String _WATCH_URL = "://vimeo.com/";
 %>

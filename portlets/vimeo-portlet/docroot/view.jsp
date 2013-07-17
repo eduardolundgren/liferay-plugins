@@ -39,7 +39,7 @@
 			allowFullScreen="true"
 			allowScriptAccess="true"
 			height="<%= height %>"
-			movie='<%= _SWF_URL + "?" + sb.toString() %>'
+			movie='<%= HttpUtil.getProtocol(request) + _SWF_URL + "?" + sb.toString() %>'
 			width="<%= width %>"
 			wmode="opaque"
 		/>
