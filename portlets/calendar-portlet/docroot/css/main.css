@@ -500,6 +500,7 @@
 	padding: 4px 6px;
 }
 
-.scheduler-base-controls .calendar-create-event-btn {
-	margin-right: 3px;
+.calendar-create-event-btn-row {
+	margin: 0 0 1em 0;
+	text-align: center;
 }
