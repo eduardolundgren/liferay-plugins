@@ -68,7 +68,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 <aui:container cssClass="calendar-portlet-column-parent">
 	<aui:row>
 		<aui:col cssClass="calendar-portlet-column-options" span="<%= 3 %>">
-			<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.VIEW) %>">
+			<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.MANAGE_BOOKINGS) %>">
 				<aui:button-row cssClass="calendar-portlet-add-booking-btn-row">
 					<aui:button onClick='<%= renderResponse.getNamespace() + "onCreateEventClick();" %>' primary="true" value="add-calendar-booking" />
 				</aui:button-row>
@@ -414,7 +414,7 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 </aui:script>
 
 <aui:script>
-	<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.VIEW) %>">
+	<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.MANAGE_BOOKINGS) %>">
 		Liferay.provide(
 			window,
 			'<portlet:namespace/>onCreateEventClick',
