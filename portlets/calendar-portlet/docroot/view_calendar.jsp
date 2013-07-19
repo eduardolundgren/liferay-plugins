@@ -68,10 +68,9 @@ JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 <aui:container cssClass="calendar-portlet-column-parent">
 	<aui:row>
 		<aui:col cssClass="calendar-portlet-column-options" span="<%= 3 %>">
-
 			<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.VIEW) %>">
-				<aui:button-row cssClass="calendar-create-event-btn-row">
-					<aui:button cssClass="btn calendar-create-event-btn" icon="icon-plus" onClick='<%= renderResponse.getNamespace() + \"onCreateEventClick();\" %>' primary="true" value="new-calendar-booking" />
+				<aui:button-row cssClass="calendar-portlet-add-booking-btn-row">
+					<aui:button onClick='<%= renderResponse.getNamespace() + "onCreateEventClick();" %>' primary="true" value="add-calendar-booking" />
 				</aui:button-row>
 			</c:if>
 
