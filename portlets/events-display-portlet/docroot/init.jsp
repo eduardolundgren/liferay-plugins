@@ -50,7 +50,7 @@ page import="com.liferay.portal.util.PortalUtil" %><%@
 page import="com.liferay.portal.util.PortletKeys" %><%@
 page import="com.liferay.portlet.PortletURLFactoryUtil" %><%@
 page import="com.liferay.portlet.calendar.model.CalEvent" %><%@
-page import="com.liferay.portlet.calendar.service.CalEventServiceUtil" %>
+page import="com.liferay.portlet.calendar.service.CalEventLocalServiceUtil" %>
 
 <%@ page import="java.lang.reflect.Constructor" %>
 
