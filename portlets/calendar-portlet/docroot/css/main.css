@@ -1,4 +1,5 @@
 @import "compass";
+@import "mixins";
 
 .calendar-booking-invitations {
 	min-height: 110px;
@@ -20,6 +21,18 @@
 	.reminder-type {
 		margin: 0 6px 11px 0;
 		padding: 4px 6px;
+	}
+}
+
+.calendar-collapse-button {
+	cursor: pointer;
+	padding: 0.3em;
+	position: absolute;
+	right: 74%;
+	top: 50%;
+
+	@include respond-to(phone, tablet) {
+		display: none;
 	}
 }
 
@@ -154,6 +167,27 @@
 	height: 80%;
 	vertical-align: middle;
 	width: 80%;
+}
+
+.calendar-portlet-column-parent {
+	position: relative;
+
+	&.calendar-child-column-collapsed {
+		.calendar-collapse-button {
+			right: auto;
+			left: 0%;
+		}
+
+		.calendar-portlet-column-grid {
+			float: right;
+			margin-left: 0;
+		}
+
+		.calendar-portlet-column-options {
+			overflow: hidden;
+			width: 0;
+		}
+	}
 }
 
 .calendar-portlet-confirmation-text {
