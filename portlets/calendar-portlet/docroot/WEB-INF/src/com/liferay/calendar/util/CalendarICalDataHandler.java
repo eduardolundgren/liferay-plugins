@@ -599,7 +599,6 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 
 		boolean isMultipleDayEvent = calendarBooking.getDuration() > Time.DAY;
 
-
 		if (calendarBooking.isAllDay() && isMultipleDayEvent) {
 			DtStart dtStart = new DtStart(
 				new Date(calendarBooking.getStartTime()));
