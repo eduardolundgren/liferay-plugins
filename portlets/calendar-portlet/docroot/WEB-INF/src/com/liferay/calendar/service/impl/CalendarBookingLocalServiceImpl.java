@@ -167,10 +167,6 @@ public class CalendarBookingLocalServiceImpl
 		addChildCalendarBookings(
 			calendarBooking, childCalendarIds, serviceContext);
 
-		// Resources
-
-		resourceLocalService.addModelResources(calendarBooking, serviceContext);
-
 		// Asset
 
 		updateAsset(
@@ -190,6 +186,10 @@ public class CalendarBookingLocalServiceImpl
 
 		calendarBookingApprovalWorkflow.startWorkflow(
 			userId, calendarBookingId, serviceContext);
+
+		// Resources
+
+		resourceLocalService.addModelResources(calendarBooking, serviceContext);
 
 		return calendarBooking;
 	}
