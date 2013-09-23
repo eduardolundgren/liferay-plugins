@@ -129,7 +129,7 @@ public class CalendarNotificationTemplateStagedModelDataHandler
 				calendarNotificationTemplate.getNotificationTemplateType());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			calendarNotificationTemplate, CalendarPortletDataHandler.NAMESPACE);
+			calendarNotificationTemplate);
 
 		CalendarNotificationTemplate importedCalendarNotificationTemplate =
 			null;

@@ -139,7 +139,7 @@ public class CalendarResourceStagedModelDataHandler
 		}
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			calendarResource, CalendarPortletDataHandler.NAMESPACE);
+			calendarResource);
 
 		long classPK = getClassPK(portletDataContext, calendarResource, userId);
 

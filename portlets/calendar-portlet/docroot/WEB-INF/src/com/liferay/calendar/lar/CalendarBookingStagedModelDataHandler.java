@@ -142,7 +142,7 @@ public class CalendarBookingStagedModelDataHandler
 		}
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			calendarBooking, CalendarPortletDataHandler.NAMESPACE);
+			calendarBooking);
 
 		CalendarBooking importedCalendarBooking = null;
 

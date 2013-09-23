@@ -106,7 +106,7 @@ public class CalendarStagedModelDataHandler
 			calendar.getCalendarResourceId());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			calendar, CalendarPortletDataHandler.NAMESPACE);
+			calendar);
 
 		Calendar importedCalendar = null;
 
