@@ -168,50 +168,46 @@ public class CalendarImporterLocalServiceImpl
 
 	@Override
 	public void updatePortletIds() throws PortalException, SystemException {
-		final UnicodeProperties layoutTypeSettings = new UnicodeProperties(
-			true);
-
 		ActionableDynamicQuery actionableDynamicQuery =
 			new LayoutActionableDynamicQuery() {
 
 			@Override
 			protected void performAction(Object object) throws SystemException {
+				UnicodeProperties layoutTypeSettings = new UnicodeProperties(
+					true);
+
 				Layout layout = (Layout)object;
-				boolean propertiesChanged = false;
 
 				try {
-					layoutTypeSettings.clear();
 					layoutTypeSettings.load(layout.getTypeSettings());
 				}
 				catch (IOException e) {
 					throw new SystemException(e);
 				}
 
-				for (String property : layoutTypeSettings.keySet()) {
-					String[] propertyParts = StringUtil.split(
-						property, StringPool.DASH);
+				boolean propertiesChanged = false;
 
-					if ((propertyParts.length == 2) &&
-						propertyParts[0].equals("column") &&
-						Validator.isNumber(propertyParts[1])) {
+				for (String key : layoutTypeSettings.keySet()) {
+					String[] property = StringUtil.split(key, StringPool.DASH);
+
+					if ((property.length == 2) &&
+						Validator.equals(property[0], "column") &&
+						Validator.isNumber(property[1])) {
+
+						String value = layoutTypeSettings.get(key);
 
 						String[] values = StringUtil.split(
-								layoutTypeSettings.get(property),
-								StringPool.COMMA);
-						boolean propertyChanged = false;
+							value, StringPool.COMMA);
 
 						for (int i = 0; i < values.length; i++) {
 							if (values[i].equals("8")) {
 								values[i] = PortletKeys.CALENDAR;
-								propertyChanged = true;
 								propertiesChanged = true;
 							}
 						}
 
-						if (propertyChanged) {
-							layoutTypeSettings.setProperty(
-								property, StringUtil.merge(values, ","));
-						}
+						layoutTypeSettings.setProperty(
+							key, StringUtil.merge(values, StringPool.COMMA));
 					}
 				}
 
