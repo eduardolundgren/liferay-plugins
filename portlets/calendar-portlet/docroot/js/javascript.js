@@ -1335,7 +1335,9 @@ AUI.add(
 								color: 1,
 								content: 1,
 								endDate: 1,
-								startDate: 1
+								endTime: 1,
+								startDate: 1,
+								startTime: 1
 							};
 
 							var persist = true;
@@ -1343,7 +1345,7 @@ AUI.add(
 							A.each(
 								changed,
 								function(item, index, collection) {
-									persist = persist || AObject.owns(persistentAttrMap, index);
+									persist = AObject.owns(persistentAttrMap, index);
 								}
 							);
 
