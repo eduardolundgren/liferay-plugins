@@ -226,6 +226,7 @@ public class CalendarImporterLocalServiceImpl
 			protected void addCriteria(DynamicQuery dynamicQuery) {
 				Property typeSettingsProperty = PropertyFactoryUtil.forName(
 					"typeSettings");
+
 				Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
 
 				disjunction.add(typeSettingsProperty.like("%column-%=8\n%"));
