@@ -27,6 +27,11 @@ import com.liferay.calendar.util.PortletKeys;
 import com.liferay.portal.kernel.cal.DayAndPosition;
 import com.liferay.portal.kernel.cal.TZSRecurrence;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Disjunction;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Property;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.StringPool;
@@ -217,6 +222,21 @@ public class CalendarImporterLocalServiceImpl
 				}
 			}
 
+			@Override
+			protected void addCriteria(DynamicQuery dynamicQuery) {
+				Property typeSettingsProperty = PropertyFactoryUtil.forName(
+					"typeSettings");
+				Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
+
+				disjunction.add(typeSettingsProperty.like("%column-%=8\n%"));
+				disjunction.add(typeSettingsProperty.like("%column-%=8,%"));
+				disjunction.add(typeSettingsProperty.like("%column-%=8"));
+				disjunction.add(typeSettingsProperty.like("%column-%=%,8\n%"));
+				disjunction.add(typeSettingsProperty.like("%column-%=%,8,%"));
+				disjunction.add(typeSettingsProperty.like("%column-%=%,8"));
+
+				dynamicQuery.add(disjunction);
+			}
 		};
 
 		actionableDynamicQuery.performActions();
