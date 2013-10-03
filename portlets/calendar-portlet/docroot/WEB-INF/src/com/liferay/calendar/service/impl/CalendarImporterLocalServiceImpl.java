@@ -27,6 +27,11 @@ import com.liferay.calendar.util.PortletKeys;
 import com.liferay.portal.kernel.cal.DayAndPosition;
 import com.liferay.portal.kernel.cal.TZSRecurrence;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Criterion;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Property;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.StringPool;
@@ -215,6 +220,32 @@ public class CalendarImporterLocalServiceImpl
 					layout.setTypeSettings(layoutTypeSettings.toString());
 					layoutPersistence.update(layout);
 				}
+			}
+
+			@Override
+			protected void addCriteria(DynamicQuery dynamicQuery) {
+				Property typeSettingsProperty = PropertyFactoryUtil.forName(
+						"typeSettings");
+				Criterion criterion = anyCriterion(
+					typeSettingsProperty.like("%column-%=8\n%"),
+					typeSettingsProperty.like("%column-%=8,%"),
+					typeSettingsProperty.like("%column-%=8"),
+					typeSettingsProperty.like("%column-%=%,8\n%"),
+					typeSettingsProperty.like("%column-%=%,8,%"),
+					typeSettingsProperty.like("%column-%=%,8"));
+
+				dynamicQuery.add(criterion);
+			}
+
+			private Criterion anyCriterion(Criterion... criteria) {
+				Criterion anyCriterion = criteria[0];
+
+				for (int i = 1; i < criteria.length; i++) {
+					anyCriterion = RestrictionsFactoryUtil.or(
+						anyCriterion, criteria[i]);
+				}
+
+				return anyCriterion;
 			}
 
 		};
