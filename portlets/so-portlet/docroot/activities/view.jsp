@@ -27,7 +27,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 portletURL.setParameter("tabs1", tabs1);
 %>
 
-<c:if test="<%= group.isUser() %>">
+<c:if test="<%= group.isUser() && layout.isPrivateLayout() %>">
 	<liferay-ui:tabs
 		names="all,connections,following,my-sites,me"
 		url="<%= portletURL.toString() %>"
@@ -139,9 +139,7 @@ portletURL.setParameter("tabs1", tabs1);
 
 			var commentsList = commentsContainer.one('.comments-list');
 
-			var commentEntry = commentsList.one('.comment-entry');
-
-			if (commentEntry) {
+			if (commentsList.attr('loaded')) {
 				commentsList.toggle();
 			}
 			else {
@@ -157,12 +155,16 @@ portletURL.setParameter("tabs1", tabs1);
 								var responseData = this.get('responseData');
 
 								if (responseData) {
+									commentsList.empty();
+
 									A.Array.each(
 										responseData.comments,
 										function(item, index, collection) {
 											Liferay.SO.Activities.addNewComment(commentsList, item);
 										}
 									);
+
+									commentsList.attr('loaded', 'true');
 								}
 							}
 						},
