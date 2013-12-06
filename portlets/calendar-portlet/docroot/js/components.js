@@ -1153,9 +1153,11 @@
 							{
 								dialog : {
 									bodyContent: message,
+									height: 200,
 									toolbars: {
 										footer: buttons
 									},
+									width: 700
 								},
 								title: Liferay.Language.get('are-you-sure')
 							}
