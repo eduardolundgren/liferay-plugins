@@ -118,12 +118,12 @@ public class CalendarBookingServiceUtil {
 		return getService().getCalendarBooking(calendarBookingId);
 	}
 
-	public static com.liferay.calendar.model.CalendarBooking getCalendarBooking(
+	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
 		long calendarId, long parentCalendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
-				   .getCalendarBooking(calendarId, parentCalendarBookingId);
+				   .getCalendarBookings(calendarId, parentCalendarBookingId);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(

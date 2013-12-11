@@ -61,7 +61,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 
 		_methodParameterTypes8 = new String[] { "long" };
 
-		_methodName9 = "getCalendarBooking";
+		_methodName9 = "getCalendarBookings";
 
 		_methodParameterTypes9 = new String[] { "long", "long" };
 
@@ -464,7 +464,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 	}
 
 	@Override
-	public com.liferay.calendar.model.CalendarBooking getCalendarBooking(
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
 		long calendarId, long parentCalendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -495,7 +495,7 @@ public class CalendarBookingServiceClp implements CalendarBookingService {
 			}
 		}
 
-		return (com.liferay.calendar.model.CalendarBooking)ClpSerializer.translateOutput(returnObj);
+		return (java.util.List<com.liferay.calendar.model.CalendarBooking>)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override

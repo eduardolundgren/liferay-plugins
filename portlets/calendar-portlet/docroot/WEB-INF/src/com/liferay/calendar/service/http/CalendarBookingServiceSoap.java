@@ -170,14 +170,15 @@ public class CalendarBookingServiceSoap {
 		}
 	}
 
-	public static com.liferay.calendar.model.CalendarBookingSoap getCalendarBooking(
+	public static com.liferay.calendar.model.CalendarBookingSoap[] getCalendarBookings(
 		long calendarId, long parentCalendarBookingId)
 		throws RemoteException {
 		try {
-			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.getCalendarBooking(calendarId,
+			java.util.List<com.liferay.calendar.model.CalendarBooking> returnValue =
+				CalendarBookingServiceUtil.getCalendarBookings(calendarId,
 					parentCalendarBookingId);
 
-			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModel(returnValue);
+			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModels(returnValue);
 		}
 		catch (Exception e) {
 			_log.error(e, e);

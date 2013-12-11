@@ -61,7 +61,7 @@ public class CalendarBookingServiceClpInvoker {
 
 		_methodParameterTypes103 = new String[] { "long" };
 
-		_methodName104 = "getCalendarBooking";
+		_methodName104 = "getCalendarBookings";
 
 		_methodParameterTypes104 = new String[] { "long", "long" };
 
@@ -239,7 +239,7 @@ public class CalendarBookingServiceClpInvoker {
 
 		if (_methodName104.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes104, parameterTypes)) {
-			return CalendarBookingServiceUtil.getCalendarBooking(((Long)arguments[0]).longValue(),
+			return CalendarBookingServiceUtil.getCalendarBookings(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue());
 		}
 

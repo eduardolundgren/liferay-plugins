@@ -401,7 +401,7 @@ public class CalendarBookingLocalServiceUtil {
 		return getService().fetchCalendarBooking(uuid, groupId);
 	}
 
-	public static com.liferay.calendar.model.CalendarBooking getCalendarBooking(
+	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBooking(
 		long calendarId, long parentCalendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
