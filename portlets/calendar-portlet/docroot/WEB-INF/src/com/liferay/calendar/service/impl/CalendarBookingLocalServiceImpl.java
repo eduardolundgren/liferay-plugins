@@ -412,7 +412,7 @@ public class CalendarBookingLocalServiceImpl
 	}
 
 	@Override
-	public CalendarBooking getCalendarBooking(
+	public List<CalendarBooking> getCalendarBooking(
 			long calendarId, long parentCalendarBookingId)
 		throws PortalException, SystemException {
 
@@ -830,9 +830,16 @@ public class CalendarBookingLocalServiceImpl
 			recurrence = StringPool.BLANK;
 		}
 
+		long parentCalendarBookingId =
+			calendarBooking.getParentCalendarBookingId();
+
+		if (calendarBooking.isMasterBooking()) {
+			parentCalendarBookingId =
+				CalendarBookingConstants.PARENT_CALENDAR_BOOKING_ID_DEFAULT;
+		}
+
 		return addCalendarBooking(
-			userId, calendarId, childCalendarIds,
-			CalendarBookingConstants.PARENT_CALENDAR_BOOKING_ID_DEFAULT,
+			userId, calendarId, childCalendarIds, parentCalendarBookingId,
 			titleMap, descriptionMap, location, startTime, endTime, allDay,
 			recurrence, firstReminder, firstReminderType, secondReminder,
 			secondReminderType, serviceContext);
@@ -1022,9 +1029,7 @@ public class CalendarBookingLocalServiceImpl
 			childCalendarIds.length);
 
 		for (CalendarBooking childCalendarBooking : childCalendarBookings) {
-			if (childCalendarBooking.isMasterBooking() ||
-				childCalendarBooking.isDenied()) {
-
+			if (childCalendarBooking.isMasterBooking()) {
 				continue;
 			}
 
