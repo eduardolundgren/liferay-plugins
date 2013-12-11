@@ -111,6 +111,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:input name="status" type="hidden" value ="<%= status %>" />
 	<aui:input name="allFollowing" type="hidden" />
 	<aui:input name="updateCalendarBookingInstance" type="hidden" />
+	<aui:input name="updateChildCalendars" type="hidden" />
 
 	<liferay-ui:error exception="<%= CalendarBookingDurationException.class %>" message="please-enter-a-start-date-that-comes-before-the-end-date" />
 
@@ -315,55 +316,30 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			</c:if>
 
 			<c:if test="<%= (calendarBooking != null) && (calendar != null) %>">
-				<c:choose>
-					<c:when test="<%= recurring %>">
-						Liferay.RecurrenceUtil.openConfirmationPanel(
-							'update',
-							'<%= calendarBooking.isMasterBooking() %>',
-							function() {
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+				Liferay.CalendarUtil.getEvent(
+					<%= calendarBookingId %>,
+					function(calendarBooking) {
+						var schedulerEvent = Liferay.CalendarUtil.toSchedulerEvent(calendarBooking);
 
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
-								A.one('#<portlet:namespace />allFollowing').val('true');
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+						Liferay.CalendarUtil.askEventEditConfirmations(
+							schedulerEvent,
+							function(schedulerEvent, parameters) {
+								if (parameters.shouldCancel) {
+									return;
+								}
 
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
+								if (schedulerEvent.isRecurring()) {
+									A.one('#<portlet:namespace />updateCalendarBookingInstance').val(!parameters.shouldSaveAllInstances);
+									A.one('#<portlet:namespace />allFollowing').val(parameters.shouldSaveFollowingInstances);
+								}
+
+								A.one('#<portlet:namespace />updateChildCalendars').val(parameters.shouldUpdateChildCalendars);
+
 								submitForm(document.<portlet:namespace />fm);
 							}
 						);
-					</c:when>
-					<c:when test="<%= calendarBooking.isMasterBooking() %>">
-						submitForm(document.<portlet:namespace />fm);
-					</c:when>
-					<c:otherwise>
-						var content = [
-							'<p class="calendar-portlet-confirmation-text">',
-							A.Lang.sub(
-								Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-								['<%= HtmlUtil.escapeJS(calendar.getName(locale)) %>']
-							),
-							'</p>'
-						].join('');
-
-						Liferay.CalendarMessageUtil.confirm(
-							content,
-							Liferay.Language.get('continue'),
-							Liferay.Language.get('dont-change-the-event'),
-							function() {
-								submitForm(document.<portlet:namespace />fm);
-
-								this.hide();
-							},
-							function() {
-								this.hide();
-							}
-						);
-					</c:otherwise>
-				</c:choose>
+					}
+				);
 			</c:if>
 		},
 		['liferay-calendar-message-util', 'json']
