@@ -327,30 +327,36 @@ public class CalendarBookingLocalServiceImpl
 
 		Recurrence recurrenceObj = calendarBooking.getRecurrenceObj();
 
-		if (allFollowing) {
-			if (startTime == calendarBooking.getStartTime()) {
-				calendarBookingLocalService.deleteCalendarBooking(
-					calendarBooking);
+		List<CalendarBooking> calendarBookings =
+				getChildCalendarBookings(
+						calendarBooking.getCalendarBookingId());
 
-				return;
+		for (CalendarBooking editingCalendarBooking : calendarBookings) {
+			if (allFollowing) {
+				if (startTime == editingCalendarBooking.getStartTime()) {
+					calendarBookingLocalService.deleteCalendarBooking(
+							editingCalendarBooking);
+
+					return;
+				}
+
+				if (recurrenceObj.getCount() > 0) {
+					recurrenceObj.setCount(0);
+				}
+
+				startTimeJCalendar.add(java.util.Calendar.DATE, -1);
+
+				recurrenceObj.setUntilJCalendar(startTimeJCalendar);
+			}
+			else {
+				recurrenceObj.addExceptionDate(startTimeJCalendar);
 			}
 
-			if (recurrenceObj.getCount() > 0) {
-				recurrenceObj.setCount(0);
-			}
+			editingCalendarBooking.setRecurrence(
+				RecurrenceSerializer.serialize(recurrenceObj));
 
-			startTimeJCalendar.add(java.util.Calendar.DATE, -1);
-
-			recurrenceObj.setUntilJCalendar(startTimeJCalendar);
+			calendarBookingPersistence.update(editingCalendarBooking);
 		}
-		else {
-			recurrenceObj.addExceptionDate(startTimeJCalendar);
-		}
-
-		calendarBooking.setRecurrence(
-			RecurrenceSerializer.serialize(recurrenceObj));
-
-		calendarBookingPersistence.update(calendarBooking);
 	}
 
 	@Override
