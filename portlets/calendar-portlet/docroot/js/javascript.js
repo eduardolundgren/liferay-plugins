@@ -1425,47 +1425,12 @@ AUI.add(
 								var calendarBookingId = schedulerEvent.get('calendarBookingId');
 
 								var saveSimpleEvent = function(schedulerEvent) {
-									if (schedulerEvent.isMasterBooking()) {
-										CalendarUtil.updateEvent(
-											schedulerEvent,
-											function() {
-												instance.load();
-											}
-										);
-									}
-									else {
-										var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
-
-										var content = [
-											'<p class="calendar-portlet-confirmation-text">',
-											Lang.sub(
-												Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-												[Liferay.Util.escapeHTML(calendar.get('name'))]
-											),
-											'</p>'
-										].join(STR_BLANK);
-
-										Liferay.CalendarMessageUtil.confirm(
-											content,
-											Liferay.Language.get('continue'),
-											Liferay.Language.get('dont-change-the-event'),
-											function() {
-												CalendarUtil.updateEvent(
-													schedulerEvent,
-													function() {
-														instance.load();
-													}
-												);
-
-												this.hide();
-											},
-											function() {
-												instance.load();
-
-												this.hide();
-											}
-										);
-									}
+									CalendarUtil.updateEvent(
+										schedulerEvent,
+										function() {
+											instance.load();
+										}
+									);
 								};
 
 								var saveOneInstance = function(schedulerEvent) {
@@ -1543,31 +1508,45 @@ AUI.add(
 									instance.load();
 								}
 
-								CalendarUtil.countChildrenCalendarBookings(
-									schedulerEvent,
-									function(childrenCount) {
-										if (childrenCount > 1) {
-											Liferay.CalendarMessageUtil.confirm(
-												TPL_MESSAGE_UPDATE_ALL_INVITED,
-												Liferay.Language.get('continue'),
-												Liferay.Language.get('dont-change-the-event'),
-												function() {
-													if (schedulerEvent.isRecurring()) {
-														Liferay.RecurrenceUtil.openConfirmationPanel(
-															'update',
-															schedulerEvent.isMasterBooking(),
+								if (schedulerEvent.isMasterBooking()) {
+									CalendarUtil.countChildrenCalendarBookings(
+											schedulerEvent,
+											function(childrenCount) {
+												if (childrenCount > 1) {
+													Liferay.CalendarMessageUtil.confirm(
+															TPL_MESSAGE_UPDATE_ALL_INVITED,
+															Liferay.Language.get('continue'),
+															Liferay.Language.get('dont-change-the-event'),
 															function() {
-																saveOneInstance(schedulerEvent);
+																if (schedulerEvent.isRecurring()) {
+																	Liferay.RecurrenceUtil.openConfirmationPanel(
+																			'update',
+																			schedulerEvent.isMasterBooking(),
+																			function() {
+																				saveOneInstance(schedulerEvent);
 
-																this.hide();
-															},
-															function() {
-																saveFollowingInstances(schedulerEvent);
+																				this.hide();
+																			},
+																			function() {
+																				saveFollowingInstances(schedulerEvent);
 
-																this.hide();
-															},
-															function() {
-																saveAllInstances(schedulerEvent);
+																				this.hide();
+																			},
+																			function() {
+																				saveAllInstances(schedulerEvent);
+
+																				this.hide();
+																			},
+																			function() {
+																				cancel();
+
+																				this.hide();
+																			}
+																	);
+																}
+																else {
+																	saveSimpleEvent(schedulerEvent);
+																}
 
 																this.hide();
 															},
@@ -1576,56 +1555,100 @@ AUI.add(
 
 																this.hide();
 															}
+													);
+												}
+												else {
+													if (schedulerEvent.isRecurring()) {
+														Liferay.RecurrenceUtil.openConfirmationPanel(
+																'update',
+																schedulerEvent.isMasterBooking(),
+																function() {
+																	saveOneInstance(schedulerEvent);
+
+																	this.hide();
+																},
+																function() {
+																	saveFollowingInstances(schedulerEvent);
+
+																	this.hide();
+																},
+																function() {
+																	saveAllInstances(schedulerEvent);
+
+																	this.hide();
+																},
+																function() {
+																	cancel();
+
+																	this.hide();
+																}
 														);
 													}
 													else {
 														saveSimpleEvent(schedulerEvent);
 													}
-
-													this.hide();
-												},
-												function() {
-													cancel();
-
-													this.hide();
 												}
-											);
-										}
-										else {
+
+												this.hide();
+											}
+									);
+								}
+								else {
+									var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+
+									var content = [
+										'<p class="calendar-portlet-confirmation-text">',
+										Lang.sub(
+											Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
+											[Liferay.Util.escapeHTML(calendar.get('name'))]
+										),
+										'</p>'
+									].join(STR_BLANK);
+
+									Liferay.CalendarMessageUtil.confirm(
+										content,
+										Liferay.Language.get('continue'),
+										Liferay.Language.get('dont-change-the-event'),
+										function() {
 											if (schedulerEvent.isRecurring()) {
 												Liferay.RecurrenceUtil.openConfirmationPanel(
-													'update',
-													schedulerEvent.isMasterBooking(),
-													function() {
-														saveOneInstance(schedulerEvent);
+														'update',
+														schedulerEvent.isMasterBooking(),
+														function() {
+															saveOneInstance(schedulerEvent);
 
-														this.hide();
-													},
-													function() {
-														saveFollowingInstances(schedulerEvent);
+															this.hide();
+														},
+														function() {
+															saveFollowingInstances(schedulerEvent);
 
-														this.hide();
-													},
-													function() {
-														saveAllInstances(schedulerEvent);
+															this.hide();
+														},
+														function() {
+															saveAllInstances(schedulerEvent);
 
-														this.hide();
-													},
-													function() {
-														cancel();
+															this.hide();
+														},
+														function() {
+															cancel();
 
-														this.hide();
-													}
+															this.hide();
+														}
 												);
 											}
 											else {
 												saveSimpleEvent(schedulerEvent);
 											}
-										}
 
-										this.hide();
-									}
-								);
+											this.hide();
+										},
+										function() {
+											cancel();
+
+											this.hide();
+										}
+									);
+								}
 							}
 						}
 					},
