@@ -51,8 +51,11 @@ import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.CalendarUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -323,30 +326,48 @@ public class CalendarBookingLocalServiceImpl
 
 		Recurrence recurrenceObj = calendarBooking.getRecurrenceObj();
 
-		if (allFollowing) {
-			if (startTime == calendarBooking.getStartTime()) {
-				calendarBookingLocalService.deleteCalendarBooking(
-					calendarBooking);
+		List<CalendarBooking> calendarBookings =
+				getChildCalendarBookings(
+						calendarBooking.getCalendarBookingId());
 
-				return;
-			}
-
-			if (recurrenceObj.getCount() > 0) {
-				recurrenceObj.setCount(0);
-			}
-
-			startTimeJCalendar.add(java.util.Calendar.DATE, -1);
-
-			recurrenceObj.setUntilJCalendar(startTimeJCalendar);
-		}
-		else {
-			recurrenceObj.addExceptionDate(startTimeJCalendar);
+		if (!calendarBookings.contains(calendarBooking)) {
+			calendarBookings = ListUtil.copy(calendarBookings);
+			calendarBookings.add(0, calendarBooking);
 		}
 
-		calendarBooking.setRecurrence(
-			RecurrenceSerializer.serialize(recurrenceObj));
+		Date newStartDate = DateUtil.newDate(startTime);
 
-		calendarBookingPersistence.update(calendarBooking);
+		for (CalendarBooking editingCalendarBooking : calendarBookings) {
+			if (allFollowing) {
+				Date previousStartDate = DateUtil.newDate(
+					editingCalendarBooking.getStartTime());
+
+				if (CalendarUtil.equalsByDay(newStartDate, previousStartDate)) {
+					calendarBookingLocalService.deleteCalendarBooking(
+							editingCalendarBooking);
+
+					continue;
+				}
+
+				if (recurrenceObj.getCount() > 0) {
+					recurrenceObj.setCount(0);
+				}
+
+				java.util.Calendar endTimeJCalendar =
+					JCalendarUtil.getJCalendar(startTime);
+				endTimeJCalendar.add(java.util.Calendar.DATE, -1);
+
+				recurrenceObj.setUntilJCalendar(endTimeJCalendar);
+			}
+			else {
+				recurrenceObj.addExceptionDate(startTimeJCalendar);
+			}
+
+			editingCalendarBooking.setRecurrence(
+				RecurrenceSerializer.serialize(recurrenceObj));
+
+			calendarBookingPersistence.update(editingCalendarBooking);
+		}
 	}
 
 	@Override
