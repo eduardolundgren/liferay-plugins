@@ -149,7 +149,7 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	}
 
 	@Override
-	public CalendarBooking getCalendarBooking(
+	public List<CalendarBooking> getCalendarBookings(
 			long calendarId, long parentCalendarBookingId)
 		throws PortalException, SystemException {
 
