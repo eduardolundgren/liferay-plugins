@@ -53,6 +53,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -326,6 +327,11 @@ public class CalendarBookingLocalServiceImpl
 		List<CalendarBooking> calendarBookings =
 				getChildCalendarBookings(
 						calendarBooking.getCalendarBookingId());
+
+		if (!calendarBookings.contains(calendarBooking)) {
+			calendarBookings = ListUtil.copy(calendarBookings);
+			calendarBookings.add(0, calendarBooking);
+		}
 
 		for (CalendarBooking editingCalendarBooking : calendarBookings) {
 			if (allFollowing) {
