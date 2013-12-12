@@ -543,6 +543,97 @@ AUI.add(
 				A.oneNS(instance.PORTLET_NAMESPACE, '#message').html(msg);
 			},
 
+			saveSimpleEvent: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				CalendarUtil.updateEvent(
+					schedulerEvent,
+					function() {
+						scheduler.load();
+					}
+				);
+			},
+
+			saveOneInstance: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				CalendarUtil.updateEventInstance(
+					schedulerEvent,
+					false,
+					function() {
+						scheduler.load();
+					}
+				);
+			},
+
+			saveFollowingInstances: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				CalendarUtil.updateEventInstance(
+					schedulerEvent,
+					true,
+					function() {
+						scheduler.load();
+					}
+				);
+			},
+
+			saveAllInstances: function(schedulerEvent, previousTime, newTime) {
+				var scheduler = schedulerEvent.get('scheduler');
+				var calendarBookingId = schedulerEvent.get('calendarBookingId');
+
+				CalendarUtil.getEvent(
+					calendarBookingId,
+					function(calendarBooking) {
+						var newSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
+
+						newSchedulerEvent.copyPropagateAttrValues(
+								schedulerEvent,
+								null,
+								{
+									silent: true
+								}
+						);
+
+						var schedulerEventDuration = schedulerEvent.getSecondsDuration() * 1000;
+
+						var calendarEndTime = calendarBooking.startTime + schedulerEventDuration;
+						var calendarStartTime = calendarBooking.startTime;
+
+						if (previousTime && newTime) {
+							var offset = 0;
+
+							if (isDate(newTime) && isDate(prevTime)) {
+								offset = newTime.getTime() - prevTime.getTime();
+							}
+
+							calendarStartTime = calendarStartTime + offset;
+							calendarEndTime = calendarStartTime + schedulerEventDuration;
+						}
+
+						newSchedulerEvent.setAttrs(
+								{
+									endDate: CalendarUtil.toLocalTime(calendarEndTime),
+									startDate: CalendarUtil.toLocalTime(calendarStartTime)
+								}
+						);
+
+						CalendarUtil.updateEvent(
+								newSchedulerEvent,
+								function() {
+									scheduler.load();
+								}
+						);
+					}
+				);
+			},
+
+			cancelSaving: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				scheduler.load();
+			},
+
 			setEventAttrs: function(schedulerEvent, data) {
 				var instance = this;
 
@@ -1422,90 +1513,13 @@ AUI.add(
 
 							if (persist) {
 								var schedulerEvent = event.target;
-								var calendarBookingId = schedulerEvent.get('calendarBookingId');
 
-								var saveSimpleEvent = function(schedulerEvent) {
-									CalendarUtil.updateEvent(
-										schedulerEvent,
-										function() {
-											instance.load();
-										}
-									);
-								};
+								var previousTime;
+								var newTime;
 
-								var saveOneInstance = function(schedulerEvent) {
-									CalendarUtil.updateEventInstance(
-										schedulerEvent,
-										false,
-										function() {
-											instance.load();
-										}
-									);
-								};
-
-								var saveFollowingInstances = function(schedulerEvent) {
-									CalendarUtil.updateEventInstance(
-										schedulerEvent,
-										true,
-										function() {
-											instance.load();
-										}
-									);
-								};
-
-								var saveAllInstances = function(schedulerEvent) {
-									CalendarUtil.getEvent(
-										calendarBookingId,
-										function(calendarBooking) {
-											var newSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
-
-											newSchedulerEvent.copyPropagateAttrValues(
-													schedulerEvent,
-													null,
-													{
-														silent: true
-													}
-											);
-
-											var schedulerEventDuration = schedulerEvent.getSecondsDuration() * 1000;
-
-											var calendarEndTime = calendarBooking.startTime + schedulerEventDuration;
-											var calendarStartTime = calendarBooking.startTime;
-
-											var changedStartDate = changed.startDate;
-
-											if (changedStartDate) {
-												var offset = 0;
-												var newVal = changedStartDate.newVal;
-												var prevVal = changedStartDate.prevVal;
-
-												if (isDate(newVal) && isDate(prevVal)) {
-													offset = newVal.getTime() - prevVal.getTime();
-												}
-
-												calendarStartTime = calendarStartTime + offset;
-												calendarEndTime = calendarStartTime + schedulerEventDuration;
-											}
-
-											newSchedulerEvent.setAttrs(
-													{
-														endDate: CalendarUtil.toLocalTime(calendarEndTime),
-														startDate: CalendarUtil.toLocalTime(calendarStartTime)
-													}
-											);
-
-											CalendarUtil.updateEvent(
-													newSchedulerEvent,
-													function() {
-														instance.load();
-													}
-											);
-										}
-									);
-								};
-
-								var cancel = function() {
-									instance.load();
+								if (changed.startDate) {
+									previousTime = changed.startDate.prevVal;
+									newTime = changed.startDate.newVal;
 								}
 
 								if (schedulerEvent.isMasterBooking()) {
@@ -1523,35 +1537,35 @@ AUI.add(
 																			'update',
 																			schedulerEvent.isMasterBooking(),
 																			function() {
-																				saveOneInstance(schedulerEvent);
+																				CalendarUtil.saveOneInstance(schedulerEvent);
 
 																				this.hide();
 																			},
 																			function() {
-																				saveFollowingInstances(schedulerEvent);
+																				CalendarUtil.saveFollowingInstances(schedulerEvent);
 
 																				this.hide();
 																			},
 																			function() {
-																				saveAllInstances(schedulerEvent);
+																				CalendarUtil.saveAllInstances(schedulerEvent, previousTime, newTime);
 
 																				this.hide();
 																			},
 																			function() {
-																				cancel();
+																				CalendarUtil.cancelSaving(schedulerEvent);
 
 																				this.hide();
 																			}
 																	);
 																}
 																else {
-																	saveSimpleEvent(schedulerEvent);
+																	CalendarUtil.saveSimpleEvent(schedulerEvent);
 																}
 
 																this.hide();
 															},
 															function() {
-																cancel();
+																CalendarUtil.cancelSaving(schedulerEvent);
 
 																this.hide();
 															}
@@ -1563,29 +1577,29 @@ AUI.add(
 																'update',
 																schedulerEvent.isMasterBooking(),
 																function() {
-																	saveOneInstance(schedulerEvent);
+																	CalendarUtil.saveOneInstance(schedulerEvent);
 
 																	this.hide();
 																},
 																function() {
-																	saveFollowingInstances(schedulerEvent);
+																	CalendarUtil.saveFollowingInstances(schedulerEvent);
 
 																	this.hide();
 																},
 																function() {
-																	saveAllInstances(schedulerEvent);
+																	CalendarUtil.saveAllInstances(schedulerEvent, previousTime, newTime);
 
 																	this.hide();
 																},
 																function() {
-																	cancel();
+																	CalendarUtil.cancelSaving(schedulerEvent);
 
 																	this.hide();
 																}
 														);
 													}
 													else {
-														saveSimpleEvent(schedulerEvent);
+														CalendarUtil.saveSimpleEvent(schedulerEvent);
 													}
 												}
 											}
@@ -1613,35 +1627,35 @@ AUI.add(
 														'update',
 														schedulerEvent.isMasterBooking(),
 														function() {
-															saveOneInstance(schedulerEvent);
+															CalendarUtil.saveOneInstance(schedulerEvent);
 
 															this.hide();
 														},
 														function() {
-															saveFollowingInstances(schedulerEvent);
+															CalendarUtil.saveFollowingInstances(schedulerEvent);
 
 															this.hide();
 														},
 														function() {
-															saveAllInstances(schedulerEvent);
+															CalendarUtil.saveAllInstances(schedulerEvent, previousTime, newTime);
 
 															this.hide();
 														},
 														function() {
-															cancel();
+															CalendarUtil.cancelSaving(schedulerEvent);
 
 															this.hide();
 														}
 												);
 											}
 											else {
-												saveSimpleEvent(schedulerEvent);
+												CalendarUtil.saveSimpleEvent(schedulerEvent);
 											}
 
 											this.hide();
 										},
 										function() {
-											cancel();
+											CalendarUtil.cancelSaving(schedulerEvent);
 
 											this.hide();
 										}
