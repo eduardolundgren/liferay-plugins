@@ -1602,8 +1602,6 @@ AUI.add(
 														CalendarUtil.saveSimpleEvent(schedulerEvent);
 													}
 												}
-
-												this.hide();
 											}
 									);
 								}
