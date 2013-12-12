@@ -1588,8 +1588,6 @@ AUI.add(
 														saveSimpleEvent(schedulerEvent);
 													}
 												}
-
-												this.hide();
 											}
 									);
 								}

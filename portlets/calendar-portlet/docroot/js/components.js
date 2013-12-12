@@ -1122,49 +1122,42 @@
 		'liferay-calendar-message-util',
 		function(A) {
 			Liferay.CalendarMessageUtil = {
-				confirmationPanel: null,
 
 				confirm: function(message, yesButtonLabel, noButtonLabel, yesFn, noFn) {
 					var instance = this;
 
-					var confirmationPanel = instance.confirmationPanel;
-
-					if (!confirmationPanel) {
-						var buttons = [
-							{
-								on: {
-									click: function(event, buttonItem) {
-										confirmationPanel.yesFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: yesButtonLabel
+					var buttons = [
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.yesFn.apply(confirmationPanel, arguments);
+								}
 							},
-							{
-								on: {
-									click: function(event, buttonItem) {
-										confirmationPanel.noFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: noButtonLabel
-							}
-						];
+							label: yesButtonLabel
+						},
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.noFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: noButtonLabel
+						}
+					];
 
-						confirmationPanel = Liferay.Util.Window.getWindow(
-							{
-								dialog : {
-									bodyContent: message,
-									height: 200,
-									toolbars: {
-										footer: buttons
-									},
-									width: 700
+					var confirmationPanel = Liferay.Util.Window.getWindow(
+						{
+							dialog : {
+								bodyContent: message,
+								height: 200,
+								toolbars: {
+									footer: buttons
 								},
-								title: Liferay.Language.get('are-you-sure')
-							}
-						);
-
-						instance.confirmationPanel = confirmationPanel;
-					}
+								width: 700
+							},
+							title: Liferay.Language.get('are-you-sure')
+						}
+					);
 
 					confirmationPanel.yesFn = yesFn;
 					confirmationPanel.noFn = noFn || confirmationPanel.close;
