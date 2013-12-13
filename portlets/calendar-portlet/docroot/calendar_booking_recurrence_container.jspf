@@ -64,7 +64,7 @@ if (recurrence != null) {
 }
 %>
 
-<div class="calendar-portlet-recurrence-container hide">
+<div class="calendar-portlet-recurrence-container hide <%= reschedulable? "" : "calendar-portlet-not-reschedulable" %>">
 	<table id="<portlet:namespace />recurrenceContainer">
 		<aui:input disabled="<%= !reschedulable %>" name="exceptionDates" type="hidden" value="<%= exceptionDatesString %>" />
 

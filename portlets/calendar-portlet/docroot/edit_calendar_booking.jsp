@@ -112,7 +112,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 	<aui:model-context bean="<%= calendarBooking %>" model="<%= CalendarBooking.class %>" />
 
-	<aui:fieldset>
+	<aui:fieldset cssClass='<%= reschedulable? "" : "calendar-portlet-not-reschedulable" %>' id="mainCalendarBookingFields">
 		<aui:input name="title" />
 
 		<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />startDateContainer">
@@ -307,55 +307,55 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			</c:if>
 
 			<c:if test="<%= (calendarBooking != null) && (calendar != null) %>">
-				<c:choose>
-					<c:when test="<%= recurring %>">
-						Liferay.RecurrenceUtil.openConfirmationPanel(
-							'update',
-							'<%= calendarBooking.isMasterBooking() %>',
-							function() {
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+				var newTime = new Date(A.one('#<portlet:namespace />startTime').val());
 
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
-								A.one('#<portlet:namespace />allFollowing').val('true');
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+				var setUneditableFieldDisabled = function(value) {
+					A.all('.calendar-portlet-not-reschedulable :disabled').each(
+						function(input, index) {
+							console.log(input,index);
+							input.set('disabled', value);
+						}
+					);
+				};
 
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
-								submitForm(document.<portlet:namespace />fm);
+				Liferay.CalendarUtil.getEvent(
+					<%= calendarBookingId %>,
+					function(calendarBooking) {
+						var schedulerEvent = Liferay.CalendarUtil.toSchedulerEvent(calendarBooking);
+
+						Liferay.CalendarUtil.askUserConfirmations(
+							schedulerEvent, schedulerEvent.get('startTime'), newTime,
+							{
+								saveSimpleEvent: function() {
+									setUneditableFieldDisabled(false);
+									submitForm(document.<portlet:namespace />fm);
+									setUneditableFieldDisabled(true);
+								},
+								saveOneInstance: function() {
+									A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+
+									setUneditableFieldDisabled(false);
+									submitForm(document.<portlet:namespace />fm);
+									setUneditableFieldDisabled(true);
+								},
+								saveFollowingInstances: function() {
+									A.one('#<portlet:namespace />allFollowing').val('true');
+									A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+
+									setUneditableFieldDisabled(false);
+									submitForm(document.<portlet:namespace />fm);
+									setUneditableFieldDisabled(true);
+								},
+								saveAllInstances: function() {
+									setUneditableFieldDisabled(false);
+									submitForm(document.<portlet:namespace />fm);
+									setUneditableFieldDisabled(true);
+								},
+								cancelSaving: A.Lang.emptyFn
 							}
 						);
-					</c:when>
-					<c:when test="<%= calendarBooking.isMasterBooking() %>">
-						submitForm(document.<portlet:namespace />fm);
-					</c:when>
-					<c:otherwise>
-						var content = [
-							'<p class="calendar-portlet-confirmation-text">',
-							A.Lang.sub(
-								Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-								['<%= HtmlUtil.escapeJS(calendar.getName(locale)) %>']
-							),
-							'</p>'
-						].join('');
-
-						Liferay.CalendarMessageUtil.confirm(
-							content,
-							Liferay.Language.get('continue'),
-							Liferay.Language.get('dont-change-the-event'),
-							function() {
-								submitForm(document.<portlet:namespace />fm);
-
-								this.hide();
-							},
-							function() {
-								this.hide();
-							}
-						);
-					</c:otherwise>
-				</c:choose>
+					}
+				);
 			</c:if>
 		},
 		['liferay-calendar-message-util', 'json']
