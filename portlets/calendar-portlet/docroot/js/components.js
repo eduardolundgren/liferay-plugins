@@ -1145,6 +1145,64 @@
 					confirmationPanel.noFn = noFn || confirmationPanel.close;
 
 					return confirmationPanel.render().show();
+				},
+
+				confirmChildCalendarBookingUpdate: function(onlyCurrentCalendarFn, allInvitedCalendarsFn, cancelFn) {
+					var instance = this;
+
+					var message = '<p class="calendar-portlet-confirmation-text">' +
+							Liferay.Language.get('would-you-like-to-change-only-the-current-calendar-or-all-invited-calendars') +
+						'</p>' +
+						'<p class="calendar-portlet-confirmation-text">' +
+							Liferay.Language.get('invited-users-will-be-notified') +
+						'</p>';
+
+					var buttons = [
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.onlyCurrentCalendarFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('only-current-calendar')
+						},
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.allInvitedCalendarsFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('all-invited-calendars')
+						},
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.cancelFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('cancel')
+						}
+					];
+
+					var confirmationPanel = Liferay.Util.Window.getWindow(
+						{
+							dialog : {
+								bodyContent: message,
+								height: 250,
+								toolbars: {
+									footer: buttons
+								},
+								width: 700
+							},
+							title: Liferay.Language.get('are-you-sure')
+						}
+					);
+
+					confirmationPanel.onlyCurrentCalendarFn = onlyCurrentCalendarFn;
+					confirmationPanel.allInvitedCalendarsFn = allInvitedCalendarsFn;
+					confirmationPanel.cancelFn = cancelFn || confirmationPanel.hide;
+
+					return confirmationPanel.render().show();
 				}
 			};
 		},

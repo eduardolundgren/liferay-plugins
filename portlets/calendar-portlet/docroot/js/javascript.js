@@ -47,10 +47,6 @@ AUI.add(
 										'</div>' +
 									 '</button>';
 
-		var TPL_MESSAGE_UPDATE_ALL_INVITED = '<p class="calendar-portlet-confirmation-text">' +
-												Liferay.Language.get('invited-users-will-be-notified') +
-											'</p>';
-
 		var COMPANY_ID = toInt(themeDisplay.getCompanyId());
 
 		var USER_ID = toInt(themeDisplay.getUserId());
@@ -182,27 +178,57 @@ AUI.add(
 							schedulerEvent,
 							function(childrenCount) {
 								if (childrenCount > 1) {
-									Liferay.CalendarMessageUtil.confirm(
-											TPL_MESSAGE_UPDATE_ALL_INVITED,
-											Liferay.Language.get('continue'),
-											Liferay.Language.get('dont-change-the-event'),
+									Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
 											function() {
 												if (schedulerEvent.isRecurring()) {
 													Liferay.RecurrenceUtil.openConfirmationPanel(
 															'update',
 															schedulerEvent.isMasterBooking(),
 															function() {
-																callbacks.saveOneInstance(schedulerEvent);
+																callbacks.saveOneInstance(schedulerEvent, false);
 
 																this.hide();
 															},
 															function() {
-																callbacks.saveFollowingInstances(schedulerEvent);
+																callbacks.saveFollowingInstances(schedulerEvent, false);
 
 																this.hide();
 															},
 															function() {
-																callbacks.saveAllInstances(schedulerEvent, previousTime, newTime);
+																callbacks.saveAllInstances(schedulerEvent, previousTime, newTime, false);
+
+																this.hide();
+															},
+															function() {
+																callbacks.cancelSaving(schedulerEvent, false);
+
+																this.hide();
+															}
+													);
+												}
+												else {
+													callbacks.saveSimpleEvent(schedulerEvent, false);
+												}
+
+												this.hide();
+											},
+											function() {
+												if (schedulerEvent.isRecurring()) {
+													Liferay.RecurrenceUtil.openConfirmationPanel(
+															'update',
+															schedulerEvent.isMasterBooking(),
+															function() {
+																callbacks.saveOneInstance(schedulerEvent, true);
+
+																this.hide();
+															},
+															function() {
+																callbacks.saveFollowingInstances(schedulerEvent, true);
+
+																this.hide();
+															},
+															function() {
+																callbacks.saveAllInstances(schedulerEvent, previousTime, newTime, true);
 
 																this.hide();
 															},
@@ -214,7 +240,7 @@ AUI.add(
 													);
 												}
 												else {
-													callbacks.saveSimpleEvent(schedulerEvent);
+													callbacks.saveSimpleEvent(schedulerEvent, true);
 												}
 
 												this.hide();
@@ -687,42 +713,42 @@ AUI.add(
 				A.oneNS(instance.PORTLET_NAMESPACE, '#message').html(msg);
 			},
 
-			saveSimpleEvent: function(schedulerEvent) {
+			saveSimpleEvent: function(schedulerEvent, updateChildCalendars) {
 				var scheduler = schedulerEvent.get('scheduler');
 
 				CalendarUtil.updateEvent(
-					schedulerEvent,
+					schedulerEvent, updateChildCalendars,
 					function() {
 						scheduler.load();
 					}
 				);
 			},
 
-			saveOneInstance: function(schedulerEvent) {
+			saveOneInstance: function(schedulerEvent, updateChildCalendars) {
 				var scheduler = schedulerEvent.get('scheduler');
 
 				CalendarUtil.updateEventInstance(
 					schedulerEvent,
-					false,
+					false, updateChildCalendars,
 					function() {
 						scheduler.load();
 					}
 				);
 			},
 
-			saveFollowingInstances: function(schedulerEvent) {
+			saveFollowingInstances: function(schedulerEvent, updateChildCalendars) {
 				var scheduler = schedulerEvent.get('scheduler');
 
 				CalendarUtil.updateEventInstance(
 					schedulerEvent,
-					true,
+					true, updateChildCalendars,
 					function() {
 						scheduler.load();
 					}
 				);
 			},
 
-			saveAllInstances: function(schedulerEvent, previousTime, newTime) {
+			saveAllInstances: function(schedulerEvent, previousTime, newTime, updateChildCalendars) {
 				var scheduler = schedulerEvent.get('scheduler');
 				var calendarBookingId = schedulerEvent.get('calendarBookingId');
 
@@ -747,8 +773,8 @@ AUI.add(
 						if (previousTime && newTime) {
 							var offset = 0;
 
-							if (isDate(newTime) && isDate(prevTime)) {
-								offset = newTime.getTime() - prevTime.getTime();
+							if (isDate(newTime) && isDate(previousTime)) {
+								offset = newTime.getTime() - previousTime.getTime();
 							}
 
 							calendarStartTime = calendarStartTime + offset;
@@ -763,7 +789,7 @@ AUI.add(
 						);
 
 						CalendarUtil.updateEvent(
-								newSchedulerEvent,
+								newSchedulerEvent, updateChildCalendars,
 								function() {
 									scheduler.load();
 								}
@@ -919,7 +945,7 @@ AUI.add(
 				return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
 			},
 
-			updateEvent: function(schedulerEvent, success) {
+			updateEvent: function(schedulerEvent, updateChildCalendars, success) {
 				var instance = this;
 
 				var allDay = schedulerEvent.get('allDay');
@@ -952,6 +978,7 @@ AUI.add(
 							startTime: startDate.getTime(),
 							status: schedulerEvent.get('status'),
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content'))),
+							updateChildCalendars: updateChildCalendars,
 							userId: USER_ID
 						}
 					},
@@ -992,7 +1019,7 @@ AUI.add(
 				);
 			},
 
-			updateEventInstance: function(schedulerEvent, allFollowing, success) {
+			updateEventInstance: function(schedulerEvent, allFollowing, updateChildCalendars, success) {
 				var instance = this;
 
 				instance.invokeService(
@@ -1013,6 +1040,7 @@ AUI.add(
 							startTime: instance.toUTC(schedulerEvent.get('startDate')).getTime(),
 							status: schedulerEvent.get('status'),
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content'))),
+							updateChildCalendars: updateChildCalendars,
 							userId: USER_ID
 						}
 					},
