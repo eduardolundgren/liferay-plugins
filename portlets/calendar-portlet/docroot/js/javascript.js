@@ -347,25 +347,10 @@ AUI.add(
 			countChildrenCalendarBookings: function(schedulerEvent, callback) {
 				var instance = this;
 
-				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
-
-				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
-
-				var statuses = [CalendarWorkflow.STATUS_APPROVED, CalendarWorkflow.STATUS_MAYBE, CalendarWorkflow.STATUS_PENDING];
-
 				instance.invokeService(
 					{
-						'/calendar-portlet/calendarbooking/search-count': {
-							calendarIds: STR_BLANK,
-							calendarResourceIds: STR_BLANK,
-							companyId: COMPANY_ID,
-							endTime: endDate.getTime(),
-							groupIds: STR_BLANK,
-							keywords: STR_BLANK,
-							parentCalendarBookingId: schedulerEvent.get('calendarBookingId'),
-							recurring: schedulerEvent.isRecurring(),
-							startTime: startDate.getTime(),
-							statuses: statuses.join(',')
+						'/calendar-portlet/calendarbooking/get-child-calendar-bookings-count': {
+							parentCalendarBookingId: schedulerEvent.get('calendarBookingId')
 						}
 					},
 					{
