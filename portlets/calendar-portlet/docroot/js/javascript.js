@@ -170,142 +170,69 @@ AUI.add(
 				);
 			},
 
-			askUserConfirmations: function(schedulerEvent, callback) {
+			askEventDeleteConfirmations: function(schedulerEvent, callback) {
+				var instance = this;
+
 				var parameters = {
 					shouldCancel: false,
-					shouldSaveFollowingInstances: false,
-					shouldSaveAllInstances: false,
+					shouldDeleteAllInstances: false,
+					shouldDeleteFollowingInstances: false,
 					shouldUpdateChildCalendars: false,
 				};
 
 				if (schedulerEvent.isMasterBooking()) {
 					CalendarUtil.countChildrenCalendarBookings(
-							schedulerEvent,
-							function(childrenCount) {
-								if (childrenCount > 1) {
-									Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
-											function() {
-												parameters.shouldUpdateChildCalendars = false;
+						schedulerEvent,
+						function(childrenCount) {
+							if (childrenCount > 1) {
+								if (schedulerEvent.isRecurring()) {
+									RecurrenceUtil.openConfirmationPanel(
+										'delete',
+										schedulerEvent.isMasterBooking(),
+										function() {
+											parameters.shouldDeleteAllInstances = false;
+											parameters.shouldDeleteFollowingInstances = false;
 
-												if (schedulerEvent.isRecurring()) {
-													Liferay.RecurrenceUtil.openConfirmationPanel(
-															'update',
-															schedulerEvent.isMasterBooking(),
-															function() {
-																parameters.shouldSaveAllInstances = false;
-																parameters.shouldSaveFollowingInstances = false;
+											Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
+													function() {
+														parameters.shouldUpdateChildCalendars = false;
 
-																callback(schedulerEvent, parameters);
+														callback(schedulerEvent, parameters);
 
-																this.hide();
-															},
-															function() {
-																parameters.shouldSaveAllInstances = false;
-																parameters.shouldSaveFollowingInstances = true;
+														this.hide();
+													},
+													function() {
+														parameters.shouldUpdateChildCalendars = true;
 
-																callback(schedulerEvent, parameters);
+														callback(schedulerEvent, parameters);
 
-																this.hide();
-															},
-															function() {
-																parameters.shouldSaveAllInstances = true;
+														this.hide();
+													},
+													function() {
+														parameters.shouldCancel = true;
 
-																callback(schedulerEvent, parameters);
+														callback(schedulerEvent, parameters);
 
-																this.hide();
-															},
-															function() {
-																parameters.shouldCancel = true;
+														this.hide();
+													}
+												);
 
-																callback(schedulerEvent, parameters);
+											this.hide();
+										},
+										function() {
+											parameters.shouldDeleteAllInstances = false;
+											parameters.shouldDeleteFollowingInstances = true;
 
-																this.hide();
-															}
-													);
-												}
-												else {
-													callback(schedulerEvent, parameters);
-												}
-
-												this.hide();
-											},
-											function() {
-												parameters.shouldUpdateChildCalendars = true;
-
-												if (schedulerEvent.isRecurring()) {
-													Liferay.RecurrenceUtil.openConfirmationPanel(
-															'update',
-															schedulerEvent.isMasterBooking(),
-															function() {
-																parameters.shouldSaveAllInstances = false;
-																parameters.shouldSaveFollowingInstances = false;
-
-																callback(schedulerEvent, parameters);
-
-																this.hide();
-															},
-															function() {
-																parameters.shouldSaveAllInstances = false;
-																parameters.shouldSaveFollowingInstances = true;
-
-																callback(schedulerEvent, parameters);
-
-																this.hide();
-															},
-															function() {
-																parameters.shouldSaveAllInstances = true;
-
-																callback(schedulerEvent, parameters);
-
-																this.hide();
-															},
-															function() {
-																parameters.shouldCancel = true;
-
-																callback(schedulerEvent, parameters);
-
-																this.hide();
-															}
-													);
-												}
-												else {
-													callback(schedulerEvent, parameters);
-												}
-
-												this.hide();
-											},
-											function() {
-												parameters.shouldCancel = true;
-
-												callback(schedulerEvent, parameters);
-
-												this.hide();
-											}
-									);
-								}
-								else {
-									if (schedulerEvent.isRecurring()) {
-										Liferay.RecurrenceUtil.openConfirmationPanel(
-												'update',
-												schedulerEvent.isMasterBooking(),
+											Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
 												function() {
-													parameters.shouldSaveAllInstances = false;
-													parameters.shouldSaveFollowingInstances = false;
+													parameters.shouldUpdateChildCalendars = false;
 
 													callback(schedulerEvent, parameters);
 
 													this.hide();
 												},
 												function() {
-													parameters.shouldSaveAllInstances = false;
-													parameters.shouldSaveFollowingInstances = true;
-
-													callback(schedulerEvent, parameters);
-
-													this.hide();
-												},
-												function() {
-													parameters.shouldSaveAllInstances = true;
+													parameters.shouldUpdateChildCalendars = true;
 
 													callback(schedulerEvent, parameters);
 
@@ -318,54 +245,44 @@ AUI.add(
 
 													this.hide();
 												}
-										);
-									}
-									else {
-										callback(schedulerEvent, parameters);
-									}
+											);
+
+											this.hide();
+										},
+										function() {
+											parameters.shouldDeleteAllInstances = true;
+
+											Liferay.CalendarMessageUtil.confirm(
+												Liferay.Language.get('moving-this-event-to-the-trash-bin-will-cancel-the-meeting-with-your-guests-would-you-like-to-move-it'),
+												Liferay.Language.get('move-event-to-trash'),
+												Liferay.Language.get('dont-move-the-event'),
+												function() {
+													parameters.shouldDeleteAllInstances = true;
+
+													callback(schedulerEvent, parameters);
+
+													this.hide();
+												},
+												function() {
+													parameters.shouldCancel = true;
+
+													callback(schedulerEvent, parameters);
+
+													this.hide();
+												}
+											);
+
+											this.hide();
+										}
+									);
 								}
-							}
-					);
-				}
-				else {
-					var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
-
-					var content = [
-						'<p class="calendar-portlet-confirmation-text">',
-						Lang.sub(
-							Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-							[Liferay.Util.escapeHTML(calendar.get('name'))]
-						),
-						'</p>'
-					].join(STR_BLANK);
-
-					Liferay.CalendarMessageUtil.confirm(
-						content,
-						Liferay.Language.get('continue'),
-						Liferay.Language.get('dont-change-the-event'),
-						function() {
-							if (schedulerEvent.isRecurring()) {
-								Liferay.RecurrenceUtil.openConfirmationPanel(
-										'update',
-										schedulerEvent.isMasterBooking(),
+								else {
+									Liferay.CalendarMessageUtil.confirm(
+										Liferay.Language.get('moving-this-event-to-the-trash-bin-will-cancel-the-meeting-with-your-guests-would-you-like-to-move-it'),
+										Liferay.Language.get('move-event-to-trash'),
+										Liferay.Language.get('dont-move-the-event'),
 										function() {
-											parameters.shouldSaveAllInstances = false;
-											parameters.shouldSaveFollowingInstances = false;
-
-											callback(schedulerEvent, parameters);
-
-											this.hide();
-										},
-										function() {
-											parameters.shouldSaveAllInstances = false;
-											parameters.shouldSaveFollowingInstances = true;
-
-											callback(schedulerEvent, parameters);
-
-											this.hide();
-										},
-										function() {
-											parameters.shouldSaveAllInstances = true;
+											parameters.shouldDeleteAllInstances = true;
 
 											callback(schedulerEvent, parameters);
 
@@ -378,22 +295,83 @@ AUI.add(
 
 											this.hide();
 										}
+									);
+								}
+							}
+							else if (schedulerEvent.isRecurring()) {
+								RecurrenceUtil.openConfirmationPanel(
+									'delete',
+									schedulerEvent.isMasterBooking(),
+									function() {
+										parameters.shouldDeleteAllInstances = false;
+										parameters.shouldDeleteFollowingInstances = false;
+
+										callback(schedulerEvent, parameters);
+
+										this.hide();
+									},
+									function() {
+										parameters.shouldDeleteAllInstances = false;
+										parameters.shouldDeleteFollowingInstances = true;
+
+										callback(schedulerEvent, parameters);
+
+										this.hide();
+									},
+									function() {
+										parameters.shouldDeleteAllInstances = true;
+
+										callback(schedulerEvent, parameters);
+
+										this.hide();
+									},
+									function() {
+										parameters.shouldCancel = true;
+
+										callback(schedulerEvent, parameters);
+
+										this.hide();
+									}
 								);
 							}
 							else {
+								parameters.shouldDeleteAllInstances = true;
+
 								callback(schedulerEvent, parameters);
 							}
-
-							this.hide();
-						},
-						function() {
-							parameters.shouldCancel = true;
-
-							callback(schedulerEvent, parameters);
-
-							this.hide();
 						}
 					);
+				}
+			},
+
+			askEventEditConfirmations: function(schedulerEvent, callback) {
+				var instance = this;
+
+				var parameters = {
+					shouldCancel: false,
+					shouldSaveFollowingInstances: false,
+					shouldSaveAllInstances: false,
+					shouldUpdateChildCalendars: false,
+				};
+
+				if (schedulerEvent.isMasterBooking()) {
+					instance.countChildrenCalendarBookings(
+							schedulerEvent,
+							function(childrenCount) {
+								if (childrenCount > 1) {
+									instance._askAboutUpdatingParentEvent(schedulerEvent, callback, parameters);
+								}
+								else if (schedulerEvent.isRecurring()) {
+									instance._askAboutUpdatingRecurringEvent(schedulerEvent, callback, parameters);
+								}
+								else {
+									callback(schedulerEvent, parameters);
+								}
+							}
+					);
+				}
+				else {
+					instance._askAboutUpdatingChildEvent(schedulerEvent, callback, parameters);
 				}
 			},
 
@@ -1032,6 +1010,119 @@ AUI.add(
 						}
 					}
 				);
+			},
+
+			_askAboutUpdatingChildEvent: function(schedulerEvent, callback, parameters) {
+				var instance = this;
+
+				var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+
+				var content = [
+					'<p class="calendar-portlet-confirmation-text">',
+					Lang.sub(
+						Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
+						[Liferay.Util.escapeHTML(calendar.get('name'))]
+					),
+					'</p>'
+				].join(STR_BLANK);
+
+				Liferay.CalendarMessageUtil.confirm(
+					content,
+					Liferay.Language.get('continue'),
+					Liferay.Language.get('dont-change-the-event'),
+					function() {
+						if (schedulerEvent.isRecurring()) {
+							instance._askAboutUpdatingRecurringEvent(schedulerEvent, callback, parameters);
+						}
+						else {
+							callback(schedulerEvent, parameters);
+						}
+
+						this.hide();
+					},
+					function() {
+						parameters.shouldCancel = true;
+
+						callback(schedulerEvent, parameters);
+
+						this.hide();
+					}
+				);
+			},
+
+			_askAboutUpdatingParentEvent: function(schedulerEvent, callback, parameters) {
+				var instance = this;
+
+				Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
+						function() {
+							parameters.shouldUpdateChildCalendars = false;
+
+							if (schedulerEvent.isRecurring()) {
+								instance._askAboutUpdatingRecurringEvent(schedulerEvent, callback, parameters);
+							}
+							else {
+								callback(schedulerEvent, parameters);
+							}
+
+							this.hide();
+						},
+						function() {
+							parameters.shouldUpdateChildCalendars = true;
+
+							if (schedulerEvent.isRecurring()) {
+								instance._askAboutUpdatingRecurringEvent(schedulerEvent, callback, parameters);
+							}
+							else {
+								callback(schedulerEvent, parameters);
+							}
+
+							this.hide();
+						},
+						function() {
+							parameters.shouldCancel = true;
+
+							callback(schedulerEvent, parameters);
+
+							this.hide();
+						}
+				);
+			},
+
+			_askAboutUpdatingRecurringEvent: function(schedulerEvent, callback, parameters) {
+				Liferay.RecurrenceUtil.openConfirmationPanel(
+						'update',
+						schedulerEvent.isMasterBooking(),
+						function() {
+							parameters.shouldSaveAllInstances = false;
+							parameters.shouldSaveFollowingInstances = false;
+
+							callback(schedulerEvent, parameters);
+
+							this.hide();
+						},
+						function() {
+							parameters.shouldSaveAllInstances = false;
+							parameters.shouldSaveFollowingInstances = true;
+
+							callback(schedulerEvent, parameters);
+
+							this.hide();
+						},
+						function() {
+							parameters.shouldSaveAllInstances = true;
+
+							callback(schedulerEvent, parameters);
+
+							this.hide();
+						},
+						function() {
+							parameters.shouldCancel = true;
+
+							callback(schedulerEvent, parameters);
+
+							this.hide();
+						}
+				);
 			}
 		};
 
@@ -1643,7 +1734,7 @@ AUI.add(
 									newTime = changed.startDate.newVal;
 								}
 
-								CalendarUtil.askUserConfirmations(
+								CalendarUtil.askEventEditConfirmations(
 									schedulerEvent,
 									function(schedulerEvent, parameters) {
 										var scheduler = schedulerEvent.get('scheduler');
@@ -1770,109 +1861,24 @@ AUI.add(
 
 						var schedulerEvent = event.schedulerEvent;
 
-						if (schedulerEvent.isMasterBooking()) {
-							CalendarUtil.countChildrenCalendarBookings(
-								schedulerEvent,
-								function(childrenCount) {
-									if (childrenCount > 1) {
-										if (schedulerEvent.isRecurring()) {
-											RecurrenceUtil.openConfirmationPanel(
-												'delete',
-												schedulerEvent.isMasterBooking(),
-												function() {
-													Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
-															function() {
-																CalendarUtil.deleteEventInstance(schedulerEvent, false, false);
+						CalendarUtil.askEventDeleteConfirmations(
+							schedulerEvent,
+							function(schedulerEvent, parameters) {
+								var scheduler = schedulerEvent.get('scheduler');
+								if (parameters.shouldCancel) {
+									scheduler.load();
 
-																this.hide();
-															},
-															function() {
-																CalendarUtil.deleteEventInstance(schedulerEvent, false, true);
-
-																this.hide();
-															},
-															function() {
-																this.hide();
-															}
-													);
-
-													this.hide();
-												},
-												function() {
-													Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
-															function() {
-																CalendarUtil.deleteEventInstance(schedulerEvent, true, false);
-
-																this.hide();
-															},
-															function() {
-																CalendarUtil.deleteEventInstance(schedulerEvent, true, true);
-
-																this.hide();
-															},
-															function() {
-																this.hide();
-															}
-													);
-
-													this.hide();
-												},
-												function() {
-													Liferay.CalendarMessageUtil.confirm(
-														Liferay.Language.get('moving-this-event-to-the-recycle-bin-will-cancel-the-meeting-with-your-guests-would-you-like-to-move-it'),
-														Liferay.Language.get('move-event-to-recycle-bin'),
-														Liferay.Language.get('dont-move-the-event'),
-														function() {
-															CalendarUtil.deleteEvent(schedulerEvent);
-
-															this.hide();
-														}
-													);
-
-													this.hide();
-												}
-											);
-										}
-										else {
-											Liferay.CalendarMessageUtil.confirm(
-												Liferay.Language.get('moving-this-event-to-the-recycle-bin-will-cancel-the-meeting-with-your-guests-would-you-like-to-move-it'),
-												Liferay.Language.get('move-event-to-recycle-bin'),
-												Liferay.Language.get('dont-move-the-event'),
-												function() {
-													CalendarUtil.deleteEvent(schedulerEvent);
-
-													this.hide();
-												}
-											);
-										}
-									}
-									else if (schedulerEvent.isRecurring()) {
-										RecurrenceUtil.openConfirmationPanel(
-											'delete',
-											schedulerEvent.isMasterBooking(),
-											function() {
-												CalendarUtil.deleteEventInstance(schedulerEvent, false);
-
-												this.hide();
-											},
-											function() {
-												CalendarUtil.deleteEventInstance(schedulerEvent, true);
-
-												this.hide();
-											},
-											function() {
-												CalendarUtil.deleteEvent(schedulerEvent);
-
-												this.hide();
-											}
-										);
-									}
-									else {
-										CalendarUtil.deleteEvent(schedulerEvent);
-									}
+									return;
 								}
-							);
-						}
+
+								if (parameters.shouldDeleteAllInstances) {
+									CalendarUtil.deleteEvent(schedulerEvent);
+								}
+								else {
+									CalendarUtil.deleteEventInstance(schedulerEvent, parameters.shouldDeleteFollowingInstances, parameters.shouldUpdateChildCalendars);
+								}
+							}
+						);
 
 						event.preventDefault();
 					},

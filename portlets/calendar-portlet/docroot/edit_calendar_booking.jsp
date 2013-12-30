@@ -315,7 +315,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					function(calendarBooking) {
 						var schedulerEvent = Liferay.CalendarUtil.toSchedulerEvent(calendarBooking);
 
-						Liferay.CalendarUtil.askUserConfirmations(
+						Liferay.CalendarUtil.askEventEditConfirmations(
 							schedulerEvent,
 							function(schedulerEvent, parameters) {
 								if (parameters.shouldCancel) {
