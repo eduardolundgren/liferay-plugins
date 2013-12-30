@@ -310,40 +310,26 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			</c:if>
 
 			<c:if test="<%= (calendarBooking != null) && (calendar != null) %>">
-				var newTime = new Date(A.one('#<portlet:namespace />startTime').val());
-
 				Liferay.CalendarUtil.getEvent(
 					<%= calendarBookingId %>,
 					function(calendarBooking) {
 						var schedulerEvent = Liferay.CalendarUtil.toSchedulerEvent(calendarBooking);
 
 						Liferay.CalendarUtil.askUserConfirmations(
-							schedulerEvent, schedulerEvent.get('startTime'), newTime,
-							{
-								saveSimpleEvent: function(schedulerEvent, updateChildCalendars) {
-									A.one('#<portlet:namespace />updateChildCalendars').val(updateChildCalendars);
+							schedulerEvent,
+							function(schedulerEvent, parameters) {
+								if (parameters.shouldCancel) {
+									return;
+								}
 
-									submitForm(document.<portlet:namespace />fm);
-								},
-								saveOneInstance: function(schedulerEvent, updateChildCalendars) {
-									A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
-									A.one('#<portlet:namespace />updateChildCalendars').val(updateChildCalendars);
+								if (schedulerEvent.isRecurring()) {
+									A.one('#<portlet:namespace />updateCalendarBookingInstance').val(!parameters.shouldSaveAllInstances);
+									A.one('#<portlet:namespace />allFollowing').val(parameters.shouldSaveFollowingInstances);
+								}
 
-									submitForm(document.<portlet:namespace />fm);
-								},
-								saveFollowingInstances: function(schedulerEvent, updateChildCalendars) {
-									A.one('#<portlet:namespace />allFollowing').val('true');
-									A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
-									A.one('#<portlet:namespace />updateChildCalendars').val(updateChildCalendars);
+								A.one('#<portlet:namespace />updateChildCalendars').val(parameters.shouldUpdateChildCalendars);
 
-									submitForm(document.<portlet:namespace />fm);
-								},
-								saveAllInstances: function(schedulerEvent, previousTime, newTime, updateChildCalendars) {
-									A.one('#<portlet:namespace />updateChildCalendars').val(updateChildCalendars);
-
-									submitForm(document.<portlet:namespace />fm);
-								},
-								cancelSaving: A.Lang.emptyFn
+								submitForm(document.<portlet:namespace />fm);
 							}
 						);
 					}

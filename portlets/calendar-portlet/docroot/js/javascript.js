@@ -170,8 +170,13 @@ AUI.add(
 				);
 			},
 
-			askUserConfirmations: function(schedulerEvent, previousTime, newTime, callbacks) {
-				callbacks = callbacks || CalendarUtil;
+			askUserConfirmations: function(schedulerEvent, callback) {
+				var parameters = {
+					shouldCancel: false,
+					shouldSaveFollowingInstances: false,
+					shouldSaveAllInstances: false,
+					shouldUpdateChildCalendars: false,
+				};
 
 				if (schedulerEvent.isMasterBooking()) {
 					CalendarUtil.countChildrenCalendarBookings(
@@ -180,73 +185,99 @@ AUI.add(
 								if (childrenCount > 1) {
 									Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
 											function() {
+												parameters.shouldUpdateChildCalendars = false;
+
 												if (schedulerEvent.isRecurring()) {
 													Liferay.RecurrenceUtil.openConfirmationPanel(
 															'update',
 															schedulerEvent.isMasterBooking(),
 															function() {
-																callbacks.saveOneInstance(schedulerEvent, false);
+																parameters.shouldSaveAllInstances = false;
+																parameters.shouldSaveFollowingInstances = false;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															},
 															function() {
-																callbacks.saveFollowingInstances(schedulerEvent, false);
+																parameters.shouldSaveAllInstances = false;
+																parameters.shouldSaveFollowingInstances = true;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															},
 															function() {
-																callbacks.saveAllInstances(schedulerEvent, previousTime, newTime, false);
+																parameters.shouldSaveAllInstances = true;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															},
 															function() {
-																callbacks.cancelSaving(schedulerEvent, false);
+																parameters.shouldCancel = true;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															}
 													);
 												}
 												else {
-													callbacks.saveSimpleEvent(schedulerEvent, false);
+													callback(schedulerEvent, parameters);
 												}
 
 												this.hide();
 											},
 											function() {
+												parameters.shouldUpdateChildCalendars = true;
+
 												if (schedulerEvent.isRecurring()) {
 													Liferay.RecurrenceUtil.openConfirmationPanel(
 															'update',
 															schedulerEvent.isMasterBooking(),
 															function() {
-																callbacks.saveOneInstance(schedulerEvent, true);
+																parameters.shouldSaveAllInstances = false;
+																parameters.shouldSaveFollowingInstances = false;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															},
 															function() {
-																callbacks.saveFollowingInstances(schedulerEvent, true);
+																parameters.shouldSaveAllInstances = false;
+																parameters.shouldSaveFollowingInstances = true;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															},
 															function() {
-																callbacks.saveAllInstances(schedulerEvent, previousTime, newTime, true);
+																parameters.shouldSaveAllInstances = true;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															},
 															function() {
-																callbacks.cancelSaving(schedulerEvent);
+																parameters.shouldCancel = true;
+
+																callback(schedulerEvent, parameters);
 
 																this.hide();
 															}
 													);
 												}
 												else {
-													callbacks.saveSimpleEvent(schedulerEvent, true);
+													callback(schedulerEvent, parameters);
 												}
 
 												this.hide();
 											},
 											function() {
-												callbacks.cancelSaving(schedulerEvent);
+												parameters.shouldCancel = true;
+
+												callback(schedulerEvent, parameters);
 
 												this.hide();
 											}
@@ -258,29 +289,39 @@ AUI.add(
 												'update',
 												schedulerEvent.isMasterBooking(),
 												function() {
-													callbacks.saveOneInstance(schedulerEvent);
+													parameters.shouldSaveAllInstances = false;
+													parameters.shouldSaveFollowingInstances = false;
+
+													callback(schedulerEvent, parameters);
 
 													this.hide();
 												},
 												function() {
-													callbacks.saveFollowingInstances(schedulerEvent);
+													parameters.shouldSaveAllInstances = false;
+													parameters.shouldSaveFollowingInstances = true;
+
+													callback(schedulerEvent, parameters);
 
 													this.hide();
 												},
 												function() {
-													callbacks.saveAllInstances(schedulerEvent, previousTime, newTime);
+													parameters.shouldSaveAllInstances = true;
+
+													callback(schedulerEvent, parameters);
 
 													this.hide();
 												},
 												function() {
-													callbacks.cancelSaving(schedulerEvent);
+													parameters.shouldCancel = true;
+
+													callback(schedulerEvent, parameters);
 
 													this.hide();
 												}
 										);
 									}
 									else {
-										callbacks.saveSimpleEvent(schedulerEvent);
+										callback(schedulerEvent, parameters);
 									}
 								}
 							}
@@ -308,35 +349,47 @@ AUI.add(
 										'update',
 										schedulerEvent.isMasterBooking(),
 										function() {
-											callbacks.saveOneInstance(schedulerEvent);
+											parameters.shouldSaveAllInstances = false;
+											parameters.shouldSaveFollowingInstances = false;
+
+											callback(schedulerEvent, parameters);
 
 											this.hide();
 										},
 										function() {
-											callbacks.saveFollowingInstances(schedulerEvent);
+											parameters.shouldSaveAllInstances = false;
+											parameters.shouldSaveFollowingInstances = true;
+
+											callback(schedulerEvent, parameters);
 
 											this.hide();
 										},
 										function() {
-											callbacks.saveAllInstances(schedulerEvent, previousTime, newTime);
+											parameters.shouldSaveAllInstances = true;
+
+											callback(schedulerEvent, parameters);
 
 											this.hide();
 										},
 										function() {
-											callbacks.cancelSaving(schedulerEvent);
+											parameters.shouldCancel = true;
+
+											callback(schedulerEvent, parameters);
 
 											this.hide();
 										}
 								);
 							}
 							else {
-								callbacks.saveSimpleEvent(schedulerEvent);
+								callback(schedulerEvent, parameters);
 							}
 
 							this.hide();
 						},
 						function() {
-							callbacks.cancelSaving(schedulerEvent);
+							parameters.shouldCancel = true;
+
+							callback(schedulerEvent, parameters);
 
 							this.hide();
 						}
@@ -699,96 +752,6 @@ AUI.add(
 				A.oneNS(instance.PORTLET_NAMESPACE, '#message').html(msg);
 			},
 
-			saveSimpleEvent: function(schedulerEvent, updateChildCalendars) {
-				var scheduler = schedulerEvent.get('scheduler');
-
-				CalendarUtil.updateEvent(
-					schedulerEvent, updateChildCalendars,
-					function() {
-						scheduler.load();
-					}
-				);
-			},
-
-			saveOneInstance: function(schedulerEvent, updateChildCalendars) {
-				var scheduler = schedulerEvent.get('scheduler');
-
-				CalendarUtil.updateEventInstance(
-					schedulerEvent,
-					false, updateChildCalendars,
-					function() {
-						scheduler.load();
-					}
-				);
-			},
-
-			saveFollowingInstances: function(schedulerEvent, updateChildCalendars) {
-				var scheduler = schedulerEvent.get('scheduler');
-
-				CalendarUtil.updateEventInstance(
-					schedulerEvent,
-					true, updateChildCalendars,
-					function() {
-						scheduler.load();
-					}
-				);
-			},
-
-			saveAllInstances: function(schedulerEvent, previousTime, newTime, updateChildCalendars) {
-				var scheduler = schedulerEvent.get('scheduler');
-				var calendarBookingId = schedulerEvent.get('calendarBookingId');
-
-				CalendarUtil.getEvent(
-					calendarBookingId,
-					function(calendarBooking) {
-						var newSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
-
-						newSchedulerEvent.copyPropagateAttrValues(
-								schedulerEvent,
-								null,
-								{
-									silent: true
-								}
-						);
-
-						var schedulerEventDuration = schedulerEvent.getSecondsDuration() * 1000;
-
-						var calendarEndTime = calendarBooking.startTime + schedulerEventDuration;
-						var calendarStartTime = calendarBooking.startTime;
-
-						if (previousTime && newTime) {
-							var offset = 0;
-
-							if (isDate(newTime) && isDate(previousTime)) {
-								offset = newTime.getTime() - previousTime.getTime();
-							}
-
-							calendarStartTime = calendarStartTime + offset;
-							calendarEndTime = calendarStartTime + schedulerEventDuration;
-						}
-
-						newSchedulerEvent.setAttrs(
-								{
-									endDate: CalendarUtil.toLocalTime(calendarEndTime),
-									startDate: CalendarUtil.toLocalTime(calendarStartTime)
-								}
-						);
-
-						CalendarUtil.updateEvent(
-								newSchedulerEvent, updateChildCalendars,
-								function() {
-									scheduler.load();
-								}
-						);
-					}
-				);
-			},
-
-			cancelSaving: function(schedulerEvent) {
-				var scheduler = schedulerEvent.get('scheduler');
-
-				scheduler.load();
-			},
 
 			setEventAttrs: function(schedulerEvent, data) {
 				var instance = this;
@@ -1680,7 +1643,87 @@ AUI.add(
 									newTime = changed.startDate.newVal;
 								}
 
-								CalendarUtil.askUserConfirmations(schedulerEvent, previousTime, newTime);
+								CalendarUtil.askUserConfirmations(
+									schedulerEvent,
+									function(schedulerEvent, parameters) {
+										var scheduler = schedulerEvent.get('scheduler');
+
+										if (parameters.shouldCancel) {
+											scheduler.load();
+
+											return;
+										}
+
+										if (!schedulerEvent.isRecurring()) {
+											CalendarUtil.updateEvent(
+												schedulerEvent,
+												parameters.shouldUpdateChildCalendars,
+												function() {
+													scheduler.load();
+												}
+											);
+										}
+										else if (!parameters.shouldSaveAllInstances) {
+											CalendarUtil.updateEventInstance(
+												schedulerEvent,
+												parameters.shouldSaveFollowingInstances,
+												parameters.shouldUpdateChildCalendars,
+												function() {
+													scheduler.load();
+												}
+											);
+										}
+										else {
+											var calendarBookingId = schedulerEvent.get('calendarBookingId');
+
+											CalendarUtil.getEvent(
+												calendarBookingId,
+												function(calendarBooking) {
+													var newSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
+
+													newSchedulerEvent.copyPropagateAttrValues(
+															schedulerEvent,
+															null,
+															{
+																silent: true
+															}
+													);
+
+													var schedulerEventDuration = schedulerEvent.getSecondsDuration() * 1000;
+
+													var calendarEndTime = calendarBooking.startTime + schedulerEventDuration;
+													var calendarStartTime = calendarBooking.startTime;
+
+													if (previousTime && newTime) {
+														var offset = 0;
+
+														if (isDate(newTime) && isDate(previousTime)) {
+															offset = newTime.getTime() - previousTime.getTime();
+														}
+
+														calendarStartTime = calendarStartTime + offset;
+														calendarEndTime = calendarStartTime + schedulerEventDuration;
+													}
+
+													newSchedulerEvent.setAttrs(
+															{
+																endDate: CalendarUtil.toLocalTime(calendarEndTime),
+																startDate: CalendarUtil.toLocalTime(calendarStartTime)
+															}
+													);
+
+													CalendarUtil.updateEvent(
+															newSchedulerEvent,
+															parameters.shouldUpdateChildCalendars,
+															function() {
+																scheduler.load();
+															}
+													);
+												}
+											);
+										}
+									}
+								);
 							}
 						}
 					},
