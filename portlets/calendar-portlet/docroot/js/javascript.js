@@ -947,12 +947,28 @@ AUI.add(
 						this.hide();
 					},
 					function() {
-						parameters.shouldDeleteAllInstances = false;
-						parameters.shouldDeleteFollowingInstances = true;
+						var confirmationPanel = this;
 
-						instance._askAboutDeletingChildInstances(schedulerEvent, callback, parameters);
+						CalendarUtil.getEvent(
+							schedulerEvent.get('calendarBookingId'),
+							function(calendarBooking) {
+								var originalSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
 
-						this.hide();
+								if (schedulerEvent.sameStartDate(originalSchedulerEvent)) {
+									parameters.shouldDeleteAllInstances = true;
+
+									instance._askAboutDeletingParentEvent(schedulerEvent, callback, parameters);
+								}
+								else {
+									parameters.shouldDeleteAllInstances = false;
+									parameters.shouldDeleteFollowingInstances = true;
+
+									instance._askAboutDeletingChildInstances(schedulerEvent, callback, parameters);
+								}
+
+								confirmationPanel.hide();
+							}
+						);
 					},
 					function() {
 						parameters.shouldDeleteAllInstances = true;
