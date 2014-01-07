@@ -427,7 +427,7 @@ AUI.add(
 				);
 			},
 
-			deleteEventInstance: function(schedulerEvent, allFollowing) {
+			deleteEventInstance: function(schedulerEvent, allFollowing, updateChildCalendars) {
 				var instance = this;
 
 				var scheduler = schedulerEvent.get('scheduler');
@@ -440,7 +440,8 @@ AUI.add(
 						'/calendar-portlet/calendarbooking/delete-calendar-booking-instance': {
 							allFollowing: allFollowing,
 							calendarBookingId: schedulerEvent.get('calendarBookingId'),
-							startTime: CalendarUtil.toUTC(schedulerEvent.get('startDate')).getTime()
+							startTime: CalendarUtil.toUTC(schedulerEvent.get('startDate')).getTime(),
+							updateChildCalendars: updateChildCalendars
 						}
 					},
 					{
@@ -1726,29 +1727,108 @@ AUI.add(
 
 						var schedulerEvent = event.schedulerEvent;
 
-						if (schedulerEvent.isRecurring()) {
-							RecurrenceUtil.openConfirmationPanel(
-								'delete',
-								schedulerEvent.isMasterBooking(),
-								function() {
-									CalendarUtil.deleteEventInstance(schedulerEvent, false);
+						if (schedulerEvent.isMasterBooking()) {
+							CalendarUtil.countChildrenCalendarBookings(
+								schedulerEvent,
+								function(childrenCount) {
+									if (childrenCount > 1) {
+										if (schedulerEvent.isRecurring()) {
+											RecurrenceUtil.openConfirmationPanel(
+												'delete',
+												schedulerEvent.isMasterBooking(),
+												function() {
+													Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
+															function() {
+																CalendarUtil.deleteEventInstance(schedulerEvent, false, false);
 
-									RecurrenceUtil.closeConfirmationPanel();
-								},
-								function() {
-									CalendarUtil.deleteEventInstance(schedulerEvent, true);
+																this.hide();
+															},
+															function() {
+																CalendarUtil.deleteEventInstance(schedulerEvent, false, true);
 
-									RecurrenceUtil.closeConfirmationPanel();
-								},
-								function() {
-									CalendarUtil.deleteEvent(schedulerEvent);
+																this.hide();
+															},
+															function() {
+																this.hide();
+															}
+													);
 
-									RecurrenceUtil.closeConfirmationPanel();
+													this.hide();
+												},
+												function() {
+													Liferay.CalendarMessageUtil.confirmChildCalendarBookingUpdate(
+															function() {
+																CalendarUtil.deleteEventInstance(schedulerEvent, true, false);
+
+																this.hide();
+															},
+															function() {
+																CalendarUtil.deleteEventInstance(schedulerEvent, true, true);
+
+																this.hide();
+															},
+															function() {
+																this.hide();
+															}
+													);
+
+													this.hide();
+												},
+												function() {
+													Liferay.CalendarMessageUtil.confirm(
+														Liferay.Language.get('moving-this-event-to-the-recycle-bin-will-cancel-the-meeting-with-your-guests-would-you-like-to-move-it'),
+														Liferay.Language.get('move-event-to-recycle-bin'),
+														Liferay.Language.get('dont-move-the-event'),
+														function() {
+															CalendarUtil.deleteEvent(schedulerEvent);
+
+															this.hide();
+														}
+													);
+
+													this.hide();
+												}
+											);
+										}
+										else {
+											Liferay.CalendarMessageUtil.confirm(
+												Liferay.Language.get('moving-this-event-to-the-recycle-bin-will-cancel-the-meeting-with-your-guests-would-you-like-to-move-it'),
+												Liferay.Language.get('move-event-to-recycle-bin'),
+												Liferay.Language.get('dont-move-the-event'),
+												function() {
+													CalendarUtil.deleteEvent(schedulerEvent);
+
+													this.hide();
+												}
+											);
+										}
+									}
+									else if (schedulerEvent.isRecurring()) {
+										RecurrenceUtil.openConfirmationPanel(
+											'delete',
+											schedulerEvent.isMasterBooking(),
+											function() {
+												CalendarUtil.deleteEventInstance(schedulerEvent, false);
+
+												this.hide();
+											},
+											function() {
+												CalendarUtil.deleteEventInstance(schedulerEvent, true);
+
+												this.hide();
+											},
+											function() {
+												CalendarUtil.deleteEvent(schedulerEvent);
+
+												this.hide();
+											}
+										);
+									}
+									else {
+										CalendarUtil.deleteEvent(schedulerEvent);
+									}
 								}
 							);
-						}
-						else if (schedulerEvent.isMasterBooking() && confirm(Liferay.Language.get('deleting-this-event-will-cancel-the-meeting-with-your-guests-would-you-like-to-delete'))) {
-							CalendarUtil.deleteEvent(schedulerEvent);
 						}
 
 						event.preventDefault();
