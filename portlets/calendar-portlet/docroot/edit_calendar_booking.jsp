@@ -41,6 +41,10 @@ long endTime = BeanParamUtil.getLong(calendarBooking, request, "endTime", defaul
 
 java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime, userTimeZone);
 
+long oldStartTime = ParamUtil.getLong(request, "oldStartTime", startTimeJCalendar.getTimeInMillis());
+
+java.util.Calendar oldStartTimeJCalendar = JCalendarUtil.getJCalendar(oldStartTime, userTimeZone);
+
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
 long firstReminder = BeanParamUtil.getLong(calendarBooking, request, "firstReminder");
@@ -97,7 +101,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:input name="mvcPath" type="hidden" value="/edit_calendar_booking.jsp" />
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
 	<aui:input name="childCalendarIds" type="hidden" />
-	<aui:input name="oldStartTime" type="hidden" value="<%= startTimeJCalendar.getTimeInMillis() %>" />
+	<aui:input name="oldStartTime" type="hidden" value="<%= oldStartTimeJCalendar.getTimeInMillis() %>" />
 	<aui:input name="status" type="hidden" value ="<%= status %>" />
 	<aui:input name="allFollowing" type="hidden" />
 	<aui:input name="updateCalendarBookingInstance" type="hidden" />
