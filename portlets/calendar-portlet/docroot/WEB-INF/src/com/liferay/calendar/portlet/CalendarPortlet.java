@@ -307,11 +307,14 @@ public class CalendarPortlet extends MVCPortlet {
 			actionRequest, "startTime");
 		java.util.Calendar endTimeJCalendar = getJCalendar(
 			actionRequest, "endTime");
+		long oldStartTime = ParamUtil.getLong(actionRequest, "oldStartTime");
 		boolean allDay = ParamUtil.getBoolean(actionRequest, "allDay");
 		String recurrence = getRecurrence(actionRequest);
 		long[] reminders = getReminders(actionRequest);
 		String[] remindersType = getRemindersType(actionRequest);
 		int status = ParamUtil.getInteger(actionRequest, "status");
+		boolean updateChildCalendars = ParamUtil.getBoolean(
+				actionRequest, "updateChildCalendars");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			CalendarBooking.class.getName(), actionRequest);
@@ -343,18 +346,22 @@ public class CalendarPortlet extends MVCPortlet {
 						startTimeJCalendar.getTimeInMillis(),
 						endTimeJCalendar.getTimeInMillis(), allDay, recurrence,
 						allFollowing, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, serviceContext);
+						reminders[1], remindersType[1], status,
+						updateChildCalendars, serviceContext);
 			}
 			else {
 				calendarBooking = CalendarBookingServiceUtil.getCalendarBooking(
 					calendarBookingId);
 
+				if (oldStartTime <= 0) {
+					oldStartTime = calendarBooking.getStartTime();
+				}
+
 				long duration =
 					(endTimeJCalendar.getTimeInMillis() -
 						startTimeJCalendar.getTimeInMillis());
 				long offset =
-					(startTimeJCalendar.getTimeInMillis() -
-						calendarBooking.getStartTime());
+					(startTimeJCalendar.getTimeInMillis() - oldStartTime);
 
 				calendarBooking =
 					CalendarBookingServiceUtil.updateCalendarBooking(
@@ -363,7 +370,8 @@ public class CalendarPortlet extends MVCPortlet {
 						(calendarBooking.getStartTime() + offset),
 						(calendarBooking.getStartTime() + offset + duration),
 						allDay, recurrence, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, serviceContext);
+						reminders[1], remindersType[1], status,
+						updateChildCalendars, serviceContext);
 			}
 		}
 

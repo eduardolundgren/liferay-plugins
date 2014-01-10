@@ -41,6 +41,10 @@ long endTime = BeanParamUtil.getLong(calendarBooking, request, "endTime", defaul
 
 java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime, userTimeZone);
 
+long oldStartTime = ParamUtil.getLong(request, "oldStartTime", startTimeJCalendar.getTimeInMillis());
+
+java.util.Calendar oldStartTimeJCalendar = JCalendarUtil.getJCalendar(oldStartTime, userTimeZone);
+
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
 long firstReminder = BeanParamUtil.getLong(calendarBooking, request, "firstReminder");
@@ -58,7 +62,6 @@ JSONArray pendingCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 boolean invitable = true;
 Recurrence recurrence = null;
 boolean recurring = false;
-boolean reschedulable = true;
 
 Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
 
@@ -77,8 +80,6 @@ if (calendarBooking != null) {
 	}
 
 	recurrence = calendarBooking.getRecurrenceObj();
-
-	reschedulable = calendarBooking.isMasterBooking();
 }
 else if (calendar != null) {
 	JSONObject calendarJSONObject = CalendarUtil.toCalendarJSONObject(themeDisplay, calendar);
@@ -100,9 +101,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:input name="mvcPath" type="hidden" value="/edit_calendar_booking.jsp" />
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
 	<aui:input name="childCalendarIds" type="hidden" />
+	<aui:input name="oldStartTime" type="hidden" value="<%= oldStartTimeJCalendar.getTimeInMillis() %>" />
 	<aui:input name="status" type="hidden" value ="<%= status %>" />
 	<aui:input name="allFollowing" type="hidden" />
 	<aui:input name="updateCalendarBookingInstance" type="hidden" />
+	<aui:input name="updateChildCalendars" type="hidden" />
 
 	<liferay-ui:error exception="<%= CalendarBookingDurationException.class %>" message="please-enter-a-start-date-that-comes-before-the-end-date" />
 
@@ -116,17 +119,17 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		<aui:input name="title" />
 
 		<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />startDateContainer">
-			<aui:input disabled="<%= !reschedulable %>" label="start-date" name="startTime" value="<%= startTimeJCalendar %>" />
+			<aui:input label="start-date" name="startTime" value="<%= startTimeJCalendar %>" />
 		</div>
 
 		<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />endDateContainer">
-			<aui:input disabled="<%= !reschedulable %>" label="end-date" name="endTime" value="<%= endTimeJCalendar %>" />
+			<aui:input label="end-date" name="endTime" value="<%= endTimeJCalendar %>" />
 		</div>
 
-		<aui:input checked="<%= allDay %>" disabled="<%= !reschedulable %>" name="allDay" />
+		<aui:input checked="<%= allDay %>" name="allDay" />
 
 		<aui:field-wrapper cssClass="calendar-portlet-recurrence-container" inlineField="<%= true %>" label="">
-			<aui:input checked="<%= recurring %>" disabled="<%= !reschedulable %>" name="repeat" type="checkbox" />
+			<aui:input checked="<%= recurring %>" ignoreRequestValue="<%= true %>" name="repeat" type="checkbox" />
 
 			<a class="calendar-portlet-recurrence-summary" href="javascript:;" id="<portlet:namespace />summary"></a>
 		</aui:field-wrapper>
@@ -307,55 +310,30 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			</c:if>
 
 			<c:if test="<%= (calendarBooking != null) && (calendar != null) %>">
-				<c:choose>
-					<c:when test="<%= recurring %>">
-						Liferay.RecurrenceUtil.openConfirmationPanel(
-							'update',
-							'<%= calendarBooking.isMasterBooking() %>',
-							function() {
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+				Liferay.CalendarUtil.getEvent(
+					<%= calendarBookingId %>,
+					function(calendarBooking) {
+						var schedulerEvent = Liferay.CalendarUtil.toSchedulerEvent(calendarBooking);
 
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
-								A.one('#<portlet:namespace />allFollowing').val('true');
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
+						Liferay.CalendarUtil.askEventEditConfirmations(
+							schedulerEvent,
+							function(schedulerEvent, parameters) {
+								if (parameters.shouldCancel) {
+									return;
+								}
 
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
+								if (schedulerEvent.isRecurring()) {
+									A.one('#<portlet:namespace />updateCalendarBookingInstance').val(!parameters.shouldSaveAllInstances);
+									A.one('#<portlet:namespace />allFollowing').val(parameters.shouldSaveFollowingInstances);
+								}
+
+								A.one('#<portlet:namespace />updateChildCalendars').val(parameters.shouldUpdateChildCalendars);
+
 								submitForm(document.<portlet:namespace />fm);
 							}
 						);
-					</c:when>
-					<c:when test="<%= calendarBooking.isMasterBooking() %>">
-						submitForm(document.<portlet:namespace />fm);
-					</c:when>
-					<c:otherwise>
-						var content = [
-							'<p class="calendar-portlet-confirmation-text">',
-							A.Lang.sub(
-								Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-								['<%= HtmlUtil.escapeJS(calendar.getName(locale)) %>']
-							),
-							'</p>'
-						].join('');
-
-						Liferay.CalendarMessageUtil.confirm(
-							content,
-							Liferay.Language.get('continue'),
-							Liferay.Language.get('dont-change-the-event'),
-							function() {
-								submitForm(document.<portlet:namespace />fm);
-
-								this.hide();
-							},
-							function() {
-								this.hide();
-							}
-						);
-					</c:otherwise>
-				</c:choose>
+					}
+				);
 			</c:if>
 		},
 		['liferay-calendar-message-util', 'json']
@@ -508,7 +486,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			simpleMenu: calendarsMenu,
 			strings: {
 				emptyMessage: '<liferay-ui:message key="no-pending-invites" />'
-			}
+			},
+			unique: true
 		}
 	).render();
 
@@ -532,7 +511,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			simpleMenu: calendarsMenu,
 			strings: {
 				emptyMessage: '<liferay-ui:message key="no-accepted-invites" />'
-			}
+			},
+			unique: true
 		}
 	).render();
 
@@ -557,7 +537,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				simpleMenu: calendarsMenu,
 				strings: {
 					emptyMessage: '<liferay-ui:message key="no-declined-invites" />'
-				}
+				},
+				unique: true
 			}
 		).render();
 
@@ -581,7 +562,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				simpleMenu: calendarsMenu,
 				strings: {
 					emptyMessage: '<liferay-ui:message key="no-outstanding-invites" />'
-				}
+				},
+				unique: true
 			}
 		).render();
 	</c:if>

@@ -213,6 +213,7 @@
 			var Lang = A.Lang;
 
 			var isArray = Lang.isArray;
+			var isBoolean = Lang.isBoolean;
 			var isObject = Lang.isObject;
 
 			var	getClassName = A.getClassName;
@@ -269,6 +270,11 @@
 							value: {
 								emptyMessage: Liferay.Language.get('no-calendars-selected')
 							}
+						},
+
+						unique: {
+							validator: isBoolean,
+							value: false
 						}
 					},
 
@@ -537,6 +543,15 @@
 							var instance = this;
 
 							var scheduler = instance.get('scheduler');
+
+							if (instance.get('unique')) {
+								val = AArray.unique(
+									val,
+									function(calendar1, calendar2) {
+										return calendar1.calendarId == calendar2.calendarId;
+									}
+								);
+							}
 
 							AArray.each(
 								val,
@@ -1029,79 +1044,61 @@
 
 					if (actionName === 'delete') {
 						titleText = Liferay.Language.get('delete-recurring-event');
-						changeDeleteText = Liferay.Language.get('would-you-like-to-delete-only-this-event-all-events-in-the-series-or-this-and-all-future-events-in-the-series');
+						changeDeleteText = Liferay.Language.get('would-you-like-to-delete-only-this-event-all-events-in-the-series-or-this-and-all-following-events-in-the-series');
 					}
 					else {
 						titleText = Liferay.Language.get('change-recurring-event');
 						changeDeleteText = Liferay.Language.get('would-you-like-to-change-only-this-event-all-events-in-the-series-or-this-and-all-future-events-in-the-series');
 					}
 
-					var content = [changeDeleteText];
-
-					if ((actionName === 'delete') && masterBooking) {
-						content.push(
-							A.Lang.sub(
-								'<br/><br/><b>{0}</b>',
-								[Liferay.Language.get('deleting-this-event-will-cancel-the-meeting-with-your-guests')]
-							)
-						);
-					}
-
-					var confirmationPanel = instance.confirmationPanel;
-
-					if (!confirmationPanel) {
-						var buttons = [
-							{
-								on: {
-
-									click: function(event, buttonItem)  {
-										confirmationPanel.onlyThisInstanceFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: Liferay.Language.get('only-this-instance')
+					var buttons = [
+						{
+							on: {
+								click: function(event, buttonItem)  {
+									confirmationPanel.onlyThisInstanceFn.apply(confirmationPanel, arguments);
+								}
 							},
-							{
-								on: {
-									click: function(event, buttonItem)  {
-										confirmationPanel.allFollowingFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: Liferay.Language.get('all-following')
+							label: Liferay.Language.get('only-this-instance')
+						},
+						{
+							on: {
+								click: function(event, buttonItem)  {
+									confirmationPanel.allFollowingFn.apply(confirmationPanel, arguments);
+								}
 							},
-							{
-								on: {
-									click: function(event, buttonItem)  {
-										confirmationPanel.allEventsInFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: Liferay.Language.get('all-events-in-the-series')
+							label: Liferay.Language.get('all-following')
+						},
+						{
+							on: {
+								click: function(event, buttonItem)  {
+									confirmationPanel.allEventsInFn.apply(confirmationPanel, arguments);
+								}
 							},
-							{
-								on: {
-									click: function(event, buttonItem)  {
-										confirmationPanel.cancelFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: Liferay.Language.get('cancel-this-change')
-							}
-						];
+							label: Liferay.Language.get('all-events-in-the-series')
+						},
+						{
+							on: {
+								click: function(event, buttonItem)  {
+									confirmationPanel.cancelFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('cancel-this-change')
+						}
+					];
 
-						confirmationPanel = Liferay.Util.Window.getWindow(
-							{
-								dialog:	{
-									bodyContent: content.join(''),
-									height: 200,
-									toolbars: {
-										footer: buttons
-									},
-									width: 700
+					var confirmationPanel = Liferay.Util.Window.getWindow(
+						{
+							dialog:	{
+								bodyContent: changeDeleteText,
+								height: 200,
+								toolbars: {
+									footer: buttons
 								},
-								title: titleText
-							}
-						);
-
-						instance.confirmationPanel = confirmationPanel;
-					}
+								width: 700
+							},
+							title: titleText
+						}
+					);
 
 					confirmationPanel.onlyThisInstanceFn = onlyThisInstanceFn;
 					confirmationPanel.allFollowingFn = allFollowingFn;
@@ -1122,50 +1119,103 @@
 		'liferay-calendar-message-util',
 		function(A) {
 			Liferay.CalendarMessageUtil = {
-				confirmationPanel: null,
 
 				confirm: function(message, yesButtonLabel, noButtonLabel, yesFn, noFn) {
 					var instance = this;
 
-					var confirmationPanel = instance.confirmationPanel;
-
-					if (!confirmationPanel) {
-						var buttons = [
-							{
-								on: {
-									click: function(event, buttonItem) {
-										confirmationPanel.yesFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: yesButtonLabel
+					var buttons = [
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.yesFn.apply(confirmationPanel, arguments);
+								}
 							},
-							{
-								on: {
-									click: function(event, buttonItem) {
-										confirmationPanel.noFn.apply(confirmationPanel, arguments);
-									}
-								},
-								label: noButtonLabel
-							}
-						];
+							label: yesButtonLabel
+						},
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.noFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: noButtonLabel
+						}
+					];
 
-						confirmationPanel = Liferay.Util.Window.getWindow(
-							{
-								dialog : {
-									bodyContent: message,
-									toolbars: {
-										footer: buttons
-									},
+					var confirmationPanel = Liferay.Util.Window.getWindow(
+						{
+							dialog : {
+								bodyContent: message,
+								height: 200,
+								toolbars: {
+									footer: buttons
 								},
-								title: Liferay.Language.get('are-you-sure')
-							}
-						);
-
-						instance.confirmationPanel = confirmationPanel;
-					}
+								width: 700
+							},
+							title: Liferay.Language.get('are-you-sure')
+						}
+					);
 
 					confirmationPanel.yesFn = yesFn;
 					confirmationPanel.noFn = noFn || confirmationPanel.close;
+
+					return confirmationPanel.render().show();
+				},
+
+				confirmChildCalendarBookingUpdate: function(onlyCurrentCalendarFn, allInvitedCalendarsFn, cancelFn) {
+					var instance = this;
+
+					var message = '<p class="calendar-portlet-confirmation-text">' +
+							Liferay.Language.get('would-you-like-to-change-only-the-current-calendar-or-all-invited-calendars') +
+						'</p>' +
+						'<p class="calendar-portlet-confirmation-text">' +
+							Liferay.Language.get('invited-users-will-be-notified') +
+						'</p>';
+
+					var buttons = [
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.onlyCurrentCalendarFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('only-current-calendar')
+						},
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.allInvitedCalendarsFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('all-invited-calendars')
+						},
+						{
+							on: {
+								click: function(event, buttonItem) {
+									confirmationPanel.cancelFn.apply(confirmationPanel, arguments);
+								}
+							},
+							label: Liferay.Language.get('cancel')
+						}
+					];
+
+					var confirmationPanel = Liferay.Util.Window.getWindow(
+						{
+							dialog : {
+								bodyContent: message,
+								height: 250,
+								toolbars: {
+									footer: buttons
+								},
+								width: 700
+							},
+							title: Liferay.Language.get('are-you-sure')
+						}
+					);
+
+					confirmationPanel.onlyCurrentCalendarFn = onlyCurrentCalendarFn;
+					confirmationPanel.allInvitedCalendarsFn = allInvitedCalendarsFn;
+					confirmationPanel.cancelFn = cancelFn || confirmationPanel.hide;
 
 					return confirmationPanel.render().show();
 				}
