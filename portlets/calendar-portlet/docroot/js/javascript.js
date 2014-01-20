@@ -1826,6 +1826,8 @@ AUI.add(
 
 						var templateData = instance.getTemplateData();
 
+						var titleNode = instance.popover.get('contentBox').one('.popover-title');
+
 						if (A.instanceOf(bodyTemplate, A.Template) && A.instanceOf(headerTemplate, A.Template)) {
 							instance.popover.setStdModContent('body', bodyTemplate.parse(templateData));
 							instance.popover.setStdModContent('header', headerTemplate.parse(templateData));
@@ -1849,6 +1851,8 @@ AUI.add(
 							],
 							'header'
 						);
+
+						titleNode.toggleClass('hide', !templateData.permissions.VIEW_BOOKING_DETAILS);
 					},
 
 					_afterPopoverVisibleChange: function(event) {
@@ -2069,22 +2073,26 @@ AUI.add(
 						var schedulerEvent = instance.get('event');
 
 						if (schedulerEvent) {
-							var parentCalendarBookingId = schedulerEvent.get('parentCalendarBookingId');
+							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
 
-							CalendarUtil.getCalendarBookingInvitees(
-								parentCalendarBookingId,
-								function(data) {
-									var results = AArray.partition(
-										data,
-										function(item) {
-											return item.classNameId === CalendarUtil.USER_CLASS_NAME_ID;
+							if (calendar.get('permissions').VIEW_BOOKING_DETAILS) {
+								var parentCalendarBookingId = schedulerEvent.get('parentCalendarBookingId');
+
+								CalendarUtil.getCalendarBookingInvitees(
+										parentCalendarBookingId,
+										function(data) {
+											var results = AArray.partition(
+													data,
+													function(item) {
+														return item.classNameId === CalendarUtil.USER_CLASS_NAME_ID;
+													}
+											);
+
+											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderUsers', results.matches);
+											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderResources', results.rejects);
 										}
-									);
-
-									instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderUsers', results.matches);
-									instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderResources', results.rejects);
-								}
-							);
+								);
+							}
 						}
 					},
 
