@@ -3,7 +3,7 @@ create index IX_F0FAF226 on Calendar (resourceBlockId);
 create index IX_97656498 on Calendar (uuid_, companyId);
 create unique index IX_3AE311A on Calendar (uuid_, groupId);
 
-create unique index IX_113A264E on CalendarBooking (calendarId, parentCalendarBookingId);
+create index IX_113A264E on CalendarBooking (calendarId, parentCalendarBookingId);
 create index IX_470170B4 on CalendarBooking (calendarId, status);
 create index IX_B198FFC on CalendarBooking (calendarResourceId);
 create index IX_F7B8A941 on CalendarBooking (parentCalendarBookingId, status);
