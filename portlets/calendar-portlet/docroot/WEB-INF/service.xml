@@ -115,7 +115,7 @@
 		<finder name="ParentCalendarBookingId" return-type="Collection">
 			<finder-column name="parentCalendarBookingId" />
 		</finder>
-		<finder name="C_P" return-type="CalendarBooking" unique="true">
+		<finder name="C_P" return-type="Collection">
 			<finder-column name="calendarId" />
 			<finder-column name="parentCalendarBookingId" />
 		</finder>

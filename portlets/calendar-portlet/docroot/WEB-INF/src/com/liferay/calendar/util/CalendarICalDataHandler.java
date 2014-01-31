@@ -422,7 +422,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 				childCalendarIdsArray, titleMap, descriptionMap, locationString,
 				startDate.getTime(), endDate.getTime(), allDay, recurrence,
 				firstReminder, firstReminderType, secondReminder,
-				secondReminderType, calendarBooking.getStatus(),
+				secondReminderType, calendarBooking.getStatus(), false,
 				serviceContext);
 		}
 	}
