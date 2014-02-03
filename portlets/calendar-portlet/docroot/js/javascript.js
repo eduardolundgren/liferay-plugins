@@ -48,10 +48,7 @@ AUI.add(
 									 '</button>';
 
 		var TPL_MESSAGE_UPDATE_ALL_INVITED = '<p class="calendar-portlet-confirmation-text">' +
-												Liferay.Language.get('your-changes-will-affect-events-of-all-invited-resources') +
-											'</p>' +
-											'<p class="calendar-portlet-confirmation-text">' +
-												Liferay.Language.get('invited-resources-will-be-notified') +
+												Liferay.Language.get('invited-users-will-be-notified') +
 											'</p>';
 
 		var COMPANY_ID = toInt(themeDisplay.getCompanyId());
@@ -175,6 +172,150 @@ AUI.add(
 						}
 					}
 				);
+			},
+
+			askUserConfirmations: function(schedulerEvent, previousTime, newTime, callbacks) {
+				callbacks = callbacks || CalendarUtil;
+
+				if (schedulerEvent.isMasterBooking()) {
+					CalendarUtil.countChildrenCalendarBookings(
+							schedulerEvent,
+							function(childrenCount) {
+								if (childrenCount > 1) {
+									Liferay.CalendarMessageUtil.confirm(
+											TPL_MESSAGE_UPDATE_ALL_INVITED,
+											Liferay.Language.get('continue'),
+											Liferay.Language.get('dont-change-the-event'),
+											function() {
+												if (schedulerEvent.isRecurring()) {
+													Liferay.RecurrenceUtil.openConfirmationPanel(
+															'update',
+															schedulerEvent.isMasterBooking(),
+															function() {
+																callbacks.saveOneInstance(schedulerEvent);
+
+																this.hide();
+															},
+															function() {
+																callbacks.saveFollowingInstances(schedulerEvent);
+
+																this.hide();
+															},
+															function() {
+																callbacks.saveAllInstances(schedulerEvent, previousTime, newTime);
+
+																this.hide();
+															},
+															function() {
+																callbacks.cancelSaving(schedulerEvent);
+
+																this.hide();
+															}
+													);
+												}
+												else {
+													callbacks.saveSimpleEvent(schedulerEvent);
+												}
+
+												this.hide();
+											},
+											function() {
+												callbacks.cancelSaving(schedulerEvent);
+
+												this.hide();
+											}
+									);
+								}
+								else {
+									if (schedulerEvent.isRecurring()) {
+										Liferay.RecurrenceUtil.openConfirmationPanel(
+												'update',
+												schedulerEvent.isMasterBooking(),
+												function() {
+													callbacks.saveOneInstance(schedulerEvent);
+
+													this.hide();
+												},
+												function() {
+													callbacks.saveFollowingInstances(schedulerEvent);
+
+													this.hide();
+												},
+												function() {
+													callbacks.saveAllInstances(schedulerEvent, previousTime, newTime);
+
+													this.hide();
+												},
+												function() {
+													callbacks.cancelSaving(schedulerEvent);
+
+													this.hide();
+												}
+										);
+									}
+									else {
+										callbacks.saveSimpleEvent(schedulerEvent);
+									}
+								}
+							}
+					);
+				}
+				else {
+					var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+
+					var content = [
+						'<p class="calendar-portlet-confirmation-text">',
+						Lang.sub(
+							Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
+							[Liferay.Util.escapeHTML(calendar.get('name'))]
+						),
+						'</p>'
+					].join(STR_BLANK);
+
+					Liferay.CalendarMessageUtil.confirm(
+						content,
+						Liferay.Language.get('continue'),
+						Liferay.Language.get('dont-change-the-event'),
+						function() {
+							if (schedulerEvent.isRecurring()) {
+								Liferay.RecurrenceUtil.openConfirmationPanel(
+										'update',
+										schedulerEvent.isMasterBooking(),
+										function() {
+											callbacks.saveOneInstance(schedulerEvent);
+
+											this.hide();
+										},
+										function() {
+											callbacks.saveFollowingInstances(schedulerEvent);
+
+											this.hide();
+										},
+										function() {
+											callbacks.saveAllInstances(schedulerEvent, previousTime, newTime);
+
+											this.hide();
+										},
+										function() {
+											callbacks.cancelSaving(schedulerEvent);
+
+											this.hide();
+										}
+								);
+							}
+							else {
+								callbacks.saveSimpleEvent(schedulerEvent);
+							}
+
+							this.hide();
+						},
+						function() {
+							callbacks.cancelSaving(schedulerEvent);
+
+							this.hide();
+						}
+					);
+				}
 			},
 
 			countChildrenCalendarBookings: function(schedulerEvent, callback) {
@@ -544,6 +685,97 @@ AUI.add(
 				var instance = this;
 
 				A.oneNS(instance.PORTLET_NAMESPACE, '#message').html(msg);
+			},
+
+			saveSimpleEvent: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				CalendarUtil.updateEvent(
+					schedulerEvent,
+					function() {
+						scheduler.load();
+					}
+				);
+			},
+
+			saveOneInstance: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				CalendarUtil.updateEventInstance(
+					schedulerEvent,
+					false,
+					function() {
+						scheduler.load();
+					}
+				);
+			},
+
+			saveFollowingInstances: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				CalendarUtil.updateEventInstance(
+					schedulerEvent,
+					true,
+					function() {
+						scheduler.load();
+					}
+				);
+			},
+
+			saveAllInstances: function(schedulerEvent, previousTime, newTime) {
+				var scheduler = schedulerEvent.get('scheduler');
+				var calendarBookingId = schedulerEvent.get('calendarBookingId');
+
+				CalendarUtil.getEvent(
+					calendarBookingId,
+					function(calendarBooking) {
+						var newSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
+
+						newSchedulerEvent.copyPropagateAttrValues(
+								schedulerEvent,
+								null,
+								{
+									silent: true
+								}
+						);
+
+						var schedulerEventDuration = schedulerEvent.getSecondsDuration() * 1000;
+
+						var calendarEndTime = calendarBooking.startTime + schedulerEventDuration;
+						var calendarStartTime = calendarBooking.startTime;
+
+						if (previousTime && newTime) {
+							var offset = 0;
+
+							if (isDate(newTime) && isDate(prevTime)) {
+								offset = newTime.getTime() - prevTime.getTime();
+							}
+
+							calendarStartTime = calendarStartTime + offset;
+							calendarEndTime = calendarStartTime + schedulerEventDuration;
+						}
+
+						newSchedulerEvent.setAttrs(
+								{
+									endDate: CalendarUtil.toLocalTime(calendarEndTime),
+									startDate: CalendarUtil.toLocalTime(calendarStartTime)
+								}
+						);
+
+						CalendarUtil.updateEvent(
+								newSchedulerEvent,
+								function() {
+									scheduler.load();
+								}
+						);
+					}
+				);
+			},
+
+			cancelSaving: function(schedulerEvent) {
+				var scheduler = schedulerEvent.get('scheduler');
+
+				scheduler.load();
 			},
 
 			setEventAttrs: function(schedulerEvent, data) {
@@ -1425,197 +1657,16 @@ AUI.add(
 
 							if (persist) {
 								var schedulerEvent = event.target;
-								var calendarBookingId = schedulerEvent.get('calendarBookingId');
 
-								if (schedulerEvent.isRecurring()) {
-									Liferay.RecurrenceUtil.openConfirmationPanel(
-										'update',
-										schedulerEvent.isMasterBooking(),
-										function() {
-											CalendarUtil.countChildrenCalendarBookings(
-												schedulerEvent,
-												function(data) {
-													if (data > 1) {
-														Liferay.CalendarMessageUtil.confirm(
-															TPL_MESSAGE_UPDATE_ALL_INVITED,
-															Liferay.Language.get('continue'),
-															Liferay.Language.get('dont-change-the-event'),
-															function() {
-																CalendarUtil.updateEventInstance(schedulerEvent, false);
+								var previousTime;
+								var newTime;
 
-																this.hide();
-															},
-															function() {
-																instance.load();
-
-																this.hide();
-															}
-														);
-													}
-												}
-											);
-
-											this.hide();
-										},
-										function() {
-											CalendarUtil.countChildrenCalendarBookings(
-												schedulerEvent,
-												function(data) {
-													if (data > 1) {
-														Liferay.CalendarMessageUtil.confirm(
-															TPL_MESSAGE_UPDATE_ALL_INVITED,
-															Liferay.Language.get('continue'),
-															Liferay.Language.get('dont-change-the-event'),
-															function() {
-																CalendarUtil.updateEventInstance(
-																	schedulerEvent,
-																	true,
-																	function() {
-																		instance.load();
-																	}
-																);
-
-																this.hide();
-															},
-															function() {
-																instance.load();
-
-																this.hide();
-															}
-														);
-													}
-												}
-											);
-
-											this.hide();
-										},
-										function() {
-											CalendarUtil.getEvent(
-												calendarBookingId,
-												function(calendarBooking) {
-													CalendarUtil.countChildrenCalendarBookings(
-														schedulerEvent,
-														function(data) {
-															if (data > 1) {
-																Liferay.CalendarMessageUtil.confirm(
-																	TPL_MESSAGE_UPDATE_ALL_INVITED,
-																	Liferay.Language.get('continue'),
-																	Liferay.Language.get('dont-change-the-event'),
-																	function() {
-																		var newSchedulerEvent = CalendarUtil.toSchedulerEvent(calendarBooking);
-
-																		newSchedulerEvent.copyPropagateAttrValues(
-																				schedulerEvent,
-																				null,
-																				{
-																					silent: true
-																				}
-																		);
-
-																		var schedulerEventDuration = schedulerEvent.getSecondsDuration() * 1000;
-
-																		var calendarEndTime = calendarBooking.startTime + schedulerEventDuration;
-																		var calendarStartTime = calendarBooking.startTime;
-
-																		var changedStartDate = changed.startDate;
-
-																		if (changedStartDate) {
-																			var offset = 0;
-																			var newVal = changedStartDate.newVal;
-																			var prevVal = changedStartDate.prevVal;
-
-																			if (isDate(newVal) && isDate(prevVal)) {
-																				offset = newVal.getTime() - prevVal.getTime();
-																			}
-
-																			calendarStartTime = calendarStartTime + offset;
-																			calendarEndTime = calendarStartTime + schedulerEventDuration;
-																		}
-
-																		newSchedulerEvent.setAttrs(
-																				{
-																					endDate: CalendarUtil.toLocalTime(calendarEndTime),
-																					startDate: CalendarUtil.toLocalTime(calendarStartTime)
-																				}
-																		);
-
-																		CalendarUtil.updateEvent(
-																				newSchedulerEvent,
-																				function() {
-																					instance.load();
-																				}
-																		);
-
-																		this.hide();
-																	}
-																);
-															}
-														}
-													);
-												}
-											);
-
-											this.hide();
-										},
-										function() {
-											instance.load();
-
-											this.hide();
-										}
-									);
+								if (changed.startDate) {
+									previousTime = changed.startDate.prevVal;
+									newTime = changed.startDate.newVal;
 								}
-								else if (schedulerEvent.isMasterBooking()) {
-									CalendarUtil.countChildrenCalendarBookings(
-										schedulerEvent,
-										function(data) {
-											if (data > 1) {
-												Liferay.CalendarMessageUtil.confirm(
-													TPL_MESSAGE_UPDATE_ALL_INVITED,
-													Liferay.Language.get('continue'),
-													Liferay.Language.get('dont-change-the-event'),
-													function() {
-														CalendarUtil.updateEvent(schedulerEvent);
 
-														this.hide();
-													},
-													function() {
-														instance.load();
-
-														this.hide();
-													}
-												);
-											}
-										}
-									);
-								}
-								else {
-									var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
-
-									var content = [
-										'<p class="calendar-portlet-confirmation-text">',
-										Lang.sub(
-											Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-											[Liferay.Util.escapeHTML(calendar.get('name'))]
-										),
-										'</p>'
-									].join(STR_BLANK);
-
-									Liferay.CalendarMessageUtil.confirm(
-										content,
-										Liferay.Language.get('continue'),
-										Liferay.Language.get('dont-change-the-event'),
-										function() {
-											CalendarUtil.updateEvent(schedulerEvent);
-
-											this.hide();
-										},
-										function() {
-											instance.load();
-
-											this.hide();
-										}
-									);
-								}
+								CalendarUtil.askUserConfirmations(schedulerEvent, previousTime, newTime);
 							}
 						}
 					},
