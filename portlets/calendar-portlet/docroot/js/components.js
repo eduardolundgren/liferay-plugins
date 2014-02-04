@@ -213,6 +213,7 @@
 			var Lang = A.Lang;
 
 			var isArray = Lang.isArray;
+			var isBoolean = Lang.isBoolean;
 			var isObject = Lang.isObject;
 
 			var	getClassName = A.getClassName;
@@ -269,6 +270,11 @@
 							value: {
 								emptyMessage: Liferay.Language.get('no-calendars-selected')
 							}
+						},
+
+						unique: {
+							validator: isBoolean,
+							value: false
 						}
 					},
 
@@ -537,6 +543,15 @@
 							var instance = this;
 
 							var scheduler = instance.get('scheduler');
+
+							if (instance.get('unique')) {
+								val = AArray.unique(
+									val,
+									function(calendar1, calendar2) {
+										return calendar1.calendarId == calendar2.calendarId;
+									}
+								);
+							}
 
 							AArray.each(
 								val,
