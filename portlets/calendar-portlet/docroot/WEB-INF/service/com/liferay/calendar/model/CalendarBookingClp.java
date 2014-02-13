@@ -1156,25 +1156,6 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
-	public com.liferay.calendar.model.CalendarBooking getParentCalendarBooking() {
-		try {
-			String methodName = "getParentCalendarBooking";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			com.liferay.calendar.model.CalendarBooking returnObj = (com.liferay.calendar.model.CalendarBooking)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getChildCalendarBookings() {
 		try {
 			String methodName = "getChildCalendarBookings";
@@ -1185,6 +1166,25 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 
 			java.util.List<com.liferay.calendar.model.CalendarBooking> returnObj =
 				(java.util.List<com.liferay.calendar.model.CalendarBooking>)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public com.liferay.calendar.model.CalendarBooking getParentCalendarBooking() {
+		try {
+			String methodName = "getParentCalendarBooking";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			com.liferay.calendar.model.CalendarBooking returnObj = (com.liferay.calendar.model.CalendarBooking)invokeOnRemoteModel(methodName,
 					parameterTypes, parameterValues);
 
 			return returnObj;
@@ -1252,6 +1252,82 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
+	public com.liferay.calendar.model.CalendarResource getCalendarResource() {
+		try {
+			String methodName = "getCalendarResource";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			com.liferay.calendar.model.CalendarResource returnObj = (com.liferay.calendar.model.CalendarResource)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public long getDisplayEndTime() {
+		try {
+			String methodName = "getDisplayEndTime";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			Long returnObj = (Long)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public boolean isMasterBooking() {
+		try {
+			String methodName = "isMasterBooking";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			Boolean returnObj = (Boolean)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public long getDisplayStartTime() {
+		try {
+			String methodName = "getDisplayStartTime";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			Long returnObj = (Long)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
 	public long getDuration() {
 		try {
 			String methodName = "getDuration";
@@ -1280,44 +1356,6 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 			Object[] parameterValues = new Object[] {  };
 
 			com.liferay.calendar.recurrence.Recurrence returnObj = (com.liferay.calendar.recurrence.Recurrence)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
-	public com.liferay.calendar.model.CalendarResource getCalendarResource() {
-		try {
-			String methodName = "getCalendarResource";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			com.liferay.calendar.model.CalendarResource returnObj = (com.liferay.calendar.model.CalendarResource)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
-	public boolean isMasterBooking() {
-		try {
-			String methodName = "isMasterBooking";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			Boolean returnObj = (Boolean)invokeOnRemoteModel(methodName,
 					parameterTypes, parameterValues);
 
 			return returnObj;

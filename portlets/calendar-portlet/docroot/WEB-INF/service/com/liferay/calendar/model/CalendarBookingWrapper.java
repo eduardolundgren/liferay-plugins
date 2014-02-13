@@ -1402,6 +1402,16 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	}
 
 	@Override
+	public long getDisplayEndTime() {
+		return _calendarBooking.getDisplayEndTime();
+	}
+
+	@Override
+	public long getDisplayStartTime() {
+		return _calendarBooking.getDisplayStartTime();
+	}
+
+	@Override
 	public long getDuration() {
 		return _calendarBooking.getDuration();
 	}
