@@ -1452,6 +1452,14 @@ AUI.add(
 															}
 														);
 													}
+													else {
+														CalendarUtil.updateEvent(
+															schedulerEvent,
+															function() {
+																instance.load();
+															}
+														);
+													}
 												}
 											);
 
@@ -1481,6 +1489,14 @@ AUI.add(
 																instance.load();
 
 																this.hide();
+															}
+														);
+													}
+													else {
+														CalendarUtil.updateEvent(
+															schedulerEvent,
+															function() {
+																instance.load();
 															}
 														);
 													}
@@ -1550,6 +1566,13 @@ AUI.add(
 																	}
 																);
 															}
+															else {
+																CalendarUtil.updateEvent(
+																	schedulerEvent,
+																	function() {
+																		instance.load();
+																	}
+																);															}
 														}
 													);
 												}
@@ -1585,6 +1608,13 @@ AUI.add(
 													}
 												);
 											}
+											else {
+												CalendarUtil.updateEvent(
+													schedulerEvent,
+													function() {
+														instance.load();
+													}
+												);											}
 										}
 									);
 								}
