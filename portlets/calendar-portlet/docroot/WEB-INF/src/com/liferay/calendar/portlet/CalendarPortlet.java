@@ -73,6 +73,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -102,7 +103,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -298,15 +298,16 @@ public class CalendarPortlet extends MVCPortlet {
 		Map<Locale, String> descriptionMap =
 			LocalizationUtil.getLocalizationMap(actionRequest, "description");
 		String location = ParamUtil.getString(actionRequest, "location");
-		java.util.Calendar startTimeJCalendar = getJCalendar(
+		java.util.Calendar startTimeJCalendar = getDisplayCalendar(
 			actionRequest, "startTime");
-		java.util.Calendar endTimeJCalendar = getJCalendar(
+		java.util.Calendar endTimeJCalendar = getDisplayCalendar(
 			actionRequest, "endTime");
 		boolean allDay = ParamUtil.getBoolean(actionRequest, "allDay");
 		String recurrence = getRecurrence(actionRequest);
 		long[] reminders = getReminders(actionRequest);
 		String[] remindersType = getRemindersType(actionRequest);
 		int status = ParamUtil.getInteger(actionRequest, "status");
+		String timeZoneId = ParamUtil.getString(actionRequest, "timeZoneId");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			CalendarBooking.class.getName(), actionRequest);
@@ -323,7 +324,7 @@ public class CalendarPortlet extends MVCPortlet {
 				startTimeJCalendar.getTimeInMillis(),
 				endTimeJCalendar.getTimeInMillis(), allDay, recurrence,
 				reminders[0], remindersType[0], reminders[1], remindersType[1],
-				serviceContext);
+				timeZoneId, serviceContext);
 
 			redirect = HttpUtil.setParameter(
 				redirect, actionResponse.getNamespace() + "calendarBookingId",
@@ -344,7 +345,8 @@ public class CalendarPortlet extends MVCPortlet {
 						startTimeJCalendar.getTimeInMillis(),
 						endTimeJCalendar.getTimeInMillis(), allDay, recurrence,
 						allFollowing, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, serviceContext);
+						reminders[1], remindersType[1], status, timeZoneId,
+						serviceContext);
 			}
 			else {
 				calendarBooking = CalendarBookingServiceUtil.getCalendarBooking(
@@ -364,7 +366,8 @@ public class CalendarPortlet extends MVCPortlet {
 						(calendarBooking.getStartTime() + offset),
 						(calendarBooking.getStartTime() + offset + duration),
 						allDay, recurrence, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, serviceContext);
+						reminders[1], remindersType[1], status, timeZoneId,
+						serviceContext);
 			}
 		}
 
@@ -631,25 +634,6 @@ public class CalendarPortlet extends MVCPortlet {
 		return editCalendarURL;
 	}
 
-	protected java.util.Calendar getJCalendar(
-		PortletRequest portletRequest, String name) {
-
-		int month = ParamUtil.getInteger(portletRequest, name + "Month");
-		int day = ParamUtil.getInteger(portletRequest, name + "Day");
-		int year = ParamUtil.getInteger(portletRequest, name + "Year");
-		int hour = ParamUtil.getInteger(portletRequest, name + "Hour");
-		int minute = ParamUtil.getInteger(portletRequest, name + "Minute");
-
-		int amPm = ParamUtil.getInteger(portletRequest, name + "AmPm");
-
-		if (amPm == java.util.Calendar.PM) {
-			hour += 12;
-		}
-
-		return JCalendarUtil.getJCalendar(
-			year, month, day, hour, minute, 0, 0, getTimeZone(portletRequest));
-	}
-
 	protected String getNotificationTypeSettings(
 		ActionRequest actionRequest, NotificationType notificationType) {
 
@@ -772,22 +756,23 @@ public class CalendarPortlet extends MVCPortlet {
 		};
 	}
 
-	protected TimeZone getTimeZone(PortletRequest portletRequest) {
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+	protected java.util.Calendar getDisplayCalendar(
+		PortletRequest portletRequest, String name) {
 
-		PortletPreferences preferences = portletRequest.getPreferences();
+		int month = ParamUtil.getInteger(portletRequest, name + "Month");
+		int day = ParamUtil.getInteger(portletRequest, name + "Day");
+		int year = ParamUtil.getInteger(portletRequest, name + "Year");
+		int hour = ParamUtil.getInteger(portletRequest, name + "Hour");
+		int minute = ParamUtil.getInteger(portletRequest, name + "Minute");
 
-		User user = themeDisplay.getUser();
+		int amPm = ParamUtil.getInteger(portletRequest, name + "AmPm");
 
-		String timeZoneId = preferences.getValue(
-			"timeZoneId", user.getTimeZoneId());
-
-		if (Validator.isNull(timeZoneId)) {
-			timeZoneId = user.getTimeZoneId();
+		if (amPm == java.util.Calendar.PM) {
+			hour += 12;
 		}
 
-		return TimeZone.getTimeZone(timeZoneId);
+		return JCalendarUtil.getJCalendar(
+			year, month, day, hour, minute, 0, 0, TimeZoneUtil.GMT);
 	}
 
 	@Override
