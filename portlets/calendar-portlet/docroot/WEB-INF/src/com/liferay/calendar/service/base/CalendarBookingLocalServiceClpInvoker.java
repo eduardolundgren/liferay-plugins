@@ -143,9 +143,9 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		_methodParameterTypes125 = new String[] {
 				"long", "long", "long[][]", "long", "java.util.Map",
-				"java.util.Map", "java.lang.String", "long", "long", "boolean",
-				"java.lang.String", "long", "java.lang.String", "long",
-				"java.lang.String", "java.lang.String",
+				"java.util.Map", "java.lang.String", "long", "long",
+				"java.lang.String", "boolean", "java.lang.String", "long",
+				"java.lang.String", "long", "java.lang.String",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -288,9 +288,9 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		_methodParameterTypes152 = new String[] {
 				"long", "long", "long", "long[][]", "java.util.Map",
-				"java.util.Map", "java.lang.String", "long", "long", "boolean",
-				"java.lang.String", "long", "java.lang.String", "long",
-				"java.lang.String", "int", "java.lang.String",
+				"java.util.Map", "java.lang.String", "long", "long",
+				"java.lang.String", "boolean", "java.lang.String", "long",
+				"java.lang.String", "long", "java.lang.String", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -308,9 +308,9 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		_methodParameterTypes154 = new String[] {
 				"long", "long", "long", "java.util.Map", "java.util.Map",
-				"java.lang.String", "long", "long", "boolean",
-				"java.lang.String", "long", "java.lang.String", "long",
-				"java.lang.String", "int", "java.lang.String",
+				"java.lang.String", "long", "long", "java.lang.String",
+				"boolean", "java.lang.String", "long", "java.lang.String",
+				"long", "java.lang.String", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -328,9 +328,9 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		_methodParameterTypes156 = new String[] {
 				"long", "long", "long", "long[][]", "java.util.Map",
-				"java.util.Map", "java.lang.String", "long", "long", "boolean",
-				"java.lang.String", "boolean", "long", "java.lang.String",
-				"long", "java.lang.String", "int", "java.lang.String",
+				"java.util.Map", "java.lang.String", "long", "long",
+				"java.lang.String", "boolean", "java.lang.String", "boolean",
+				"long", "java.lang.String", "long", "java.lang.String", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -348,9 +348,9 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		_methodParameterTypes158 = new String[] {
 				"long", "long", "long", "java.util.Map", "java.util.Map",
-				"java.lang.String", "long", "long", "boolean",
-				"java.lang.String", "boolean", "long", "java.lang.String",
-				"long", "java.lang.String", "int", "java.lang.String",
+				"java.lang.String", "long", "long", "java.lang.String",
+				"boolean", "java.lang.String", "boolean", "long",
+				"java.lang.String", "long", "java.lang.String", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -523,12 +523,12 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(java.lang.String)arguments[6],
 				((Long)arguments[7]).longValue(),
 				((Long)arguments[8]).longValue(),
-				((Boolean)arguments[9]).booleanValue(),
-				(java.lang.String)arguments[10],
-				((Long)arguments[11]).longValue(),
-				(java.lang.String)arguments[12],
-				((Long)arguments[13]).longValue(),
-				(java.lang.String)arguments[14],
+				(java.lang.String)arguments[9],
+				((Boolean)arguments[10]).booleanValue(),
+				(java.lang.String)arguments[11],
+				((Long)arguments[12]).longValue(),
+				(java.lang.String)arguments[13],
+				((Long)arguments[14]).longValue(),
 				(java.lang.String)arguments[15],
 				(com.liferay.portal.service.ServiceContext)arguments[16]);
 		}
@@ -751,14 +751,14 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(java.lang.String)arguments[6],
 				((Long)arguments[7]).longValue(),
 				((Long)arguments[8]).longValue(),
-				((Boolean)arguments[9]).booleanValue(),
-				(java.lang.String)arguments[10],
-				((Long)arguments[11]).longValue(),
-				(java.lang.String)arguments[12],
-				((Long)arguments[13]).longValue(),
-				(java.lang.String)arguments[14],
-				((Integer)arguments[15]).intValue(),
-				(java.lang.String)arguments[16],
+				(java.lang.String)arguments[9],
+				((Boolean)arguments[10]).booleanValue(),
+				(java.lang.String)arguments[11],
+				((Long)arguments[12]).longValue(),
+				(java.lang.String)arguments[13],
+				((Long)arguments[14]).longValue(),
+				(java.lang.String)arguments[15],
+				((Integer)arguments[16]).intValue(),
 				(com.liferay.portal.service.ServiceContext)arguments[17]);
 		}
 
@@ -792,14 +792,14 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(java.lang.String)arguments[5],
 				((Long)arguments[6]).longValue(),
 				((Long)arguments[7]).longValue(),
-				((Boolean)arguments[8]).booleanValue(),
-				(java.lang.String)arguments[9],
-				((Long)arguments[10]).longValue(),
-				(java.lang.String)arguments[11],
-				((Long)arguments[12]).longValue(),
-				(java.lang.String)arguments[13],
-				((Integer)arguments[14]).intValue(),
-				(java.lang.String)arguments[15],
+				(java.lang.String)arguments[8],
+				((Boolean)arguments[9]).booleanValue(),
+				(java.lang.String)arguments[10],
+				((Long)arguments[11]).longValue(),
+				(java.lang.String)arguments[12],
+				((Long)arguments[13]).longValue(),
+				(java.lang.String)arguments[14],
+				((Integer)arguments[15]).intValue(),
 				(com.liferay.portal.service.ServiceContext)arguments[16]);
 		}
 
@@ -834,15 +834,15 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(java.lang.String)arguments[6],
 				((Long)arguments[7]).longValue(),
 				((Long)arguments[8]).longValue(),
-				((Boolean)arguments[9]).booleanValue(),
-				(java.lang.String)arguments[10],
-				((Boolean)arguments[11]).booleanValue(),
-				((Long)arguments[12]).longValue(),
-				(java.lang.String)arguments[13],
-				((Long)arguments[14]).longValue(),
-				(java.lang.String)arguments[15],
-				((Integer)arguments[16]).intValue(),
-				(java.lang.String)arguments[17],
+				(java.lang.String)arguments[9],
+				((Boolean)arguments[10]).booleanValue(),
+				(java.lang.String)arguments[11],
+				((Boolean)arguments[12]).booleanValue(),
+				((Long)arguments[13]).longValue(),
+				(java.lang.String)arguments[14],
+				((Long)arguments[15]).longValue(),
+				(java.lang.String)arguments[16],
+				((Integer)arguments[17]).intValue(),
 				(com.liferay.portal.service.ServiceContext)arguments[18]);
 		}
 
@@ -877,15 +877,15 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(java.lang.String)arguments[5],
 				((Long)arguments[6]).longValue(),
 				((Long)arguments[7]).longValue(),
-				((Boolean)arguments[8]).booleanValue(),
-				(java.lang.String)arguments[9],
-				((Boolean)arguments[10]).booleanValue(),
-				((Long)arguments[11]).longValue(),
-				(java.lang.String)arguments[12],
-				((Long)arguments[13]).longValue(),
-				(java.lang.String)arguments[14],
-				((Integer)arguments[15]).intValue(),
-				(java.lang.String)arguments[16],
+				(java.lang.String)arguments[8],
+				((Boolean)arguments[9]).booleanValue(),
+				(java.lang.String)arguments[10],
+				((Boolean)arguments[11]).booleanValue(),
+				((Long)arguments[12]).longValue(),
+				(java.lang.String)arguments[13],
+				((Long)arguments[14]).longValue(),
+				(java.lang.String)arguments[15],
+				((Integer)arguments[16]).intValue(),
 				(com.liferay.portal.service.ServiceContext)arguments[17]);
 		}
 
