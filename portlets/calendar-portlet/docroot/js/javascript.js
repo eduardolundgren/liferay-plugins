@@ -100,7 +100,7 @@ AUI.add(
 			NOTIFICATION_DEFAULT_TYPE: 'email',
 			PORTLET_NAMESPACE: STR_BLANK,
 			RENDERING_RULES_URL: null,
-			USER_TIMEZONE_OFFSET: 0,
+			USER_TIME_ZONE: 'UTC',
 
 			availableCalendars: {},
 			visibleCalendars: {},
@@ -109,17 +109,8 @@ AUI.add(
 				var instance = this;
 
 				var allDay = schedulerEvent.get('allDay');
-				var startDate = schedulerEvent.get('startDate');
-				var endDate = schedulerEvent.get('endDate');
-
-				if (allDay) {
-					startDate = instance.toUTCWithoutUserTimeZone(startDate);
-					endDate = instance.toUTCWithoutUserTimeZone(endDate);
-				}
-				else {
-					startDate = instance.toUTC(startDate);
-					endDate = instance.toUTC(endDate);
-				}
+				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
+				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
 
 				instance.invokeService(
 					{
@@ -137,6 +128,7 @@ AUI.add(
 							secondReminder: schedulerEvent.get('secondReminder'),
 							secondReminderType: schedulerEvent.get('secondReminderType'),
 							startTime: startDate.getTime(),
+							timeZoneId: instance.USER_TIME_ZONE,
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content')))
 						}
 					},
@@ -618,17 +610,8 @@ AUI.add(
 				var instance = this;
 
 				var allDay = calendarBooking.allDay;
-				var startDate = calendarBooking.startTime;
-				var endDate = calendarBooking.endTime;
-
-				if (allDay) {
-					startDate = instance.toLocalTimeWithoutUserTimeZone(startDate);
-					endDate = instance.toLocalTimeWithoutUserTimeZone(endDate);
-				}
-				else {
-					startDate = instance.toLocalTime(startDate);
-					endDate = instance.toLocalTime(endDate);
-				}
+				var startDate = instance.toLocalTime(calendarBooking.displayStartTime);
+				var endDate = instance.toLocalTime(calendarBooking.displayEndTime);
 
 				return new Liferay.SchedulerEvent(
 					{
@@ -654,14 +637,6 @@ AUI.add(
 			toLocalTime: function(utc) {
 				var instance = this;
 
-				var date = instance.toLocalTimeWithoutUserTimeZone(utc);
-
-				return DateMath.add(date, DateMath.MINUTES, instance.USER_TIMEZONE_OFFSET / DateMath.ONE_MINUTE_MS);
-			},
-
-			toLocalTimeWithoutUserTimeZone: function(utc) {
-				var instance = this;
-
 				if (!isDate(utc)) {
 					utc = new Date(utc);
 				}
@@ -670,14 +645,6 @@ AUI.add(
 			},
 
 			toUTC: function(date) {
-				var instance = this;
-
-				var utc = instance.toUTCWithoutUserTimeZone(date);
-
-				return DateMath.subtract(utc, DateMath.MINUTES, instance.USER_TIMEZONE_OFFSET / DateMath.ONE_MINUTE_MS);
-			},
-
-			toUTCWithoutUserTimeZone: function(date) {
 				var instance = this;
 
 				if (!isDate(date)) {
@@ -691,17 +658,8 @@ AUI.add(
 				var instance = this;
 
 				var allDay = schedulerEvent.get('allDay');
-				var startDate = schedulerEvent.get('startDate');
-				var endDate = schedulerEvent.get('endDate');
-
-				if (allDay) {
-					startDate = instance.toUTCWithoutUserTimeZone(startDate);
-					endDate = instance.toUTCWithoutUserTimeZone(endDate);
-				}
-				else {
-					startDate = instance.toUTC(startDate);
-					endDate = instance.toUTC(endDate);
-				}
+				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
+				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
 
 				instance.invokeService(
 					{
@@ -720,6 +678,7 @@ AUI.add(
 							startTime: startDate.getTime(),
 							status: schedulerEvent.get('status'),
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content'))),
+							timeZoneId: instance.USER_TIME_ZONE,
 							userId: USER_ID
 						}
 					},
@@ -763,6 +722,10 @@ AUI.add(
 			updateEventInstance: function(schedulerEvent, allFollowing, success) {
 				var instance = this;
 
+				var allDay = schedulerEvent.get('allDay');
+				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
+				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
+
 				instance.invokeService(
 					{
 						'/calendar-portlet.calendarbooking/update-calendar-booking-instance': {
@@ -771,16 +734,17 @@ AUI.add(
 							calendarBookingId: schedulerEvent.get('calendarBookingId'),
 							calendarId: schedulerEvent.get('calendarId'),
 							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
-							endTime: instance.toUTC(schedulerEvent.get('endDate')).getTime(),
+							endTime: endTime.getTime(),
 							firstReminder: schedulerEvent.get('firstReminder'),
 							firstReminderType: schedulerEvent.get('firstReminderType'),
 							location: schedulerEvent.get('location'),
 							recurrence: schedulerEvent.get('recurrence'),
 							secondReminder: schedulerEvent.get('secondReminder'),
 							secondReminderType: schedulerEvent.get('secondReminderType'),
-							startTime: instance.toUTC(schedulerEvent.get('startDate')).getTime(),
+							startTime: startTime.getTime(),
 							status: schedulerEvent.get('status'),
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content'))),
+							timeZoneId: instance.USER_TIME_ZONE,
 							userId: USER_ID
 						}
 					},
@@ -1939,10 +1903,10 @@ AUI.add(
 
 						data.date = date.getTime();
 
-						data.endTime = CalendarUtil.toUTC(data.endTime).getTime();
-						data.startTime = CalendarUtil.toUTC(data.startTime).getTime();
-
 						data.titleCurrentValue = encodeURIComponent(data.content);
+
+						data.startTime = CalendarUtil.toUTC(data.startTime).getTime();
+						data.endTime = CalendarUtil.toUTC(data.endTime).getTime();
 
 						if (schedulerEvent) {
 							data.allDay = schedulerEvent.get('allDay');

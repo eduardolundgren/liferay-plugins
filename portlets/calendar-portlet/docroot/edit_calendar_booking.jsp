@@ -17,9 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String activeView = ParamUtil.getString(request, "activeView", defaultView);
+	String activeView = ParamUtil.getString(request, "activeView", defaultView);
 
-java.util.Calendar nowJCalendar = CalendarFactoryUtil.getCalendar(userTimeZone);
+java.util.Calendar nowJCalendar = JCalendarUtil.toDisplayCalendar(CalendarFactoryUtil.getCalendar(), userTimeZone);
 
 long date = ParamUtil.getLong(request, "date", nowJCalendar.getTimeInMillis());
 
@@ -29,17 +29,21 @@ long calendarBookingId = BeanPropertiesUtil.getLong(calendarBooking, "calendarBo
 
 long calendarId = BeanParamUtil.getLong(calendarBooking, request, "calendarId", userDefaultCalendar.getCalendarId());
 
-long startTime = BeanParamUtil.getLong(calendarBooking, request, "startTime", nowJCalendar.getTimeInMillis());
+long displayStartTime = BeanPropertiesUtil.getLong(calendarBooking, "displayStartTime", nowJCalendar.getTimeInMillis());
 
-java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(startTime, userTimeZone);
+long startTime = ParamUtil.getLong(request, "startTime", displayStartTime);
+
+java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(startTime);
 
 java.util.Calendar defaultEndTimeJCalendar = (java.util.Calendar)nowJCalendar.clone();
 
 defaultEndTimeJCalendar.add(java.util.Calendar.HOUR, 1);
 
-long endTime = BeanParamUtil.getLong(calendarBooking, request, "endTime", defaultEndTimeJCalendar.getTimeInMillis());
+long displayEndTime = BeanPropertiesUtil.getLong(calendarBooking, "displayEndTime", defaultEndTimeJCalendar.getTimeInMillis());
 
-java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime, userTimeZone);
+long endTime = ParamUtil.getLong(request, "endTime", displayEndTime);
+
+java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime);
 
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
@@ -107,6 +111,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
 	<aui:input name="childCalendarIds" type="hidden" />
 	<aui:input name="status" type="hidden" value ="<%= status %>" />
+	<aui:input name="timeZoneId" type="hidden" value ="<%= userTimeZone.getID() %>" />
 	<aui:input name="allFollowing" type="hidden" />
 	<aui:input name="updateCalendarBookingInstance" type="hidden" />
 

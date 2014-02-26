@@ -23,11 +23,20 @@ import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
+import com.liferay.calendar.util.JCalendarUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSON;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
+import com.liferay.portal.service.UserLocalServiceUtil;
 
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author Eduardo Lundgren
@@ -56,6 +65,18 @@ public class CalendarBookingImpl extends CalendarBookingBaseImpl {
 
 		return CalendarBookingLocalServiceUtil.getChildCalendarBookings(
 			getCalendarBookingId());
+	}
+
+	@JSON
+	@Override
+	public long getDisplayEndTime() {
+		return getDisplayTime(getEndTime());
+	}
+
+	@JSON
+	@Override
+	public long getDisplayStartTime() {
+		return getDisplayTime(getStartTime());
 	}
 
 	@Override
@@ -107,6 +128,45 @@ public class CalendarBookingImpl extends CalendarBookingBaseImpl {
 
 		return false;
 	}
+
+	protected long getDisplayTime(long time) {
+		if (isAllDay()) {
+			return time;
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		if (serviceContext == null) {
+			return time;
+		}
+
+		long userId = serviceContext.getUserId();
+
+		if (userId <= 0) {
+			return time;
+		}
+
+		try {
+			User user = UserLocalServiceUtil.getUser(userId);
+			TimeZone timeZone = TimeZone.getTimeZone(user.getTimeZoneId());
+
+			java.util.Calendar simulatingJCalendar =
+				JCalendarUtil.toDisplayCalendar(time, timeZone);
+
+			time = simulatingJCalendar.getTimeInMillis();
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("User with id " + userId + " not found", e);
+			}
+		}
+
+		return time;
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		CalendarBooking.class.getName());
 
 	private Recurrence _recurrenceObj;
 
