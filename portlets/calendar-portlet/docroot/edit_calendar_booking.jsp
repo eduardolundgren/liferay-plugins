@@ -17,9 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
-	String activeView = ParamUtil.getString(request, "activeView", defaultView);
+String activeView = ParamUtil.getString(request, "activeView", defaultView);
 
-java.util.Calendar nowJCalendar = JCalendarUtil.toDisplayCalendar(CalendarFactoryUtil.getCalendar(), userTimeZone);
+java.util.Calendar nowJCalendar = JCalendarUtil.getJCalendar(JCalendarUtil.toDisplayCalendar(CalendarFactoryUtil.getCalendar().getTimeInMillis(), userTimeZone));
 
 long date = ParamUtil.getLong(request, "date", nowJCalendar.getTimeInMillis());
 

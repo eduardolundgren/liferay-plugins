@@ -83,10 +83,9 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 			long calendarId, long[] childCalendarIds,
 			long parentCalendarBookingId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String location, long startTime,
-			long endTime, boolean allDay, String recurrence, long firstReminder,
-			String firstReminderType, long secondReminder,
-			String secondReminderType, String timeZoneId,
-			ServiceContext serviceContext)
+			long endTime, String timeZoneId, boolean allDay, String recurrence,
+			long firstReminder, String firstReminderType, long secondReminder,
+			String secondReminderType, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		CalendarPermission.check(
@@ -94,9 +93,9 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 		return calendarBookingLocalService.addCalendarBooking(
 			getUserId(), calendarId, childCalendarIds, parentCalendarBookingId,
-			titleMap, descriptionMap, location, startTime, endTime, allDay,
-			recurrence, firstReminder, firstReminderType, secondReminder,
-			secondReminderType, timeZoneId, serviceContext);
+			titleMap, descriptionMap, location, startTime, endTime, timeZoneId,
+			allDay, recurrence, firstReminder, firstReminderType,
+			secondReminder, secondReminderType, serviceContext);
 	}
 
 	@Override
@@ -401,10 +400,11 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public CalendarBooking updateCalendarBooking(
 			long calendarBookingId, long calendarId, long[] childCalendarIds,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String location, long startTime, long endTime, boolean allDay,
-			String recurrence, long firstReminder, String firstReminderType,
-			long secondReminder, String secondReminderType, int status,
-			String timeZoneId, ServiceContext serviceContext)
+			String location, long startTime, long endTime, String timeZoneId,
+			boolean allDay, String recurrence, long firstReminder,
+			String firstReminderType, long secondReminder,
+			String secondReminderType, int status,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		CalendarPermission.check(
@@ -412,9 +412,9 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 		return calendarBookingLocalService.updateCalendarBooking(
 			getUserId(), calendarBookingId, calendarId, childCalendarIds,
-			titleMap, descriptionMap, location, startTime, endTime, allDay,
-			recurrence, firstReminder, firstReminderType, secondReminder,
-			secondReminderType, status, timeZoneId, serviceContext);
+			titleMap, descriptionMap, location, startTime, endTime, timeZoneId,
+			allDay, recurrence, firstReminder, firstReminderType,
+			secondReminder, secondReminderType, status, serviceContext);
 	}
 
 	@Override
@@ -441,10 +441,11 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public CalendarBooking updateCalendarBooking(
 			long calendarBookingId, long calendarId,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String location, long startTime, long endTime, boolean allDay,
-			String recurrence, long firstReminder, String firstReminderType,
-			long secondReminder, String secondReminderType, int status,
-			String timeZoneId, ServiceContext serviceContext)
+			String location, long startTime, long endTime, String timeZoneId,
+			boolean allDay, String recurrence, long firstReminder,
+			String firstReminderType, long secondReminder,
+			String secondReminderType, int status,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		CalendarPermission.check(
@@ -452,9 +453,9 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 		return calendarBookingLocalService.updateCalendarBooking(
 			getUserId(), calendarBookingId, calendarId, titleMap,
-			descriptionMap, location, startTime, endTime, allDay, recurrence,
-			firstReminder, firstReminderType, secondReminder,
-			secondReminderType, status, timeZoneId, serviceContext);
+			descriptionMap, location, startTime, endTime, timeZoneId, allDay,
+			recurrence, firstReminder, firstReminderType, secondReminder,
+			secondReminderType, status, serviceContext);
 	}
 
 	@Override
@@ -482,10 +483,10 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	public CalendarBooking updateCalendarBookingInstance(
 			long calendarBookingId, long calendarId, long[] childCalendarIds,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String location, long startTime, long endTime, boolean allDay,
-			String recurrence, boolean allFollowing, long firstReminder,
-			String firstReminderType, long secondReminder,
-			String secondReminderType, int status, String timeZoneId,
+			String location, long startTime, long endTime, String timeZoneId,
+			boolean allDay, String recurrence, boolean allFollowing,
+			long firstReminder, String firstReminderType, long secondReminder,
+			String secondReminderType, int status,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -494,10 +495,9 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 		return calendarBookingLocalService.updateCalendarBookingInstance(
 			getUserId(), calendarBookingId, calendarId, childCalendarIds,
-			titleMap, descriptionMap, location, startTime, endTime, allDay,
-			recurrence, allFollowing, firstReminder, firstReminderType,
-			secondReminder, secondReminderType, status, timeZoneId,
-			serviceContext);
+			titleMap, descriptionMap, location, startTime, endTime, timeZoneId,
+			allDay, recurrence, allFollowing, firstReminder, firstReminderType,
+			secondReminder, secondReminderType, status, serviceContext);
 	}
 
 	@Override

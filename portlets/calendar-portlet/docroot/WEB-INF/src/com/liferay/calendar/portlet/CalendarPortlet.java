@@ -322,9 +322,9 @@ public class CalendarPortlet extends MVCPortlet {
 				CalendarBookingConstants.PARENT_CALENDAR_BOOKING_ID_DEFAULT,
 				titleMap, descriptionMap, location,
 				startTimeJCalendar.getTimeInMillis(),
-				endTimeJCalendar.getTimeInMillis(), allDay, recurrence,
-				reminders[0], remindersType[0], reminders[1], remindersType[1],
-				timeZoneId, serviceContext);
+				endTimeJCalendar.getTimeInMillis(), timeZoneId, allDay,
+				recurrence, reminders[0], remindersType[0], reminders[1],
+				remindersType[1], serviceContext);
 
 			redirect = HttpUtil.setParameter(
 				redirect, actionResponse.getNamespace() + "calendarBookingId",
@@ -343,10 +343,10 @@ public class CalendarPortlet extends MVCPortlet {
 						calendarBookingId, calendarId, childCalendarIds,
 						titleMap, descriptionMap, location,
 						startTimeJCalendar.getTimeInMillis(),
-						endTimeJCalendar.getTimeInMillis(), allDay, recurrence,
-						allFollowing, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, timeZoneId,
-						serviceContext);
+						endTimeJCalendar.getTimeInMillis(), timeZoneId, allDay,
+						recurrence, allFollowing, reminders[0],
+						remindersType[0], reminders[1], remindersType[1],
+						status, serviceContext);
 			}
 			else {
 				calendarBooking = CalendarBookingServiceUtil.getCalendarBooking(
@@ -365,9 +365,9 @@ public class CalendarPortlet extends MVCPortlet {
 						titleMap, descriptionMap, location,
 						(calendarBooking.getStartTime() + offset),
 						(calendarBooking.getStartTime() + offset + duration),
-						allDay, recurrence, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, timeZoneId,
-						serviceContext);
+						timeZoneId, allDay, recurrence, reminders[0],
+						remindersType[0], reminders[1], remindersType[1],
+						status, serviceContext);
 			}
 		}
 
@@ -600,6 +600,25 @@ public class CalendarPortlet extends MVCPortlet {
 			WebKeys.CALENDAR_RESOURCE, calendarResource);
 	}
 
+	protected java.util.Calendar getDisplayCalendar(
+		PortletRequest portletRequest, String name) {
+
+		int month = ParamUtil.getInteger(portletRequest, name + "Month");
+		int day = ParamUtil.getInteger(portletRequest, name + "Day");
+		int year = ParamUtil.getInteger(portletRequest, name + "Year");
+		int hour = ParamUtil.getInteger(portletRequest, name + "Hour");
+		int minute = ParamUtil.getInteger(portletRequest, name + "Minute");
+
+		int amPm = ParamUtil.getInteger(portletRequest, name + "AmPm");
+
+		if (amPm == java.util.Calendar.PM) {
+			hour += 12;
+		}
+
+		return JCalendarUtil.getJCalendar(
+			year, month, day, hour, minute, 0, 0, TimeZoneUtil.GMT);
+	}
+
 	protected String getEditCalendarURL(
 			ActionRequest actionRequest, ActionResponse actionResponse,
 			Calendar calendar)
@@ -754,25 +773,6 @@ public class CalendarPortlet extends MVCPortlet {
 		return new String[] {
 			firstReminderType, secondReminderType
 		};
-	}
-
-	protected java.util.Calendar getDisplayCalendar(
-		PortletRequest portletRequest, String name) {
-
-		int month = ParamUtil.getInteger(portletRequest, name + "Month");
-		int day = ParamUtil.getInteger(portletRequest, name + "Day");
-		int year = ParamUtil.getInteger(portletRequest, name + "Year");
-		int hour = ParamUtil.getInteger(portletRequest, name + "Hour");
-		int minute = ParamUtil.getInteger(portletRequest, name + "Minute");
-
-		int amPm = ParamUtil.getInteger(portletRequest, name + "AmPm");
-
-		if (amPm == java.util.Calendar.PM) {
-			hour += 12;
-		}
-
-		return JCalendarUtil.getJCalendar(
-			year, month, day, hour, minute, 0, 0, TimeZoneUtil.GMT);
 	}
 
 	@Override

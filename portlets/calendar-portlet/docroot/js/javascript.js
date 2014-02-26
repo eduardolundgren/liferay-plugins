@@ -108,14 +108,13 @@ AUI.add(
 			addEvent: function(schedulerEvent) {
 				var instance = this;
 
-				var allDay = schedulerEvent.get('allDay');
 				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
 				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
 
 				instance.invokeService(
 					{
 						'/calendar-portlet.calendarbooking/add-calendar-booking': {
-							allDay: allDay,
+							allDay: schedulerEvent.get('allDay'),
 							calendarId: schedulerEvent.get('calendarId'),
 							childCalendarIds: STR_BLANK,
 							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
@@ -172,9 +171,8 @@ AUI.add(
 			countChildrenCalendarBookings: function(schedulerEvent, callback) {
 				var instance = this;
 
-				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
-
 				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
+				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
 
 				var statuses = [CalendarWorkflow.STATUS_APPROVED, CalendarWorkflow.STATUS_MAYBE, CalendarWorkflow.STATUS_PENDING];
 
@@ -657,14 +655,13 @@ AUI.add(
 			updateEvent: function(schedulerEvent, success) {
 				var instance = this;
 
-				var allDay = schedulerEvent.get('allDay');
 				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
 				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
 
 				instance.invokeService(
 					{
 						'/calendar-portlet.calendarbooking/update-calendar-booking': {
-							allDay: allDay,
+							allDay: schedulerEvent.get('allDay'),
 							calendarBookingId: schedulerEvent.get('calendarBookingId'),
 							calendarId: schedulerEvent.get('calendarId'),
 							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
@@ -722,7 +719,6 @@ AUI.add(
 			updateEventInstance: function(schedulerEvent, allFollowing, success) {
 				var instance = this;
 
-				var allDay = schedulerEvent.get('allDay');
 				var startDate = instance.toUTC(schedulerEvent.get('startDate'));
 				var endDate = instance.toUTC(schedulerEvent.get('endDate'));
 

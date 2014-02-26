@@ -15,8 +15,8 @@
 package com.liferay.calendar.util;
 
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
-import com.liferay.portal.kernel.util.TimeZoneUtil;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -38,28 +38,21 @@ public class JCalendarUtil {
 
 	public static final long SECOND = 1000;
 
-	public static Calendar fromDisplayCalendar(
-		Calendar calendar, TimeZone simulatedTimeZone) {
+	public static long fromDisplayCalendar(
+		long time, TimeZone displayTimeZone) {
 
-		Calendar displayCalendar = getJCalendar(
-			calendar.getTimeInMillis(), TimeZoneUtil.GMT);
+		Calendar displayJCalendar = getJCalendar(time, _utcTimeZone);
 
-		Calendar realJCalendar = getJCalendar(
-			displayCalendar.get(Calendar.YEAR),
-			displayCalendar.get(Calendar.MONTH),
-			displayCalendar.get(Calendar.DAY_OF_MONTH),
-			displayCalendar.get(Calendar.HOUR_OF_DAY),
-			displayCalendar.get(Calendar.MINUTE),
-			displayCalendar.get(Calendar.SECOND),
-			displayCalendar.get(Calendar.MILLISECOND), simulatedTimeZone);
+		Calendar jCalendar = getJCalendar(
+			displayJCalendar.get(Calendar.YEAR),
+			displayJCalendar.get(Calendar.MONTH),
+			displayJCalendar.get(Calendar.DAY_OF_MONTH),
+			displayJCalendar.get(Calendar.HOUR_OF_DAY),
+			displayJCalendar.get(Calendar.MINUTE),
+			displayJCalendar.get(Calendar.SECOND),
+			displayJCalendar.get(Calendar.MILLISECOND), displayTimeZone);
 
-		return getJCalendar(realJCalendar.getTimeInMillis(), TimeZoneUtil.GMT);
-	}
-
-	public static Calendar fromDisplayCalendar(
-		long time, TimeZone simulatedTimeZone) {
-
-		return fromDisplayCalendar(getJCalendar(time), simulatedTimeZone);
+		return jCalendar.getTimeInMillis();
 	}
 
 	public static long getDaysBetween(
@@ -92,7 +85,7 @@ public class JCalendarUtil {
 	}
 
 	public static Calendar getJCalendar(long time) {
-		return getJCalendar(time, TimeZoneUtil.GMT);
+		return getJCalendar(time, _utcTimeZone);
 	}
 
 	public static Calendar getJCalendar(long time, TimeZone timeZone) {
@@ -103,24 +96,17 @@ public class JCalendarUtil {
 		return jCalendar;
 	}
 
-	public static Calendar toDisplayCalendar(
-		Calendar calendar, TimeZone simulatedTimeZone) {
+	public static long toDisplayCalendar(long time, TimeZone displayTimeZone) {
+		Calendar jCalendar = getJCalendar(time, displayTimeZone);
 
-		Calendar localizedJCalendar = getJCalendar(
-			calendar.getTimeInMillis(), simulatedTimeZone);
+		Calendar displayJCalendar = getJCalendar(
+			jCalendar.get(Calendar.YEAR), jCalendar.get(Calendar.MONTH),
+			jCalendar.get(Calendar.DAY_OF_MONTH),
+			jCalendar.get(Calendar.HOUR_OF_DAY), jCalendar.get(Calendar.MINUTE),
+			jCalendar.get(Calendar.SECOND), jCalendar.get(Calendar.MILLISECOND),
+			_utcTimeZone);
 
-		return getJCalendar(
-			localizedJCalendar.get(Calendar.YEAR),
-			localizedJCalendar.get(Calendar.MONTH),
-			localizedJCalendar.get(Calendar.DAY_OF_MONTH),
-			localizedJCalendar.get(Calendar.HOUR_OF_DAY),
-			localizedJCalendar.get(Calendar.MINUTE),
-			localizedJCalendar.get(Calendar.SECOND),
-			localizedJCalendar.get(Calendar.MILLISECOND), TimeZoneUtil.GMT);
-	}
-
-	public static Calendar toDisplayCalendar(long time, TimeZone timeZone) {
-		return toDisplayCalendar(getJCalendar(time), timeZone);
+		return displayJCalendar.getTimeInMillis();
 	}
 
 	public static Calendar toLastHourJCalendar(Calendar jCalendar) {
@@ -144,5 +130,7 @@ public class JCalendarUtil {
 
 		return midnightJCalendar;
 	}
+
+	private static TimeZone _utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);
 
 }
