@@ -1389,7 +1389,28 @@ AUI.add(
 							if (persist) {
 								var schedulerEvent = event.target;
 
-								instance._updateSchedulerEvent(schedulerEvent, changedAttributes);
+								instance._updateSchedulerEvent(
+									schedulerEvent,
+									changedAttributes,
+									function(schedulerEvent, rootSchedulerEvent, answers, executeNextStep) {
+										if (answers.cancel) {
+											executeNextStep();
+										}
+										else if (answers.updateInstance) {
+											CalendarUtil.updateEventInstance(schedulerEvent, !!answers.allFollowing, executeNextStep);
+										}
+										else {
+											schedulerEvent.copyDates(
+												rootSchedulerEvent,
+												{
+													silent: true
+												}
+											);
+
+											CalendarUtil.updateEvent(schedulerEvent, executeNextStep);
+										}
+									}
+								);
 							}
 						}
 					},
@@ -1511,7 +1532,7 @@ AUI.add(
 						);
 					},
 
-					_updateSchedulerEvent: function(schedulerEvent, changedAttributes) {
+					_updateSchedulerEvent: function(schedulerEvent, changedAttributes, savingCallback) {
 						var instance = this;
 
 						var answers = {};
@@ -1525,12 +1546,12 @@ AUI.add(
 						)
 						.then(
 							function(data) {
-								instance._promptSchedulerEventUpdate(data);
+								instance._promptSchedulerEventUpdate(data, savingCallback);
 							}
 						);
 					},
 
-					_promptSchedulerEventUpdate: function(data) {
+					_promptSchedulerEventUpdate: function(data, savingCallback) {
 						var instance = this;
 
 						var hasChild = data[2];
@@ -1577,7 +1598,7 @@ AUI.add(
 
 						instance.queue.add(
 							{
-								args: [data],
+								args: [data, savingCallback],
 								autoContinue: false,
 								context: instance,
 								fn: instance._queueableQuestionResolver,
@@ -1597,7 +1618,7 @@ AUI.add(
 						instance.queue.run();
 					},
 
-					_queueableQuestionResolver: function(data) {
+					_queueableQuestionResolver: function(data, savingCallback) {
 						var instance = this;
 
 						var answers = data[3];
@@ -1606,22 +1627,7 @@ AUI.add(
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
-						if (answers.cancel) {
-							A.soon(showNextQuestion);
-						}
-						else if (answers.updateInstance) {
-							CalendarUtil.updateEventInstance(schedulerEvent, !!answers.allFollowing, showNextQuestion);
-						}
-						else {
-							schedulerEvent.copyDates(
-								rootSchedulerEvent,
-								{
-									silent: true
-								}
-							);
-
-							CalendarUtil.updateEvent(schedulerEvent, showNextQuestion);
-						}
+						A.soon(A.bind(savingCallback, instance, schedulerEvent, rootSchedulerEvent, answers, showNextQuestion));
 					},
 
 					_queueableQuestionUpdateAllInvited: function(data) {
