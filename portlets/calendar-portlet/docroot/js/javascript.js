@@ -684,24 +684,24 @@ AUI.add(
 				return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
 			},
 
-			updateEvent: function(schedulerEvent, success) {
+			updateEvent: function(schedulerEvent, offset, duration, success) {
 				var instance = this;
 
 				instance.invokeService(
 					{
-						'/calendar-portlet.calendarbooking/update-calendar-booking': {
+						'/calendar-portlet.calendarbooking/update-calendar-booking-by-offset-and-duration': {
 							allDay: schedulerEvent.get('allDay'),
 							calendarBookingId: schedulerEvent.get('calendarBookingId'),
 							calendarId: schedulerEvent.get('calendarId'),
 							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
-							endTime: CalendarUtil.toUTC(schedulerEvent.get('endDate')).getTime(),
+							duration: duration,
 							firstReminder: schedulerEvent.get('firstReminder'),
 							firstReminderType: schedulerEvent.get('firstReminderType'),
 							location: schedulerEvent.get('location'),
+							offset: offset,
 							recurrence: schedulerEvent.get('recurrence'),
 							secondReminder: schedulerEvent.get('secondReminder'),
 							secondReminderType: schedulerEvent.get('secondReminderType'),
-							startTime: CalendarUtil.toUTC(schedulerEvent.get('startDate')).getTime(),
 							status: schedulerEvent.get('status'),
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content'))),
 							userId: USER_ID
@@ -1389,6 +1389,18 @@ AUI.add(
 							if (persist) {
 								var schedulerEvent = event.target;
 
+								var offset = 0;
+								var duration = schedulerEvent.getSecondsDuration() * 1000;
+
+								if (changedAttributes.startDate) {
+									var previousTime = changedAttributes.startDate.prevVal;
+									var newTime = changedAttributes.startDate.newVal;
+
+									if (isDate(newTime) && isDate(previousTime)) {
+										offset = newTime.getTime() - previousTime.getTime();
+									}
+								}
+
 								instance._updateSchedulerEvent(
 									schedulerEvent,
 									changedAttributes,
@@ -1400,14 +1412,7 @@ AUI.add(
 											CalendarUtil.updateEventInstance(schedulerEvent, !!answers.allFollowing, executeNextStep);
 										}
 										else {
-											schedulerEvent.copyDates(
-												rootSchedulerEvent,
-												{
-													silent: true
-												}
-											);
-
-											CalendarUtil.updateEvent(schedulerEvent, executeNextStep);
+											CalendarUtil.updateEvent(schedulerEvent, offset, duration, executeNextStep);
 										}
 									}
 								);
