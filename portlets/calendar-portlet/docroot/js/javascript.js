@@ -451,38 +451,6 @@ AUI.add(
 				return A.JSON.stringify(map);
 			},
 
-			getNewStartTimeAndDurationCalendarBooking: function(calendarBookingId, offset, duration, success) {
-				var instance = this;
-
-				var schedulerEvent = null;
-
-				instance.invokeService(
-					{
-						'/calendar-portlet.calendarbooking/get-new-start-time-and-duration-calendar-booking': {
-							calendarBookingId: calendarBookingId,
-							offset: offset,
-							duration: duration
-						}
-					},
-					{
-						success: function(data) {
-							if (data) {
-								if (data.exception) {
-									return;
-								}
-								else {
-									schedulerEvent = instance.createSchedulerEvent(data);
-								}
-							}
-
-							if (success) {
-								success.call(this, schedulerEvent);
-							}
-						}
-					}
-				);
-			},
-
 			hasChildCalendarBookings: function(schedulerEvent, callback) {
 				var instance = this;
 
@@ -1404,7 +1372,7 @@ AUI.add(
 								instance._updateSchedulerEvent(
 									schedulerEvent,
 									changedAttributes,
-									function(schedulerEvent, rootSchedulerEvent, answers, executeNextStep) {
+									function(schedulerEvent, answers, executeNextStep) {
 										if (answers.cancel) {
 											executeNextStep();
 										}
@@ -1418,27 +1386,6 @@ AUI.add(
 								);
 							}
 						}
-					},
-
-					_getNewStartTimeAndDurationCalendarBookingPromise: function(schedulerEvent, changedAttributes) {
-						var instance = this;
-
-						return A.Promise(
-							function(resolve) {
-								var calendarbookingId = schedulerEvent.get('calendarBookingId');
-
-								var offset = 0;
-								var duration = schedulerEvent.getSecondsDuration()*Time.SECOND;
-
-								if (changedAttributes.startDate) {
-									offset = changedAttributes.startDate.newVal.getTime() - changedAttributes.startDate.prevVal.getTime();
-								}
-
-								CalendarUtil.getNewStartTimeAndDurationCalendarBooking(calendarbookingId, offset, duration, function(rootSchedulerEvent) {
-									resolve(rootSchedulerEvent);
-								});
-							}
-						);
 					},
 
 					_hasChildCalendarBookingsPromise: function(schedulerEvent) {
@@ -1545,7 +1492,6 @@ AUI.add(
 
 						A.batch(
 							schedulerEvent,
-							instance._getNewStartTimeAndDurationCalendarBookingPromise(schedulerEvent, changedAttributes),
 							instance._hasChildCalendarBookingsPromise(schedulerEvent),
 							answers
 						)
@@ -1559,7 +1505,7 @@ AUI.add(
 					_promptSchedulerEventUpdate: function(data, savingCallback) {
 						var instance = this;
 
-						var hasChild = data[2];
+						var hasChild = data[1];
 						var schedulerEvent = data[0];
 
 						instance.queue = new A.AsyncQueue();
@@ -1626,19 +1572,18 @@ AUI.add(
 					_queueableQuestionResolver: function(data, savingCallback) {
 						var instance = this;
 
-						var answers = data[3];
-						var rootSchedulerEvent = data[1];
+						var answers = data[2];
 						var schedulerEvent = data[0];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
-						A.soon(A.bind(savingCallback, instance, schedulerEvent, rootSchedulerEvent, answers, showNextQuestion));
+						A.soon(A.bind(savingCallback, instance, schedulerEvent, answers, showNextQuestion));
 					},
 
 					_queueableQuestionUpdateAllInvited: function(data) {
 						var instance = this;
 
-						var answers = data[3];
+						var answers = data[2];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
@@ -1665,7 +1610,7 @@ AUI.add(
 					_queueableQuestionUpdateRecurring: function(data) {
 						var instance = this;
 
-						var answers = data[3];
+						var answers = data[2];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
@@ -1701,7 +1646,7 @@ AUI.add(
 					_queueableQuestionUserCalendarOnly: function(data) {
 						var instance = this;
 
-						var answers = data[3];
+						var answers = data[2];
 						var schedulerEvent = data[0];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
