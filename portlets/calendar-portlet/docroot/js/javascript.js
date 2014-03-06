@@ -451,38 +451,6 @@ AUI.add(
 				return A.JSON.stringify(map);
 			},
 
-			getNewStartTimeAndDurationCalendarBooking: function(calendarBookingId, offset, duration, success) {
-				var instance = this;
-
-				var schedulerEvent = null;
-
-				instance.invokeService(
-					{
-						'/calendar-portlet.calendarbooking/get-new-start-time-and-duration-calendar-booking': {
-							calendarBookingId: calendarBookingId,
-							offset: offset,
-							duration: duration
-						}
-					},
-					{
-						success: function(data) {
-							if (data) {
-								if (data.exception) {
-									return;
-								}
-								else {
-									schedulerEvent = instance.createSchedulerEvent(data);
-								}
-							}
-
-							if (success) {
-								success.call(this, schedulerEvent);
-							}
-						}
-					}
-				);
-			},
-
 			hasChildCalendarBookings: function(schedulerEvent, callback) {
 				var instance = this;
 
@@ -684,24 +652,24 @@ AUI.add(
 				return DateMath.subtract(date, DateMath.MINUTES, date.getTimezoneOffset());
 			},
 
-			updateEvent: function(schedulerEvent, success) {
+			updateEvent: function(schedulerEvent, offset, duration, success) {
 				var instance = this;
 
 				instance.invokeService(
 					{
-						'/calendar-portlet.calendarbooking/update-calendar-booking': {
+						'/calendar-portlet.calendarbooking/update-calendar-booking-by-offset-and-duration': {
 							allDay: schedulerEvent.get('allDay'),
 							calendarBookingId: schedulerEvent.get('calendarBookingId'),
 							calendarId: schedulerEvent.get('calendarId'),
 							descriptionMap: instance.getLocalizationMap(schedulerEvent.get('description')),
-							endTime: CalendarUtil.toUTC(schedulerEvent.get('endDate')).getTime(),
+							duration: duration,
 							firstReminder: schedulerEvent.get('firstReminder'),
 							firstReminderType: schedulerEvent.get('firstReminderType'),
 							location: schedulerEvent.get('location'),
+							offset: offset,
 							recurrence: schedulerEvent.get('recurrence'),
 							secondReminder: schedulerEvent.get('secondReminder'),
 							secondReminderType: schedulerEvent.get('secondReminderType'),
-							startTime: CalendarUtil.toUTC(schedulerEvent.get('startDate')).getTime(),
 							status: schedulerEvent.get('status'),
 							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content'))),
 							userId: USER_ID
@@ -1389,30 +1357,35 @@ AUI.add(
 							if (persist) {
 								var schedulerEvent = event.target;
 
-								instance._updateSchedulerEvent(schedulerEvent, changedAttributes);
-							}
-						}
-					},
-
-					_getNewStartTimeAndDurationCalendarBookingPromise: function(schedulerEvent, changedAttributes) {
-						var instance = this;
-
-						return A.Promise(
-							function(resolve) {
-								var calendarbookingId = schedulerEvent.get('calendarBookingId');
-
 								var offset = 0;
-								var duration = schedulerEvent.getSecondsDuration()*Time.SECOND;
+								var duration = schedulerEvent.getSecondsDuration() * 1000;
 
 								if (changedAttributes.startDate) {
-									offset = changedAttributes.startDate.newVal.getTime() - changedAttributes.startDate.prevVal.getTime();
+									var previousTime = changedAttributes.startDate.prevVal;
+									var newTime = changedAttributes.startDate.newVal;
+
+									if (isDate(newTime) && isDate(previousTime)) {
+										offset = newTime.getTime() - previousTime.getTime();
+									}
 								}
 
-								CalendarUtil.getNewStartTimeAndDurationCalendarBooking(calendarbookingId, offset, duration, function(rootSchedulerEvent) {
-									resolve(rootSchedulerEvent);
-								});
+								instance._updateSchedulerEvent(
+									schedulerEvent,
+									changedAttributes,
+									function(schedulerEvent, answers, executeNextStep) {
+										if (answers.cancel) {
+											executeNextStep();
+										}
+										else if (answers.updateInstance) {
+											CalendarUtil.updateEventInstance(schedulerEvent, !!answers.allFollowing, executeNextStep);
+										}
+										else {
+											CalendarUtil.updateEvent(schedulerEvent, offset, duration, executeNextStep);
+										}
+									}
+								);
 							}
-						);
+						}
 					},
 
 					_hasChildCalendarBookingsPromise: function(schedulerEvent) {
@@ -1511,7 +1484,7 @@ AUI.add(
 						);
 					},
 
-					_updateSchedulerEvent: function(schedulerEvent, changedAttributes) {
+					_updateSchedulerEvent: function(schedulerEvent, changedAttributes, savingCallback) {
 						var instance = this;
 
 						var answers = {};
@@ -1519,21 +1492,20 @@ AUI.add(
 
 						A.batch(
 							schedulerEvent,
-							instance._getNewStartTimeAndDurationCalendarBookingPromise(schedulerEvent, changedAttributes),
 							instance._hasChildCalendarBookingsPromise(schedulerEvent),
 							answers
 						)
 						.then(
 							function(data) {
-								instance._promptSchedulerEventUpdate(data);
+								instance._promptSchedulerEventUpdate(data, savingCallback);
 							}
 						);
 					},
 
-					_promptSchedulerEventUpdate: function(data) {
+					_promptSchedulerEventUpdate: function(data, savingCallback) {
 						var instance = this;
 
-						var hasChild = data[2];
+						var hasChild = data[1];
 						var schedulerEvent = data[0];
 
 						instance.queue = new A.AsyncQueue();
@@ -1577,7 +1549,7 @@ AUI.add(
 
 						instance.queue.add(
 							{
-								args: [data],
+								args: [data, savingCallback],
 								autoContinue: false,
 								context: instance,
 								fn: instance._queueableQuestionResolver,
@@ -1597,37 +1569,21 @@ AUI.add(
 						instance.queue.run();
 					},
 
-					_queueableQuestionResolver: function(data) {
+					_queueableQuestionResolver: function(data, savingCallback) {
 						var instance = this;
 
-						var answers = data[3];
-						var rootSchedulerEvent = data[1];
+						var answers = data[2];
 						var schedulerEvent = data[0];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
-						if (answers.cancel) {
-							A.soon(showNextQuestion);
-						}
-						else if (answers.updateInstance) {
-							CalendarUtil.updateEventInstance(schedulerEvent, !!answers.allFollowing, showNextQuestion);
-						}
-						else {
-							schedulerEvent.copyDates(
-								rootSchedulerEvent,
-								{
-									silent: true
-								}
-							);
-
-							CalendarUtil.updateEvent(schedulerEvent, showNextQuestion);
-						}
+						A.soon(A.bind(savingCallback, instance, schedulerEvent, answers, showNextQuestion));
 					},
 
 					_queueableQuestionUpdateAllInvited: function(data) {
 						var instance = this;
 
-						var answers = data[3];
+						var answers = data[2];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
@@ -1654,7 +1610,7 @@ AUI.add(
 					_queueableQuestionUpdateRecurring: function(data) {
 						var instance = this;
 
-						var answers = data[3];
+						var answers = data[2];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
 
@@ -1690,7 +1646,7 @@ AUI.add(
 					_queueableQuestionUserCalendarOnly: function(data) {
 						var instance = this;
 
-						var answers = data[3];
+						var answers = data[2];
 						var schedulerEvent = data[0];
 
 						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
