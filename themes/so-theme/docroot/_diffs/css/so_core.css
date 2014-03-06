@@ -106,10 +106,27 @@ div#navigation {
 		}
 
 		.portrait-icons {
-			bottom: -5px;
-			left: 5px;
+			bottom: 0;
+			left: 0;
+			margin: 4px 0;
 			position: absolute;
 			visibility: hidden;
+			width: 100%;
+
+			.btn-group {
+				margin: 0 3%;
+				width: 94%;
+			}
+
+			.btn {
+				@include border-radius(4px);
+
+				display: block;
+				float: right;
+				padding: 4px;
+				margin-top: 4px;
+				width: 100%;
+			}
 		}
 
 		&:hover .portrait-icons {
@@ -312,7 +329,6 @@ html.aui {
 
 		.navbar-inner .nav-add-controls {
 			background: $controlBgColor;
-			border-right: 1px solid $defaultBorderColor;
 			bottom: 0;
 			margin-left: -64px;
 			top: 0;
@@ -390,15 +406,14 @@ html.aui {
 }
 
 .aui .dockbar-split.show-dockbar {
-	#wrapper, .so-portlet-user-bar {
-		border-left: 63px solid $controlBgColor;
+	border-left: 63px solid $controlBgColor;
 
-		@include transition-duration(0.2s);
-		@include transition-property(border-left);
-	}
+	@include transition-duration(0.2s);
+	@include transition-property(border-left);
 
 	.dockbar .navbar-inner .nav-add-controls {
 		background: $controlBgColor;
+		border-right: 1px solid $defaultBorderColor;
 		bottom: 0;
 		margin-left: 0;
 		top: 0;
@@ -410,12 +425,6 @@ html.aui {
 .aui {
 	form#hrefFm {
 		margin: 0;
-	}
-
-	fieldset {
-		@include default-border;
-
-		padding: 8px;
 	}
 
 	input[type="text"], input[type="password"], input[type="file"], input[type="submit"], input[type="button"], input[type="reset"], select, textarea, .textarea, button {
@@ -847,7 +856,7 @@ html.aui {
 	}
 }
 
-/* ---------- Portlet: Calendar ---------- */
+/* ---------- Portlet: calendar ---------- */
 
 .calendar-portlet {
 	.nav-tabs {
@@ -986,6 +995,17 @@ html.aui {
 	}
 }
 
+.portal-popup.profile-page {
+	.fieldset.w50 {
+		display: inline;
+		width: 49%;
+	}
+
+	.form-section h3 {
+		display: none;
+	}
+}
+
 /* ---------- Portlet: document library ---------- */
 
 .portlet-document-library {
@@ -1034,8 +1054,9 @@ html.aui {
 		border-width: 0;
 		margin-bottom: 10px;
 
-		.accordion-toggle {
+		.accordion-toggle:before {
 			-webkit-font-smoothing: antialiased;
+			content: "\f0da";
 			font-family: 'fontawesome-alloy';
 			font-style: normal;
 			font-variant: normal;
@@ -1043,10 +1064,6 @@ html.aui {
 			line-height: 1;
 			speak: none;
 			text-transform: none;
-
-			&:before {
-				content: "\f0da";
-			}
 		}
 
 		.toggler-header-expanded .accordion-toggle:before {
@@ -1705,11 +1722,6 @@ html.aui {
 }
 
 .ie8, .ie9 {
-	#user-bar .user-menu .avatar img {
-		visibility: visible;
-		width: 24px;
-	}
-
 	#navigation .avatar img {
 		visibility: visible;
 		width: 155px;
@@ -1763,141 +1775,9 @@ html.aui {
 				display: none;
 			}
 
-			.nav-navigation {
-				display: block;
-			}
-		}
-
-		.so-portlet-user-bar {
-			padding-right: 0;
-
-			nav {
-				display: none;
-			}
-		}
-
-		.dockbar-split {
-			&.show-dockbar {
-				#wrapper, .so-portlet-user-bar {
-					border-left-width: 0;
-
-					@include transition-duration(0.2s);
-					@include transition-property(border-left);
-				}
-			}
-
-			.dockbar .navbar-inner .nav-add-controls > li {
-				margin: 0;
-			}
-		}
-
-		.portlet-dockbar .dockbar .navbar-inner {
-			.nav-add-controls > li {
-				margin: 0;
-			}
-
-			.container {
-				z-index: 301;
-
-				.nav-collapse .nav, .nav {
-					float: none;
-					margin-bottom: 0;
-					position: relative;
-
-					> li {
-						border-bottom: 1px solid #DDD;
-						border-top: 1px solid #FFF;
-					}
-
-					a {
-						border-radius: 0;
-						color: #555;
-						font-weight: bold;
-
-						&:hover, &:focus {
-							background: rgba(0,0,0,0.2);
-						}
-					}
-
-					.active a {
-						background: rgba(0,0,0,0.2);
-					}
-
-					.go-to {
-						display: none;
-					}
-
-					.my-sites {
-						display: block;
-					}
-
-					.dockbar-user-notifications {
-						.dropdown-menu {
-							padding: 0;
-							width: 100%;
-
-							> li {
-								text-align: left;
-							}
-						}
-
-						.user-notification-link {
-							.user-notifications-count {
-								background-color: #333;
-								color: #FFF;
-								display: inline;
-							}
-						}
-					}
-				}
-
-				.nav-account-controls .user-avatar-link .nav-item-label {
-					padding-left: 0;
-
-					img {
-						display: none;
-					}
-				}
-			}
-
-			.nav-collapse.open > ul, .nav-collapse .open > .dropdown-menu, .site-administration-menu {
-				&.nav {
-					background-color: #DDD;
-				}
-
-				> li {
-					background: transparent;
-					border-top: 1px solid #CCC;
-
-					a {
-						background: transparent;
-						margin-bottom: 0;
-						text-align: left;
-
-						.nav-item-label {
-							background: transparent;
-							display: inline;
-							font-weight: bold;
-							padding: 0;
-							position: inherit;
-						}
-					}
-				}
-			}
-
-			.nav-collapse .open  > .dropdown-menu {
-				margin: 0;
-
-				li {
-					> a:hover {
-						background: rgba(0, 0, 0, 0.2);
-					}
-
-					li > a {
-						padding: 9px 15px 9px 40px;
-					}
-
-				}
+			.navbar-inner .nav-collapse.open .nav-add-controls {
+				bottom: auto;
+				top: auto;
 			}
 		}
 
@@ -1907,39 +1787,6 @@ html.aui {
 
 		#content, #navigation, #navigation ul {
 			border-width: 0;
-		}
-
-		div#navigation {
-			@include clear-both;
-
-			float: none;
-			margin-left: 0;
-
-			@include subtle-gradient;
-
-			width: 100%;
-
-			li {
-				float: left;
-
-				a {
-					@include background-image(linear, 50% 100%, 50% 0, color-stop(0, #252d31), color-stop(100%, #32363a));
-
-					display: block;
-					padding: 0.75em 1em;
-				}
-			}
-
-			.avatar {
-				float: left;
-				height: 39px;
-				width: 39px;
-
-				img {
-					min-height: 39px;
-					width: 39px;
-				}
-			}
 		}
 
 		#content {
@@ -1957,25 +1804,8 @@ html.aui {
 	}
 
 	@media (max-width: 767px) {
-		body {
-			padding: 0;
-		}
-
 		.row-fluid [class*="span"] {
 			width: 100%;
-		}
-
-		.so-portlet-user-bar {
-			margin: 0;
-		}
-
-		.dockbar.navbar-static-top {
-			margin-left: 0;
-			margin-right: 0;
-		}
-
-		&.touch #_145_navAddControlsNavbarBtn {
-			display: none;
 		}
 
 		#page-search {

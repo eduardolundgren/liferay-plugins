@@ -11,7 +11,8 @@ Javac-Encoding: ${javac.encoding}
 -baseline: *
 -baselinerepo: localrepo
 -donotcopy: (\.touch)
--plugin: \
+-dsannotations: *
+-plugin:\
 	aQute.bnd.deployer.repository.LocalIndexedRepo;\
 		local=${workspace}/.bnd/localrepo;\
 		name=localrepo;\

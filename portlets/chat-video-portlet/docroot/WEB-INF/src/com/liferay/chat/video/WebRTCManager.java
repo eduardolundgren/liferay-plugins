@@ -22,16 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Philippe Proulx
  */
 public class WebRTCManager {
-
-	public WebRTCManager() {
-		_webRTCManagers.add(this);
-	}
 
 	public void answer(
 		long sourceUserId, long destinationUserId, boolean answer) {
@@ -44,7 +39,7 @@ public class WebRTCManager {
 
 		if (!hasAvailableWebRTCClient(destinationUserId)) {
 			pushErrorWebRTCMail(
-				destinationUserId, sourceUserId, "unavailable_user");
+				destinationUserId, sourceUserId, "unavailableUser");
 
 			return;
 		}
@@ -58,7 +53,7 @@ public class WebRTCManager {
 				WebRTCConnection.State.INITIATED)) {
 
 			pushErrorWebRTCMail(
-				destinationUserId, sourceUserId, "invalid_state");
+				destinationUserId, sourceUserId, "invalidState");
 
 			return;
 		}
@@ -71,7 +66,7 @@ public class WebRTCManager {
 
 		if (webRTCConnectionSourceWebRTCClient == sourceWebRTCClient) {
 			pushErrorWebRTCMail(
-				destinationUserId, sourceUserId, "cannot_answer");
+				destinationUserId, sourceUserId, "cannotAnswer");
 
 			return;
 		}
@@ -86,8 +81,8 @@ public class WebRTCManager {
 
 		JSONObject messageJSONObject = JSONFactoryUtil.createJSONObject();
 
-		messageJSONObject.put("type", "answer");
 		messageJSONObject.put("answer", answer);
+		messageJSONObject.put("type", "answer");
 
 		pushConnectionStateWebRTCMail(
 			sourceWebRTCClient, destinationWebRTCClient, messageJSONObject);
@@ -102,7 +97,7 @@ public class WebRTCManager {
 
 		if (!hasAvailableWebRTCClient(destinationUserId)) {
 			pushErrorWebRTCMail(
-				destinationUserId, sourceUserId, "unavailable_user");
+				destinationUserId, sourceUserId, "unavailableUser");
 
 			return;
 		}
@@ -115,7 +110,7 @@ public class WebRTCManager {
 			destinationWebRTCClient.hasWebRTCConnection(sourceWebRTCClient)) {
 
 			pushErrorWebRTCMail(
-				destinationUserId, sourceUserId, "existing_connection");
+				destinationUserId, sourceUserId, "existingConnection");
 
 			return;
 		}
@@ -137,6 +132,56 @@ public class WebRTCManager {
 
 		pushConnectionStateWebRTCMail(
 			sourceWebRTCClient, destinationWebRTCClient, messageJSONObject);
+	}
+
+	public void checkWebRTCClients() {
+		long time = System.currentTimeMillis();
+
+		for (long userId : _webRTCClients.keySet()) {
+			WebRTCClient webRTCClient = getWebRTCClient(userId);
+
+			long presenceDurationTime = time - webRTCClient.getPresenceTime();
+
+			if (presenceDurationTime > _PRESENCE_TIMEOUT_DURATION_TIME) {
+				resetWebRTCClient(userId);
+
+				removeWebRTCClient(userId);
+			}
+		}
+	}
+
+	public void checkWebRTCConnectionsStates() {
+		for (WebRTCClient webRTCClient : _webRTCClients.values()) {
+			for (WebRTCClient otherWebRTCClient :
+					webRTCClient.getWebRTCClients()) {
+
+				WebRTCConnection webRTCConnection =
+					webRTCClient.getWebRTCConnection(otherWebRTCClient);
+
+				if (webRTCConnection.getState() !=
+						WebRTCConnection.State.INITIATED) {
+
+					continue;
+				}
+
+				long initiatedDurationTime =
+					webRTCConnection.getInitiatedDurationTime();
+
+				if (initiatedDurationTime <=
+						_CONNECTION_TIMEOUT_DURATION_TIME) {
+
+					continue;
+				}
+
+				webRTCClient.removeBilateralWebRTCConnection(otherWebRTCClient);
+
+				pushLostConnectionStateWebRTCMail(
+					webRTCClient, otherWebRTCClient, "timeout");
+
+				pushLostConnectionStateWebRTCMail(
+					otherWebRTCClient, webRTCClient, "timeout");
+			}
+		}
 	}
 
 	public List<Long> getAvailableWebRTCClientIds() {
@@ -174,10 +219,10 @@ public class WebRTCManager {
 				destinationWebRTCClient);
 
 			pushLostConnectionStateWebRTCMail(
-				sourceWebRTCClient, destinationWebRTCClient, "hang_up");
+				sourceWebRTCClient, destinationWebRTCClient, "hangUp");
 
 			pushLostConnectionStateWebRTCMail(
-				destinationWebRTCClient, sourceWebRTCClient, "hang_up");
+				destinationWebRTCClient, sourceWebRTCClient, "hangUp");
 		}
 	}
 
@@ -191,6 +236,32 @@ public class WebRTCManager {
 		return webRTCClient.isAvailable();
 	}
 
+	public void pushDescriptionWebRTCSDPMail(
+		long sourceUserId, long destinationUserId, String description) {
+
+		JSONObject messageJSONObject = JSONFactoryUtil.createJSONObject();
+
+		messageJSONObject.put("description", description);
+
+		WebRTCMail webRTCMail = new DescriptionWebRTCSDPMail(
+			sourceUserId, messageJSONObject);
+
+		pushWebRTCMail(sourceUserId, destinationUserId, webRTCMail);
+	}
+
+	public void pushICECandidateWebRTCMail(
+		long sourceUserId, long destinationUserId, String ice) {
+
+		JSONObject messageJSONObject = JSONFactoryUtil.createJSONObject();
+
+		messageJSONObject.put("ice", ice);
+
+		WebRTCMail webRTCMail = new ICECandidateWebRTCMail(
+			sourceUserId, messageJSONObject);
+
+		pushWebRTCMail(sourceUserId, destinationUserId, webRTCMail);
+	}
+
 	public void removeWebRTCClient(long userId) {
 		WebRTCClient webRTCClient = getWebRTCClient(userId);
 
@@ -201,6 +272,32 @@ public class WebRTCManager {
 		webRTCClient.removeBilateralWebRTCConnections();
 
 		_webRTCClients.remove(userId);
+	}
+
+	public void resetWebRTCClient(long userId) {
+		WebRTCClient webRTCClient = getWebRTCClient(userId);
+
+		if (webRTCClient == null) {
+			return;
+		}
+
+		Set<WebRTCClient> webRTCClients = webRTCClient.getWebRTCClients();
+
+		for (WebRTCClient otherWebRTCClient : webRTCClients) {
+			WebRTCConnection webRTCConnection =
+				webRTCClient.getWebRTCConnection(webRTCClient);
+
+			WebRTCConnection.State state = webRTCConnection.getState();
+
+			if (state != WebRTCConnection.State.DISCONNECTED) {
+				pushLostConnectionStateWebRTCMail(
+					webRTCClient, otherWebRTCClient, "reset");
+			}
+		}
+
+		webRTCClient.reset();
+
+		webRTCClient.updatePresenceTime();
 	}
 
 	public void updateWebRTCClientAvailability(long userId, boolean available) {
@@ -226,56 +323,6 @@ public class WebRTCManager {
 	protected void addWebRTCClient(long userId) {
 		if (!_webRTCClients.containsKey(userId)) {
 			_webRTCClients.put(userId, new WebRTCClient(userId));
-		}
-	}
-
-	protected void checkWebRTCClients() {
-		long time = System.currentTimeMillis();
-
-		for (long userId : _webRTCClients.keySet()) {
-			WebRTCClient webRTCClient = getWebRTCClient(userId);
-
-			long presenceDurationTime = time - webRTCClient.getPresenceTime();
-
-			if (presenceDurationTime > _PRESENCE_TIMEOUT_DURATION_TIME) {
-				resetWebRTCClient(userId);
-
-				removeWebRTCClient(userId);
-			}
-		}
-	}
-
-	protected void checkWebRTCConnectionsStates() {
-		for (WebRTCClient webRTCClient : _webRTCClients.values()) {
-			for (WebRTCClient otherWebRTCClient :
-					webRTCClient.getWebRTCClients()) {
-
-				WebRTCConnection webRTCConnection =
-					webRTCClient.getWebRTCConnection(otherWebRTCClient);
-
-				if (webRTCConnection.getState() !=
-						WebRTCConnection.State.INITIATED) {
-
-					continue;
-				}
-
-				long initiatedDurationTime =
-					webRTCConnection.getInitiatedDurationTime();
-
-				if (initiatedDurationTime <=
-						_CONNECTION_TIMEOUT_DURATION_TIME) {
-
-					continue;
-				}
-
-				webRTCClient.removeBilateralWebRTCConnection(otherWebRTCClient);
-
-				pushLostConnectionStateWebRTCMail(
-					webRTCClient, otherWebRTCClient, "timeout");
-
-				pushLostConnectionStateWebRTCMail(
-					otherWebRTCClient, webRTCClient, "timeout");
-			}
 		}
 	}
 
@@ -324,19 +371,6 @@ public class WebRTCManager {
 		destinationWebRTCMailbox.pushWebRTCMail(connectionStateWebRTCMail);
 	}
 
-	protected void pushDescriptionWebRTCSDPMail(
-		long sourceUserId, long destinationUserId, String description) {
-
-		JSONObject messageJSONObject = JSONFactoryUtil.createJSONObject();
-
-		messageJSONObject.put("description", description);
-
-		WebRTCMail webRTCMail = new DescriptionWebRTCSDPMail(
-			sourceUserId, messageJSONObject);
-
-		pushWebRTCMail(sourceUserId, destinationUserId, webRTCMail);
-	}
-
 	protected void pushErrorWebRTCMail(
 		long sourceUserId, long destinationUserId, String errorId) {
 
@@ -354,19 +388,6 @@ public class WebRTCManager {
 			sourceUserId, messageJSONObject);
 
 		destinationOutgoingWebRTCMailbox.pushWebRTCMail(errorWebRTCMail);
-	}
-
-	protected void pushICECandidateWebRTCMail(
-		long sourceUserId, long destinationUserId, String ice) {
-
-		JSONObject messageJSONObject = JSONFactoryUtil.createJSONObject();
-
-		messageJSONObject.put("ice", ice);
-
-		WebRTCMail webRTCMail = new ICECandidateWebRTCMail(
-			sourceUserId, messageJSONObject);
-
-		pushWebRTCMail(sourceUserId, destinationUserId, webRTCMail);
 	}
 
 	protected void pushLostConnectionStateWebRTCMail(
@@ -399,7 +420,7 @@ public class WebRTCManager {
 				WebRTCConnection.State.CONNECTED)) {
 
 			pushErrorWebRTCMail(
-				destinationUserId, sourceUserId, "invalid_state");
+				destinationUserId, sourceUserId, "invalidState");
 
 			return;
 		}
@@ -410,38 +431,9 @@ public class WebRTCManager {
 		destinationOutgoingWebRTCMailbox.pushWebRTCMail(webRTCMail);
 	}
 
-	protected void resetWebRTCClient(long userId) {
-		WebRTCClient webRTCClient = getWebRTCClient(userId);
-
-		if (webRTCClient == null) {
-			return;
-		}
-
-		Set<WebRTCClient> webRTCClients = webRTCClient.getWebRTCClients();
-
-		for (WebRTCClient otherWebRTCClient : webRTCClients) {
-			WebRTCConnection webRTCConnection =
-				webRTCClient.getWebRTCConnection(webRTCClient);
-
-			WebRTCConnection.State state = webRTCConnection.getState();
-
-			if (state != WebRTCConnection.State.DISCONNECTED) {
-				pushLostConnectionStateWebRTCMail(
-					webRTCClient, otherWebRTCClient, "reset");
-			}
-		}
-
-		webRTCClient.reset();
-
-		webRTCClient.updatePresenceTime();
-	}
-
 	private static long _CONNECTION_TIMEOUT_DURATION_TIME = 60000;
 
 	private static long _PRESENCE_TIMEOUT_DURATION_TIME = 30000;
-
-	private static List<WebRTCManager> _webRTCManagers =
-		new CopyOnWriteArrayList<WebRTCManager>();
 
 	private Map<Long, WebRTCClient> _webRTCClients =
 		new ConcurrentHashMap<Long, WebRTCClient>();
