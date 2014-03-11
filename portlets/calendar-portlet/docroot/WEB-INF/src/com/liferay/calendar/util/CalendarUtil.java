@@ -233,17 +233,24 @@ public class CalendarUtil {
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
+		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
+			calendarBooking.getStartTime(), timeZone);
+		java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(
+			calendarBooking.getEndTime(), timeZone);
+
 		jsonObject.put(
 			"calendarBookingId", calendarBooking.getCalendarBookingId());
 		jsonObject.put(
 			"parentCalendarBookingId",
 			calendarBooking.getParentCalendarBookingId());
 		jsonObject.put("calendarId", calendarBooking.getCalendarId());
-		jsonObject.put("title", calendarBooking.getTitleCurrentValue());
 		jsonObject.put(
-			"description", calendarBooking.getDescriptionCurrentValue());
-		jsonObject.put("location", calendarBooking.getLocation());
+			"title", calendarBooking.getTitle(themeDisplay.getLocale()));
+		jsonObject.put(
+			"description",
+			calendarBooking.getDescription(themeDisplay.getLocale()));
 		jsonObject.put("allDay", calendarBooking.isAllDay());
+		jsonObject.put("location", calendarBooking.getLocation());
 		jsonObject.put("startTime", calendarBooking.getStartTime());
 		jsonObject.put("endTime", calendarBooking.getEndTime());
 		jsonObject.put("recurrence", calendarBooking.getRecurrence());
@@ -254,10 +261,6 @@ public class CalendarUtil {
 		jsonObject.put("secondReminder", calendarBooking.getSecondReminder());
 		jsonObject.put(
 			"secondReminderType", calendarBooking.getSecondReminder());
-
-		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
-			calendarBooking.getStartTime(), timeZone);
-
 		jsonObject.put(
 			"startTimeYear", startTimeJCalendar.get(java.util.Calendar.YEAR));
 		jsonObject.put(
@@ -271,10 +274,6 @@ public class CalendarUtil {
 		jsonObject.put(
 			"startTimeMinute",
 			startTimeJCalendar.get(java.util.Calendar.MINUTE));
-
-		java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(
-			calendarBooking.getEndTime(), timeZone);
-
 		jsonObject.put(
 			"endTimeYear", endTimeJCalendar.get(java.util.Calendar.YEAR));
 		jsonObject.put(
