@@ -16,8 +16,6 @@ package com.liferay.portal.settings;
 
 import java.io.IOException;
 
-import java.util.Map;
-
 import javax.portlet.ValidatorException;
 
 /**
@@ -25,13 +23,11 @@ import javax.portlet.ValidatorException;
  */
 public class BaseServiceSettings implements Settings {
 
-	public BaseServiceSettings(
-		Settings settings, Map<String, String> fallbackKeys) {
+	public BaseServiceSettings(Settings settings, FallbackKeys fallbackPaths) {
+		FallbackSettings fallbackPathSettings = new FallbackSettings(
+			settings, fallbackPaths);
 
-		FallbackKeySettings fallbackKeySettings = new FallbackKeySettings(
-			settings, fallbackKeys);
-
-		typedSettings = new TypedSettings(fallbackKeySettings);
+		typedSettings = new TypedSettings(fallbackPathSettings);
 	}
 
 	@Override
@@ -42,6 +38,11 @@ public class BaseServiceSettings implements Settings {
 	@Override
 	public String[] getValues(String key, String[] defaultValue) {
 		return typedSettings.getValues(key, defaultValue);
+	}
+
+	@Override
+	public void reset(String key) {
+		typedSettings.reset(key);
 	}
 
 	@Override

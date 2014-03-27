@@ -16,6 +16,8 @@ package com.liferay.sync.engine.session;
 
 import com.btr.proxy.search.ProxySearch;
 
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+
 import java.net.ProxySelector;
 import java.net.URL;
 
@@ -27,15 +29,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
-
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -57,6 +56,8 @@ import org.apache.http.protocol.BasicHttpContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.http.MediaType;
 
 /**
  * @author Shinn Lok
@@ -115,14 +116,13 @@ public class Session {
 		return _httpClient.execute(_httpHost, httpGet, _getBasicHttpContext());
 	}
 
-	public <T> T executeGet(
-			String urlPath, ResponseHandler<? extends T> responseHandler)
+	public <T> T executeGet(String urlPath, Handler<? extends T> handler)
 		throws Exception {
 
 		HttpGet httpGet = new HttpGet(urlPath);
 
 		return _httpClient.execute(
-			_httpHost, httpGet, responseHandler, _getBasicHttpContext());
+			_httpHost, httpGet, handler, _getBasicHttpContext());
 	}
 
 	public HttpResponse executePost(
@@ -138,7 +138,7 @@ public class Session {
 
 	public <T> T executePost(
 			String urlPath, Map<String, Object> parameters,
-			ResponseHandler<? extends T> responseHandler)
+			Handler<? extends T> handler)
 		throws Exception {
 
 		HttpPost httpPost = new HttpPost(_url.toString() + urlPath);
@@ -146,19 +146,27 @@ public class Session {
 		_buildHttpPostBody(httpPost, parameters);
 
 		return _httpClient.execute(
-			_httpHost, httpPost, responseHandler, _getBasicHttpContext());
+			_httpHost, httpPost, handler, _getBasicHttpContext());
 	}
 
 	private void _buildHttpPostBody(
 			HttpPost httpPost, Map<String, Object> parameters)
 		throws Exception {
 
+		Path deltaFilePath = (Path)parameters.get("deltaFilePath");
 		Path filePath = (Path)parameters.get("filePath");
 
 		MultipartEntityBuilder multipartEntityBuilder =
 			_getMultipartEntityBuilder(parameters);
 
-		if (filePath != null) {
+		if (deltaFilePath != null) {
+			multipartEntityBuilder.addPart(
+				"deltaFile",
+				_getFileBody(
+					deltaFilePath, (String)parameters.get("mimeType"),
+					(String)parameters.get("title")));
+		}
+		else if (filePath != null) {
 			multipartEntityBuilder.addPart(
 				"file",
 				_getFileBody(
@@ -235,7 +243,8 @@ public class Session {
 	private StringBody _getStringBody(Object value) {
 		return new StringBody(
 			String.valueOf(value),
-			ContentType.create(MediaType.TEXT_PLAIN, Charset.defaultCharset()));
+			ContentType.create(
+				MediaType.TEXT_PLAIN_VALUE, Charset.defaultCharset()));
 	}
 
 	private static Logger _logger = LoggerFactory.getLogger(Session.class);

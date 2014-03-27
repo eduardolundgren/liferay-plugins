@@ -15,6 +15,7 @@
 package com.liferay.sync.model.impl;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -22,9 +23,10 @@ import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
@@ -108,7 +110,8 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	public static long COMPANYID_COLUMN_BITMASK = 1L;
 	public static long MODIFIEDTIME_COLUMN_BITMASK = 2L;
 	public static long REPOSITORYID_COLUMN_BITMASK = 4L;
-	public static long TYPEPK_COLUMN_BITMASK = 8L;
+	public static long TYPE_COLUMN_BITMASK = 8L;
+	public static long TYPEPK_COLUMN_BITMASK = 16L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -654,12 +657,18 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public String getLockUserUuid() throws SystemException {
-		return PortalUtil.getUserValue(getLockUserId(), "uuid", _lockUserUuid);
+		try {
+			User user = UserLocalServiceUtil.getUserById(getLockUserId());
+
+			return user.getUuid();
+		}
+		catch (PortalException pe) {
+			return StringPool.BLANK;
+		}
 	}
 
 	@Override
 	public void setLockUserUuid(String lockUserUuid) {
-		_lockUserUuid = lockUserUuid;
 	}
 
 	@JSON
@@ -691,7 +700,17 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public void setType(String type) {
+		_columnBitmask |= TYPE_COLUMN_BITMASK;
+
+		if (_originalType == null) {
+			_originalType = _type;
+		}
+
 		_type = type;
+	}
+
+	public String getOriginalType() {
+		return GetterUtil.getString(_originalType);
 	}
 
 	@JSON
@@ -893,6 +912,8 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 		syncDLObjectModelImpl._originalRepositoryId = syncDLObjectModelImpl._repositoryId;
 
 		syncDLObjectModelImpl._setOriginalRepositoryId = false;
+
+		syncDLObjectModelImpl._originalType = syncDLObjectModelImpl._type;
 
 		syncDLObjectModelImpl._originalTypePK = syncDLObjectModelImpl._typePK;
 
@@ -1214,9 +1235,9 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	private String _event;
 	private Date _lockExpirationDate;
 	private long _lockUserId;
-	private String _lockUserUuid;
 	private String _lockUserName;
 	private String _type;
+	private String _originalType;
 	private long _typePK;
 	private long _originalTypePK;
 	private boolean _setOriginalTypePK;

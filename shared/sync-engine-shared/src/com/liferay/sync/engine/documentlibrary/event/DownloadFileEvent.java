@@ -14,21 +14,14 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
-import com.liferay.sync.engine.documentlibrary.handler.BaseHandler;
+import com.liferay.sync.engine.documentlibrary.handler.DownloadFileHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
 import com.liferay.sync.engine.model.SyncAccount;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncAccountService;
 import com.liferay.sync.engine.service.SyncFileService;
-import com.liferay.sync.engine.util.FileUtil;
-import com.liferay.sync.engine.util.StreamUtil;
-
-import java.io.OutputStream;
 
 import java.net.URL;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import java.util.Map;
 
@@ -44,7 +37,12 @@ public class DownloadFileEvent extends BaseEvent {
 	}
 
 	@Override
-	protected String processRequest() throws Exception {
+	protected Handler<?> getHandler() {
+		return new DownloadFileHandler(this);
+	}
+
+	@Override
+	protected void processRequest() throws Exception {
 		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
 
 		syncFile.setState(SyncFile.STATE_IN_PROGRESS);
@@ -52,41 +50,22 @@ public class DownloadFileEvent extends BaseEvent {
 
 		SyncFileService.update(syncFile);
 
-		StringBuilder sb = new StringBuilder(7);
+		StringBuilder sb = new StringBuilder(9);
 
 		sb.append(replaceURLPath(getSyncAccountId()));
 		sb.append("/");
 		sb.append(syncFile.getRepositoryId());
 		sb.append("/");
 		sb.append(syncFile.getTypeUuid());
-		sb.append("/");
-		sb.append(getParameterValue("patch"));
 
-		return executeGet(sb.toString(), new BaseHandler());
-	}
-
-	@Override
-	protected void processResponse(String response) throws Exception {
-		OutputStream outputStream = null;
-
-		try {
-			SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
-
-			Path filePath = Paths.get(syncFile.getFilePathName());
-
-			outputStream = Files.newOutputStream(filePath);
-
-			outputStream.write(response.getBytes());
-
-			syncFile.setFileKey(FileUtil.getFileKey(filePath));
-			syncFile.setState(SyncFile.STATE_SYNCED);
-			syncFile.setUiEvent(SyncFile.UI_EVENT_DOWNLOADED);
-
-			SyncFileService.update(syncFile);
+		if ((Boolean)getParameterValue("patch")) {
+			sb.append("?patch=true&sourceVersion=");
+			sb.append(getParameterValue("sourceVersion"));
+			sb.append("&targetVersion=");
+			sb.append(getParameterValue("targetVersion"));
 		}
-		finally {
-			StreamUtil.cleanUp(outputStream);
-		}
+
+		executeGet(sb.toString());
 	}
 
 	protected String replaceURLPath(long syncAccountId) throws Exception {

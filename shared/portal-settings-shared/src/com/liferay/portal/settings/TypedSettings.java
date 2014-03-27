@@ -15,7 +15,7 @@
 package com.liferay.portal.settings;
 
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.util.ContentUtil;
+import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.IOException;
 
@@ -30,28 +30,58 @@ public class TypedSettings implements Settings {
 		_settings = settings;
 	}
 
-	public boolean getBooleanValue(String key, boolean defaultValue) {
-		String value = getValue(key, String.valueOf(defaultValue));
-
-		return GetterUtil.getBoolean(value);
+	public boolean getBooleanValue(String key) {
+		return getBooleanValue(key, false);
 	}
 
-	public String getContentValue(String key, String defaultLocation) {
-		String value = getValue(key, defaultLocation);
+	public boolean getBooleanValue(String key, boolean defaultValue) {
+		String value = getValue(key, null);
 
-		return ContentUtil.get(value);
+		return GetterUtil.getBoolean(value, defaultValue);
+	}
+
+	public double getDoubleValue(String key) {
+		return getDoubleValue(key, 0);
+	}
+
+	public double getDoubleValue(String key, double defaultValue) {
+		String value = getValue(key, null);
+
+		return GetterUtil.getDouble(value, defaultValue);
+	}
+
+	public float getFloatValue(String key) {
+		return getFloatValue(key, 0);
+	}
+
+	public float getFloatValue(String key, float defaultValue) {
+		String value = getValue(key, null);
+
+		return GetterUtil.getFloat(value, defaultValue);
+	}
+
+	public int getIntegerValue(String key) {
+		return getIntegerValue(key, 0);
 	}
 
 	public int getIntegerValue(String key, int defaultValue) {
-		String value = getValue(key, String.valueOf(defaultValue));
+		String value = getValue(key, null);
 
-		return GetterUtil.getInteger(value);
+		return GetterUtil.getInteger(value, defaultValue);
+	}
+
+	public long getLongValue(String key) {
+		return getLongValue(key, 0);
 	}
 
 	public long getLongValue(String key, long defaultValue) {
-		String value = getValue(key, String.valueOf(defaultValue));
+		String value = getValue(key, null);
 
-		return GetterUtil.getLong(value);
+		return GetterUtil.getLong(value, defaultValue);
+	}
+
+	public String getValue(String key) {
+		return getValue(key, StringPool.BLANK);
 	}
 
 	@Override
@@ -59,9 +89,18 @@ public class TypedSettings implements Settings {
 		return _settings.getValue(key, defaultValue);
 	}
 
+	public String[] getValues(String key) {
+		return getValues(key, StringPool.EMPTY_ARRAY);
+	}
+
 	@Override
 	public String[] getValues(String key, String[] defaultValue) {
 		return _settings.getValues(key, defaultValue);
+	}
+
+	@Override
+	public void reset(String key) {
+		_settings.reset(key);
 	}
 
 	public Settings setBooleanValue(String key, boolean value) {
