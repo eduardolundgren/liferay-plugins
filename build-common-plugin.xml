@@ -4,6 +4,8 @@
 <project name="build-common-plugin" xmlns:antelope="antlib:ise.antelope.tasks">
 	<import file="build-common.xml" />
 
+	<property name="plugins.includes.path" value="${basedir}" />
+
 	<set-module-properties
 		module.dir="."
 	/>
@@ -203,22 +205,27 @@
 			<jvmarg value="-XX:MaxPermSize=512m" />
 			<arg value="-Dexternal-properties=com/liferay/portal/tools/dependencies/portal-tools.properties" />
 			<arg value="-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Log4JLogger" />
-			<arg value="service.input.file=${service.input.file}" />
-			<arg value="service.hbm.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-hbm.xml" />
-			<arg value="service.model.hints.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-model-hints.xml" />
-			<arg value="service.spring.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-spring.xml" />
 			<arg value="service.api.dir=${basedir}/docroot/WEB-INF/service" />
+			<arg value="service.auto.namespace.tables=true" />
+			<arg value="service.bean.locator.util=com.liferay.util.bean.PortletBeanLocatorUtil" />
+			<arg value="service.build.number=1" />
+			<arg value="service.build.number.increment=true" />
+			<arg value="service.hbm.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-hbm.xml" />
 			<arg value="service.impl.dir=${basedir}/docroot/WEB-INF/src" />
-			<arg value="service.json.file=${basedir}/docroot/js/service.js" />
+			<arg value="service.input.file=${service.input.file}" />
+			<arg value="service.model.hints.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-model-hints.xml" />
+			<arg value="service.osgi.module=false" />
+			<arg value="service.plugin.name=${plugin.name}" />
+			<arg value="service.props.util=com.liferay.util.service.ServiceProps" />
+			<arg value="service.remoting.file=" />
+			<arg value="service.resources.dir=${basedir}/docroot/WEB-INF/src" />
+			<arg value="service.spring.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-spring.xml" />
 			<arg value="service.sql.dir=${basedir}/docroot/WEB-INF/sql" />
 			<arg value="service.sql.file=tables.sql" />
 			<arg value="service.sql.indexes.file=indexes.sql" />
 			<arg value="service.sql.sequences.file=sequences.sql" />
-			<arg value="service.auto.namespace.tables=true" />
-			<arg value="service.bean.locator.util=com.liferay.util.bean.PortletBeanLocatorUtil" />
-			<arg value="service.props.util=com.liferay.util.service.ServiceProps" />
-			<arg value="service.plugin.name=${plugin.name}" />
 			<arg value="service.target.entity.name=${service.target.entity.name}" />
+			<arg value="service.test.dir=" />
 		</java>
 
 		<if>
@@ -407,18 +414,6 @@
 		<delete dir="${tstamp.value}" />
 	</target>
 
-	<target name="clean">
-		<clean
-			module.dir="."
-		/>
-	</target>
-
-	<target name="compile">
-		<compile
-			module.dir="."
-		/>
-	</target>
-
 	<target name="compile-import-shared">
 		<compile-import-shared
 			module.dir="."
@@ -439,18 +434,6 @@
 
 	<target name="compile-test-unit">
 		<compile-test-unit
-			module.dir="."
-		/>
-	</target>
-
-	<target name="deploy">
-		<deploy
-			module.dir="."
-		/>
-	</target>
-
-	<target name="direct-deploy">
-		<direct-deploy
 			module.dir="."
 		/>
 	</target>
@@ -619,34 +602,10 @@
 		<delete dir="${tstamp.value}" />
 	</target>
 
-	<target name="test">
-		<test
-			module.dir="."
-		/>
-	</target>
-
 	<target name="test-class">
 		<test-class
 			module.dir="."
 			test.class="${test.class}"
-		/>
-	</target>
-
-	<target name="test-integration">
-		<test-integration
-			module.dir="."
-		/>
-	</target>
-
-	<target name="test-unit">
-		<test-unit
-			module.dir="."
-		/>
-	</target>
-
-	<target name="war">
-		<war-macro
-			module.dir="."
 		/>
 	</target>
 </project>

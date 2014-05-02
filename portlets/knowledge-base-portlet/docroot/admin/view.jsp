@@ -59,6 +59,7 @@ long parentResourcePrimKey = ParamUtil.getLong(request, "parentResourcePrimKey",
 
 			<liferay-ui:search-container-row
 				className="com.liferay.knowledgebase.model.KBArticle"
+				escapedModel="<%= true %>"
 				keyProperty="resourcePrimKey"
 				modelVar="kbArticle"
 			>
@@ -143,12 +144,7 @@ long parentResourcePrimKey = ParamUtil.getLong(request, "parentResourcePrimKey",
 			<c:if test="<%= (AdminPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_KB_ARTICLE) || (AdminPermission.contains(permissionChecker, scopeGroupId, ActionKeys.PERMISSIONS) && GroupPermissionUtil.contains(permissionChecker, scopeGroupId, ActionKeys.PERMISSIONS)) || AdminPermission.contains(permissionChecker, scopeGroupId, ActionKeys.SUBSCRIBE)) %>">
 				<aui:button-row cssClass="float-container">
 					<c:if test="<%= AdminPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_KB_ARTICLE) %>">
-						<liferay-portlet:renderURL var="addKBArticleURL">
-							<portlet:param name="mvcPath" value='<%= templatePath + "edit_article.jsp" %>' />
-							<portlet:param name="redirect" value="<%= redirect %>" />
-						</liferay-portlet:renderURL>
-
-						<aui:button href="<%= addKBArticleURL %>" value="add-article" />
+						<liferay-util:include page="/admin/common/add_article_button.jsp" servletContext="<%= application %>" />
 					</c:if>
 
 					<c:if test="<%= AdminPermission.contains(permissionChecker, scopeGroupId, ActionKeys.PERMISSIONS) && GroupPermissionUtil.contains(permissionChecker, scopeGroupId, ActionKeys.PERMISSIONS) %>">

@@ -17,6 +17,7 @@ package com.liferay.sync.engine.filesystem;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.model.SyncWatchEvent;
 import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.util.FilePathNameUtil;
 
 import java.io.IOException;
 
@@ -63,7 +64,7 @@ public class Watcher implements Runnable {
 		register(filePath, recursive);
 	}
 
-	public void close() throws IOException {
+	public void close() {
 		try {
 			_watchService.close();
 		}
@@ -145,22 +146,8 @@ public class Watcher implements Runnable {
 		}
 	}
 
-	protected void fireWatchEventListener(
-		Path filePath, WatchEvent<Path> watchEvent) {
-
-		WatchEvent.Kind<?> kind = watchEvent.kind();
-
-		fireWatchEventListener(kind.name(), filePath);
-	}
-
-	protected void fireWatchEventListener(String eventType, Path filePath) {
-		_watchEventListener.watchEvent(eventType, filePath);
-	}
-
-	protected void register(Path filePath, boolean recursive)
+	protected void doRegister(Path filePath, boolean recursive)
 		throws IOException {
-
-		long startTime = System.currentTimeMillis();
 
 		if (recursive) {
 			Files.walkFileTree(
@@ -173,7 +160,7 @@ public class Watcher implements Runnable {
 							BasicFileAttributes basicFileAttributes)
 						throws IOException {
 
-						register(filePath, false);
+						doRegister(filePath, false);
 
 						return FileVisitResult.CONTINUE;
 					}
@@ -211,9 +198,41 @@ public class Watcher implements Runnable {
 				_logger.trace("Registered file path {}", filePath);
 			}
 		}
+	}
+
+	protected void fireWatchEventListener(
+		Path filePath, WatchEvent<Path> watchEvent) {
+
+		WatchEvent.Kind<?> kind = watchEvent.kind();
+
+		fireWatchEventListener(kind.name(), filePath);
+	}
+
+	protected void fireWatchEventListener(String eventType, Path filePath) {
+		SyncFile syncFile = SyncFileService.fetchSyncFile(
+			FilePathNameUtil.getFilePathName(filePath),
+			_watchEventListener.getSyncAccountId());
+
+		if (syncFile != null) {
+			syncFile.setLocalSyncTime(System.currentTimeMillis());
+
+			SyncFileService.update(syncFile);
+		}
+
+		_watchEventListener.watchEvent(eventType, filePath);
+	}
+
+	protected void register(Path filePath, boolean recursive)
+		throws IOException {
+
+		long startTime = System.currentTimeMillis();
+
+		doRegister(filePath, recursive);
+
+		String filePathName = FilePathNameUtil.getFilePathName(filePath);
 
 		List<SyncFile> syncFiles = SyncFileService.findSyncFiles(
-			startTime, _watchEventListener.getSyncAccountId());
+			filePathName, startTime, _watchEventListener.getSyncAccountId());
 
 		for (SyncFile syncFile : syncFiles) {
 			fireWatchEventListener(

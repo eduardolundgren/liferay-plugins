@@ -102,8 +102,16 @@ public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 			sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_DELETED_REMOTE);
 		}
 
+		SyncFileService.deleteSyncFile(sourceSyncFile);
+
+		Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
+
+		if (Files.notExists(sourceFilePath)) {
+			return;
+		}
+
 		Files.walkFileTree(
-			Paths.get(sourceSyncFile.getFilePathName()),
+			sourceFilePath,
 			new SimpleFileVisitor<Path>() {
 
 				@Override
@@ -111,7 +119,7 @@ public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 						Path filePath, IOException ioe)
 					throws IOException {
 
-					Files.delete(filePath);
+					Files.deleteIfExists(filePath);
 
 					return FileVisitResult.CONTINUE;
 				}
@@ -121,14 +129,12 @@ public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 						Path filePath, BasicFileAttributes basicFileAttributes)
 					throws IOException {
 
-					Files.delete(filePath);
+					Files.deleteIfExists(filePath);
 
 					return FileVisitResult.CONTINUE;
 				}
 
 			});
-
-		SyncFileService.deleteSyncFile(sourceSyncFile);
 	}
 
 	protected void downloadFile(
@@ -166,6 +172,10 @@ public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 
 		Path targetFilePath = Paths.get(targetFilePathName);
 
+		if (Files.notExists(sourceFilePath)) {
+			return;
+		}
+
 		Files.move(sourceFilePath, targetFilePath);
 
 		sourceSyncFile.setFilePathName(targetFilePathName);
@@ -188,12 +198,12 @@ public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 				syncFile.getRepositoryId(), getSyncAccountId(),
 				syncFile.getParentFolderId());
 
-			String filePathName = null;
-
-			if (parentSyncFile != null) {
-				filePathName = FilePathNameUtil.getFilePathName(
-					parentSyncFile.getFilePathName(), syncFile.getName());
+			if (parentSyncFile == null) {
+				continue;
 			}
+
+			String filePathName = FilePathNameUtil.getFilePathName(
+				parentSyncFile.getFilePathName(), syncFile.getName());
 
 			String event = syncFile.getEvent();
 
@@ -241,6 +251,10 @@ public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 		String sourceVersion = sourceSyncFile.getVersion();
 
 		Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
+
+		if (Files.notExists(sourceFilePath)) {
+			return;
+		}
 
 		String sourceFileName = String.valueOf(sourceFilePath.getFileName());
 

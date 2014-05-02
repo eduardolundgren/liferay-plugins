@@ -52,6 +52,8 @@ public class SyncFile extends StateAwareModel {
 
 	public static final String TYPE_FOLDER = "folder";
 
+	public static final String TYPE_SYSTEM = "system";
+
 	public static final int UI_EVENT_ADDED_LOCAL = 1;
 
 	public static final int UI_EVENT_ADDED_REMOTE = 2;
@@ -64,21 +66,25 @@ public class SyncFile extends StateAwareModel {
 
 	public static final int UI_EVENT_DOWNLOADING = 6;
 
-	public static final int UI_EVENT_MOVED_LOCAL = 7;
+	public static final int UI_EVENT_EXCEEDED_SIZE_LIMIT = 7;
 
-	public static final int UI_EVENT_MOVED_REMOTE = 8;
+	public static final int UI_EVENT_INVALID_PERMISSIONS = 8;
 
-	public static final int UI_EVENT_TRASHED_LOCAL = 9;
+	public static final int UI_EVENT_MOVED_LOCAL = 9;
 
-	public static final int UI_EVENT_TRASHED_REMOTE = 10;
+	public static final int UI_EVENT_MOVED_REMOTE = 10;
 
-	public static final int UI_EVENT_UPDATED_LOCAL = 11;
+	public static final int UI_EVENT_TRASHED_LOCAL = 11;
 
-	public static final int UI_EVENT_UPDATED_REMOTE = 12;
+	public static final int UI_EVENT_TRASHED_REMOTE = 12;
 
-	public static final int UI_EVENT_UPLOADED = 13;
+	public static final int UI_EVENT_UPDATED_LOCAL = 13;
 
-	public static final int UI_EVENT_UPLOADING = 14;
+	public static final int UI_EVENT_UPDATED_REMOTE = 14;
+
+	public static final int UI_EVENT_UPLOADED = 15;
+
+	public static final int UI_EVENT_UPLOADING = 16;
 
 	public String getChangeLog() {
 		return changeLog;
@@ -186,6 +192,10 @@ public class SyncFile extends StateAwareModel {
 
 	public boolean isFolder() {
 		return type.equals(TYPE_FOLDER);
+	}
+
+	public boolean isSystem() {
+		return type.equals(TYPE_SYSTEM);
 	}
 
 	public void setChangeLog(String changeLog) {

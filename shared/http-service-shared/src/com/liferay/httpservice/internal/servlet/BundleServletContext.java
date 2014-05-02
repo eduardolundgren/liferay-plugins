@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.PluginContextListener;
 import com.liferay.portal.kernel.servlet.PortletSessionListenerManager;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
@@ -182,6 +183,8 @@ public class BundleServletContext
 	}
 
 	public void close() {
+		ServletContextPool.remove(_servletContextName);
+
 		_httpServiceTracker.close();
 
 		_serviceRegistration.unregister();
@@ -453,8 +456,14 @@ public class BundleServletContext
 
 		BundleContext bundleContext = _bundle.getBundleContext();
 
-		_serviceRegistration = bundleContext.registerService(
-			BundleServletContext.class, this, properties);
+		_serviceRegistration =
+			(ServiceRegistration<ServletContext>)
+				bundleContext.registerService(
+					new String[] {
+						BundleServletContext.class.getName(),
+						ServletContext.class.getName()
+					},
+					this, properties);
 
 		_httpServiceTracker = new HttpServiceTracker(bundleContext, _bundle);
 
@@ -1077,7 +1086,7 @@ public class BundleServletContext
 	private HttpContext _httpContext;
 	private HttpServiceTracker _httpServiceTracker;
 	private Map<String, String> _initParameters = new HashMap<String, String>();
-	private ServiceRegistration<BundleServletContext> _serviceRegistration;
+	private ServiceRegistration<ServletContext> _serviceRegistration;
 	private List<ServletContextAttributeListener>
 		_servletContextAttributeListeners =
 			new ArrayList<ServletContextAttributeListener>();
