@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -49,7 +48,11 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -103,11 +106,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param typePK the type p k
 	 * @return the matching sync d l object
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject findByT_T(String type, long typePK)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		SyncDLObject syncDLObject = fetchByT_T(type, typePK);
 
 		if (syncDLObject == null) {
@@ -139,11 +141,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param type the type
 	 * @param typePK the type p k
 	 * @return the matching sync d l object, or <code>null</code> if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public SyncDLObject fetchByT_T(String type, long typePK)
-		throws SystemException {
+	public SyncDLObject fetchByT_T(String type, long typePK) {
 		return fetchByT_T(type, typePK, true);
 	}
 
@@ -154,11 +154,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param typePK the type p k
 	 * @param retrieveFromCache whether to use the finder cache
 	 * @return the matching sync d l object, or <code>null</code> if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject fetchByT_T(String type, long typePK,
-		boolean retrieveFromCache) throws SystemException {
+		boolean retrieveFromCache) {
 		Object[] finderArgs = new Object[] { type, typePK };
 
 		Object result = null;
@@ -261,11 +260,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param type the type
 	 * @param typePK the type p k
 	 * @return the sync d l object that was removed
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject removeByT_T(String type, long typePK)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		SyncDLObject syncDLObject = findByT_T(type, typePK);
 
 		return remove(syncDLObject);
@@ -277,10 +275,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param type the type
 	 * @param typePK the type p k
 	 * @return the number of matching sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByT_T(String type, long typePK) throws SystemException {
+	public int countByT_T(String type, long typePK) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_T_T;
 
 		Object[] finderArgs = new Object[] { type, typePK };
@@ -370,11 +367,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param modifiedTime the modified time
 	 * @param repositoryId the repository ID
 	 * @return the matching sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLObject> findByC_M_R(long companyId, long modifiedTime,
-		long repositoryId) throws SystemException {
+		long repositoryId) {
 		return findByC_M_R(companyId, modifiedTime, repositoryId,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -392,11 +388,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param start the lower bound of the range of sync d l objects
 	 * @param end the upper bound of the range of sync d l objects (not inclusive)
 	 * @return the range of matching sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLObject> findByC_M_R(long companyId, long modifiedTime,
-		long repositoryId, int start, int end) throws SystemException {
+		long repositoryId, int start, int end) {
 		return findByC_M_R(companyId, modifiedTime, repositoryId, start, end,
 			null);
 	}
@@ -415,12 +410,11 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param end the upper bound of the range of sync d l objects (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLObject> findByC_M_R(long companyId, long modifiedTime,
 		long repositoryId, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -531,12 +525,11 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching sync d l object
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject findByC_M_R_First(long companyId, long modifiedTime,
 		long repositoryId, OrderByComparator orderByComparator)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		SyncDLObject syncDLObject = fetchByC_M_R_First(companyId, modifiedTime,
 				repositoryId, orderByComparator);
 
@@ -570,12 +563,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param repositoryId the repository ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching sync d l object, or <code>null</code> if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject fetchByC_M_R_First(long companyId, long modifiedTime,
-		long repositoryId, OrderByComparator orderByComparator)
-		throws SystemException {
+		long repositoryId, OrderByComparator orderByComparator) {
 		List<SyncDLObject> list = findByC_M_R(companyId, modifiedTime,
 				repositoryId, 0, 1, orderByComparator);
 
@@ -595,12 +586,11 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching sync d l object
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject findByC_M_R_Last(long companyId, long modifiedTime,
 		long repositoryId, OrderByComparator orderByComparator)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		SyncDLObject syncDLObject = fetchByC_M_R_Last(companyId, modifiedTime,
 				repositoryId, orderByComparator);
 
@@ -634,12 +624,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param repositoryId the repository ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching sync d l object, or <code>null</code> if a matching sync d l object could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject fetchByC_M_R_Last(long companyId, long modifiedTime,
-		long repositoryId, OrderByComparator orderByComparator)
-		throws SystemException {
+		long repositoryId, OrderByComparator orderByComparator) {
 		int count = countByC_M_R(companyId, modifiedTime, repositoryId);
 
 		if (count == 0) {
@@ -666,13 +654,11 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next sync d l object
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject[] findByC_M_R_PrevAndNext(long syncDLObjectId,
 		long companyId, long modifiedTime, long repositoryId,
-		OrderByComparator orderByComparator)
-		throws NoSuchDLObjectException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchDLObjectException {
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -819,11 +805,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param companyId the company ID
 	 * @param modifiedTime the modified time
 	 * @param repositoryId the repository ID
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByC_M_R(long companyId, long modifiedTime,
-		long repositoryId) throws SystemException {
+		long repositoryId) {
 		for (SyncDLObject syncDLObject : findByC_M_R(companyId, modifiedTime,
 				repositoryId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(syncDLObject);
@@ -837,11 +822,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param modifiedTime the modified time
 	 * @param repositoryId the repository ID
 	 * @return the number of matching sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByC_M_R(long companyId, long modifiedTime, long repositoryId)
-		throws SystemException {
+	public int countByC_M_R(long companyId, long modifiedTime, long repositoryId) {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_M_R;
 
 		Object[] finderArgs = new Object[] { companyId, modifiedTime, repositoryId };
@@ -1061,11 +1044,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param syncDLObjectId the primary key of the sync d l object
 	 * @return the sync d l object that was removed
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject remove(long syncDLObjectId)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		return remove((Serializable)syncDLObjectId);
 	}
 
@@ -1075,11 +1057,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param primaryKey the primary key of the sync d l object
 	 * @return the sync d l object that was removed
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject remove(Serializable primaryKey)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		Session session = null;
 
 		try {
@@ -1111,8 +1092,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	}
 
 	@Override
-	protected SyncDLObject removeImpl(SyncDLObject syncDLObject)
-		throws SystemException {
+	protected SyncDLObject removeImpl(SyncDLObject syncDLObject) {
 		syncDLObject = toUnwrappedModel(syncDLObject);
 
 		Session session = null;
@@ -1145,8 +1125,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 	@Override
 	public SyncDLObject updateImpl(
-		com.liferay.sync.model.SyncDLObject syncDLObject)
-		throws SystemException {
+		com.liferay.sync.model.SyncDLObject syncDLObject) {
 		syncDLObject = toUnwrappedModel(syncDLObject);
 
 		boolean isNew = syncDLObject.isNew();
@@ -1232,11 +1211,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param primaryKey the primary key of the sync d l object
 	 * @return the sync d l object
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		SyncDLObject syncDLObject = fetchByPrimaryKey(primaryKey);
 
 		if (syncDLObject == null) {
@@ -1257,11 +1235,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param syncDLObjectId the primary key of the sync d l object
 	 * @return the sync d l object
 	 * @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLObject findByPrimaryKey(long syncDLObjectId)
-		throws NoSuchDLObjectException, SystemException {
+		throws NoSuchDLObjectException {
 		return findByPrimaryKey((Serializable)syncDLObjectId);
 	}
 
@@ -1270,11 +1247,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 *
 	 * @param primaryKey the primary key of the sync d l object
 	 * @return the sync d l object, or <code>null</code> if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public SyncDLObject fetchByPrimaryKey(Serializable primaryKey)
-		throws SystemException {
+	public SyncDLObject fetchByPrimaryKey(Serializable primaryKey) {
 		SyncDLObject syncDLObject = (SyncDLObject)EntityCacheUtil.getResult(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED,
 				SyncDLObjectImpl.class, primaryKey);
 
@@ -1318,22 +1293,111 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 *
 	 * @param syncDLObjectId the primary key of the sync d l object
 	 * @return the sync d l object, or <code>null</code> if a sync d l object with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public SyncDLObject fetchByPrimaryKey(long syncDLObjectId)
-		throws SystemException {
+	public SyncDLObject fetchByPrimaryKey(long syncDLObjectId) {
 		return fetchByPrimaryKey((Serializable)syncDLObjectId);
+	}
+
+	@Override
+	public Map<Serializable, SyncDLObject> fetchByPrimaryKeys(
+		Set<Serializable> primaryKeys) {
+		if (primaryKeys.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<Serializable, SyncDLObject> map = new HashMap<Serializable, SyncDLObject>();
+
+		if (primaryKeys.size() == 1) {
+			Iterator<Serializable> iterator = primaryKeys.iterator();
+
+			Serializable primaryKey = iterator.next();
+
+			SyncDLObject syncDLObject = fetchByPrimaryKey(primaryKey);
+
+			if (syncDLObject != null) {
+				map.put(primaryKey, syncDLObject);
+			}
+
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		for (Serializable primaryKey : primaryKeys) {
+			SyncDLObject syncDLObject = (SyncDLObject)EntityCacheUtil.getResult(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED,
+					SyncDLObjectImpl.class, primaryKey);
+
+			if (syncDLObject == null) {
+				if (uncachedPrimaryKeys == null) {
+					uncachedPrimaryKeys = new HashSet<Serializable>();
+				}
+
+				uncachedPrimaryKeys.add(primaryKey);
+			}
+			else {
+				map.put(primaryKey, syncDLObject);
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
+			return map;
+		}
+
+		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 2) +
+				1);
+
+		query.append(_SQL_SELECT_SYNCDLOBJECT_WHERE_PKS_IN);
+
+		for (Serializable primaryKey : uncachedPrimaryKeys) {
+			query.append(String.valueOf(primaryKey));
+
+			query.append(StringPool.COMMA);
+		}
+
+		query.setIndex(query.index() - 1);
+
+		query.append(StringPool.CLOSE_PARENTHESIS);
+
+		String sql = query.toString();
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			Query q = session.createQuery(sql);
+
+			for (SyncDLObject syncDLObject : (List<SyncDLObject>)q.list()) {
+				map.put(syncDLObject.getPrimaryKeyObj(), syncDLObject);
+
+				cacheResult(syncDLObject);
+
+				uncachedPrimaryKeys.remove(syncDLObject.getPrimaryKeyObj());
+			}
+
+			for (Serializable primaryKey : uncachedPrimaryKeys) {
+				EntityCacheUtil.putResult(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED,
+					SyncDLObjectImpl.class, primaryKey, _nullSyncDLObject);
+			}
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return map;
 	}
 
 	/**
 	 * Returns all the sync d l objects.
 	 *
 	 * @return the sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<SyncDLObject> findAll() throws SystemException {
+	public List<SyncDLObject> findAll() {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
@@ -1347,11 +1411,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param start the lower bound of the range of sync d l objects
 	 * @param end the upper bound of the range of sync d l objects (not inclusive)
 	 * @return the range of sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<SyncDLObject> findAll(int start, int end)
-		throws SystemException {
+	public List<SyncDLObject> findAll(int start, int end) {
 		return findAll(start, end, null);
 	}
 
@@ -1366,11 +1428,10 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * @param end the upper bound of the range of sync d l objects (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLObject> findAll(int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1452,10 +1513,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	/**
 	 * Removes all the sync d l objects from the database.
 	 *
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeAll() throws SystemException {
+	public void removeAll() {
 		for (SyncDLObject syncDLObject : findAll()) {
 			remove(syncDLObject);
 		}
@@ -1465,10 +1525,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 * Returns the number of sync d l objects.
 	 *
 	 * @return the number of sync d l objects
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countAll() throws SystemException {
+	public int countAll() {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
@@ -1537,6 +1596,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	}
 
 	private static final String _SQL_SELECT_SYNCDLOBJECT = "SELECT syncDLObject FROM SyncDLObject syncDLObject";
+	private static final String _SQL_SELECT_SYNCDLOBJECT_WHERE_PKS_IN = "SELECT syncDLObject FROM SyncDLObject syncDLObject WHERE syncDLObjectId IN (";
 	private static final String _SQL_SELECT_SYNCDLOBJECT_WHERE = "SELECT syncDLObject FROM SyncDLObject syncDLObject WHERE ";
 	private static final String _SQL_COUNT_SYNCDLOBJECT = "SELECT COUNT(syncDLObject) FROM SyncDLObject syncDLObject";
 	private static final String _SQL_COUNT_SYNCDLOBJECT_WHERE = "SELECT COUNT(syncDLObject) FROM SyncDLObject syncDLObject WHERE ";

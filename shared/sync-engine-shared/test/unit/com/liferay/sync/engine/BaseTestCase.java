@@ -79,7 +79,7 @@ public abstract class BaseTestCase {
 			System.getProperty("user.home") + "/liferay-sync-test");
 
 		syncAccount = SyncAccountService.addSyncAccount(
-			filePathName, "test@liferay.com", "test", "test", null, false,
+			filePathName, "test@liferay.com", 1, "test", "test", 5, null, false,
 			"http://localhost:8080");
 
 		syncAccount.setActive(true);
@@ -105,7 +105,7 @@ public abstract class BaseTestCase {
 		SyncAccountService.deleteSyncAccount(syncAccount.getSyncAccountId());
 	}
 
-	protected InputStream getInputStream(String fileName) {
+	protected final InputStream getInputStream(String fileName) {
 		Class<?> clazz = getClass();
 
 		return clazz.getResourceAsStream(fileName);

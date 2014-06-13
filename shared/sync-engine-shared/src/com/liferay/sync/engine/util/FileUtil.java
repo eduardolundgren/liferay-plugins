@@ -14,6 +14,8 @@
 
 package com.liferay.sync.engine.util;
 
+import com.liferay.sync.engine.model.SyncFile;
+
 import java.io.InputStream;
 
 import java.nio.file.Files;
@@ -92,6 +94,32 @@ public class FileUtil {
 		Path filePath = Paths.get(filePathName);
 
 		return getFileKey(filePath);
+	}
+
+	public static boolean hasFileChanged(SyncFile syncFile) {
+		if (syncFile.getFilePathName() == null) {
+			return true;
+		}
+
+		Path filePath = Paths.get(syncFile.getFilePathName());
+
+		if (filePath == null) {
+			return true;
+		}
+
+		String checksum = getChecksum(filePath);
+
+		return !checksum.equals(syncFile.getChecksum());
+	}
+
+	public static boolean hasFileChanged(SyncFile syncFile, Path filePath) {
+		if (filePath == null) {
+			return true;
+		}
+
+		String checksum = getChecksum(filePath);
+
+		return !checksum.equals(syncFile.getChecksum());
 	}
 
 	public static boolean isIgnoredFilePath(Path filePath) throws Exception {

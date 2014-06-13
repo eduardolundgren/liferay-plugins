@@ -28,7 +28,6 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -48,7 +47,12 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The persistence implementation for the entry service.
@@ -109,10 +113,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 *
 	 * @param userId the user ID
 	 * @return the matching entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<Entry> findByUserId(long userId) throws SystemException {
+	public List<Entry> findByUserId(long userId) {
 		return findByUserId(userId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
@@ -127,11 +130,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param start the lower bound of the range of entries
 	 * @param end the upper bound of the range of entries (not inclusive)
 	 * @return the range of matching entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<Entry> findByUserId(long userId, int start, int end)
-		throws SystemException {
+	public List<Entry> findByUserId(long userId, int start, int end) {
 		return findByUserId(userId, start, end, null);
 	}
 
@@ -147,11 +148,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param end the upper bound of the range of entries (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<Entry> findByUserId(long userId, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -254,12 +254,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching entry
 	 * @throws com.liferay.contacts.NoSuchEntryException if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry findByUserId_First(long userId,
-		OrderByComparator orderByComparator)
-		throws NoSuchEntryException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchEntryException {
 		Entry entry = fetchByUserId_First(userId, orderByComparator);
 
 		if (entry != null) {
@@ -284,11 +282,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching entry, or <code>null</code> if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry fetchByUserId_First(long userId,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<Entry> list = findByUserId(userId, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
@@ -305,12 +302,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching entry
 	 * @throws com.liferay.contacts.NoSuchEntryException if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry findByUserId_Last(long userId,
-		OrderByComparator orderByComparator)
-		throws NoSuchEntryException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchEntryException {
 		Entry entry = fetchByUserId_Last(userId, orderByComparator);
 
 		if (entry != null) {
@@ -335,11 +330,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching entry, or <code>null</code> if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry fetchByUserId_Last(long userId,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByUserId(userId);
 
 		if (count == 0) {
@@ -364,12 +358,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next entry
 	 * @throws com.liferay.contacts.NoSuchEntryException if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry[] findByUserId_PrevAndNext(long entryId, long userId,
-		OrderByComparator orderByComparator)
-		throws NoSuchEntryException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchEntryException {
 		Entry entry = findByPrimaryKey(entryId);
 
 		Session session = null;
@@ -505,10 +497,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * Removes all the entries where userId = &#63; from the database.
 	 *
 	 * @param userId the user ID
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByUserId(long userId) throws SystemException {
+	public void removeByUserId(long userId) {
 		for (Entry entry : findByUserId(userId, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
 			remove(entry);
@@ -520,10 +511,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 *
 	 * @param userId the user ID
 	 * @return the number of matching entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByUserId(long userId) throws SystemException {
+	public int countByUserId(long userId) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_USERID;
 
 		Object[] finderArgs = new Object[] { userId };
@@ -587,11 +577,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param emailAddress the email address
 	 * @return the matching entry
 	 * @throws com.liferay.contacts.NoSuchEntryException if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry findByU_EA(long userId, String emailAddress)
-		throws NoSuchEntryException, SystemException {
+		throws NoSuchEntryException {
 		Entry entry = fetchByU_EA(userId, emailAddress);
 
 		if (entry == null) {
@@ -623,11 +612,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param userId the user ID
 	 * @param emailAddress the email address
 	 * @return the matching entry, or <code>null</code> if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public Entry fetchByU_EA(long userId, String emailAddress)
-		throws SystemException {
+	public Entry fetchByU_EA(long userId, String emailAddress) {
 		return fetchByU_EA(userId, emailAddress, true);
 	}
 
@@ -638,11 +625,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param emailAddress the email address
 	 * @param retrieveFromCache whether to use the finder cache
 	 * @return the matching entry, or <code>null</code> if a matching entry could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry fetchByU_EA(long userId, String emailAddress,
-		boolean retrieveFromCache) throws SystemException {
+		boolean retrieveFromCache) {
 		Object[] finderArgs = new Object[] { userId, emailAddress };
 
 		Object result = null;
@@ -752,11 +738,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param userId the user ID
 	 * @param emailAddress the email address
 	 * @return the entry that was removed
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry removeByU_EA(long userId, String emailAddress)
-		throws NoSuchEntryException, SystemException {
+		throws NoSuchEntryException {
 		Entry entry = findByU_EA(userId, emailAddress);
 
 		return remove(entry);
@@ -768,11 +753,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param userId the user ID
 	 * @param emailAddress the email address
 	 * @return the number of matching entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByU_EA(long userId, String emailAddress)
-		throws SystemException {
+	public int countByU_EA(long userId, String emailAddress) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_U_EA;
 
 		Object[] finderArgs = new Object[] { userId, emailAddress };
@@ -997,11 +980,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param entryId the primary key of the entry
 	 * @return the entry that was removed
 	 * @throws com.liferay.contacts.NoSuchEntryException if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public Entry remove(long entryId)
-		throws NoSuchEntryException, SystemException {
+	public Entry remove(long entryId) throws NoSuchEntryException {
 		return remove((Serializable)entryId);
 	}
 
@@ -1011,11 +992,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param primaryKey the primary key of the entry
 	 * @return the entry that was removed
 	 * @throws com.liferay.contacts.NoSuchEntryException if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public Entry remove(Serializable primaryKey)
-		throws NoSuchEntryException, SystemException {
+	public Entry remove(Serializable primaryKey) throws NoSuchEntryException {
 		Session session = null;
 
 		try {
@@ -1046,7 +1025,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	}
 
 	@Override
-	protected Entry removeImpl(Entry entry) throws SystemException {
+	protected Entry removeImpl(Entry entry) {
 		entry = toUnwrappedModel(entry);
 
 		Session session = null;
@@ -1078,8 +1057,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	}
 
 	@Override
-	public Entry updateImpl(com.liferay.contacts.model.Entry entry)
-		throws SystemException {
+	public Entry updateImpl(com.liferay.contacts.model.Entry entry) {
 		entry = toUnwrappedModel(entry);
 
 		boolean isNew = entry.isNew();
@@ -1171,11 +1149,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param primaryKey the primary key of the entry
 	 * @return the entry
 	 * @throws com.liferay.contacts.NoSuchEntryException if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Entry findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchEntryException, SystemException {
+		throws NoSuchEntryException {
 		Entry entry = fetchByPrimaryKey(primaryKey);
 
 		if (entry == null) {
@@ -1196,11 +1173,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param entryId the primary key of the entry
 	 * @return the entry
 	 * @throws com.liferay.contacts.NoSuchEntryException if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public Entry findByPrimaryKey(long entryId)
-		throws NoSuchEntryException, SystemException {
+	public Entry findByPrimaryKey(long entryId) throws NoSuchEntryException {
 		return findByPrimaryKey((Serializable)entryId);
 	}
 
@@ -1209,11 +1184,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 *
 	 * @param primaryKey the primary key of the entry
 	 * @return the entry, or <code>null</code> if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public Entry fetchByPrimaryKey(Serializable primaryKey)
-		throws SystemException {
+	public Entry fetchByPrimaryKey(Serializable primaryKey) {
 		Entry entry = (Entry)EntityCacheUtil.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
 				EntryImpl.class, primaryKey);
 
@@ -1256,21 +1229,111 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 *
 	 * @param entryId the primary key of the entry
 	 * @return the entry, or <code>null</code> if a entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public Entry fetchByPrimaryKey(long entryId) throws SystemException {
+	public Entry fetchByPrimaryKey(long entryId) {
 		return fetchByPrimaryKey((Serializable)entryId);
+	}
+
+	@Override
+	public Map<Serializable, Entry> fetchByPrimaryKeys(
+		Set<Serializable> primaryKeys) {
+		if (primaryKeys.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<Serializable, Entry> map = new HashMap<Serializable, Entry>();
+
+		if (primaryKeys.size() == 1) {
+			Iterator<Serializable> iterator = primaryKeys.iterator();
+
+			Serializable primaryKey = iterator.next();
+
+			Entry entry = fetchByPrimaryKey(primaryKey);
+
+			if (entry != null) {
+				map.put(primaryKey, entry);
+			}
+
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		for (Serializable primaryKey : primaryKeys) {
+			Entry entry = (Entry)EntityCacheUtil.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
+					EntryImpl.class, primaryKey);
+
+			if (entry == null) {
+				if (uncachedPrimaryKeys == null) {
+					uncachedPrimaryKeys = new HashSet<Serializable>();
+				}
+
+				uncachedPrimaryKeys.add(primaryKey);
+			}
+			else {
+				map.put(primaryKey, entry);
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
+			return map;
+		}
+
+		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 2) +
+				1);
+
+		query.append(_SQL_SELECT_ENTRY_WHERE_PKS_IN);
+
+		for (Serializable primaryKey : uncachedPrimaryKeys) {
+			query.append(String.valueOf(primaryKey));
+
+			query.append(StringPool.COMMA);
+		}
+
+		query.setIndex(query.index() - 1);
+
+		query.append(StringPool.CLOSE_PARENTHESIS);
+
+		String sql = query.toString();
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			Query q = session.createQuery(sql);
+
+			for (Entry entry : (List<Entry>)q.list()) {
+				map.put(entry.getPrimaryKeyObj(), entry);
+
+				cacheResult(entry);
+
+				uncachedPrimaryKeys.remove(entry.getPrimaryKeyObj());
+			}
+
+			for (Serializable primaryKey : uncachedPrimaryKeys) {
+				EntityCacheUtil.putResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
+					EntryImpl.class, primaryKey, _nullEntry);
+			}
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return map;
 	}
 
 	/**
 	 * Returns all the entries.
 	 *
 	 * @return the entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<Entry> findAll() throws SystemException {
+	public List<Entry> findAll() {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
@@ -1284,10 +1347,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param start the lower bound of the range of entries
 	 * @param end the upper bound of the range of entries (not inclusive)
 	 * @return the range of entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<Entry> findAll(int start, int end) throws SystemException {
+	public List<Entry> findAll(int start, int end) {
 		return findAll(start, end, null);
 	}
 
@@ -1302,11 +1364,10 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * @param end the upper bound of the range of entries (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<Entry> findAll(int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1388,10 +1449,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	/**
 	 * Removes all the entries from the database.
 	 *
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeAll() throws SystemException {
+	public void removeAll() {
 		for (Entry entry : findAll()) {
 			remove(entry);
 		}
@@ -1401,10 +1461,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 * Returns the number of entries.
 	 *
 	 * @return the number of entries
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countAll() throws SystemException {
+	public int countAll() {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
@@ -1468,6 +1527,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	}
 
 	private static final String _SQL_SELECT_ENTRY = "SELECT entry FROM Entry entry";
+	private static final String _SQL_SELECT_ENTRY_WHERE_PKS_IN = "SELECT entry FROM Entry entry WHERE entryId IN (";
 	private static final String _SQL_SELECT_ENTRY_WHERE = "SELECT entry FROM Entry entry WHERE ";
 	private static final String _SQL_COUNT_ENTRY = "SELECT COUNT(entry) FROM Entry entry";
 	private static final String _SQL_COUNT_ENTRY_WHERE = "SELECT COUNT(entry) FROM Entry entry WHERE ";

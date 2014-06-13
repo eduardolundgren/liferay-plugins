@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -51,7 +50,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -111,11 +114,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 *
 	 * @param expirationDate the expiration date
 	 * @return the matching sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<SyncDLFileVersionDiff> findByExpirationDate(Date expirationDate)
-		throws SystemException {
+	public List<SyncDLFileVersionDiff> findByExpirationDate(Date expirationDate) {
 		return findByExpirationDate(expirationDate, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -131,11 +132,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param start the lower bound of the range of sync d l file version diffs
 	 * @param end the upper bound of the range of sync d l file version diffs (not inclusive)
 	 * @return the range of matching sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLFileVersionDiff> findByExpirationDate(
-		Date expirationDate, int start, int end) throws SystemException {
+		Date expirationDate, int start, int end) {
 		return findByExpirationDate(expirationDate, start, end, null);
 	}
 
@@ -151,12 +151,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param end the upper bound of the range of sync d l file version diffs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLFileVersionDiff> findByExpirationDate(
 		Date expirationDate, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -263,12 +262,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching sync d l file version diff
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff findByExpirationDate_First(
 		Date expirationDate, OrderByComparator orderByComparator)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = fetchByExpirationDate_First(expirationDate,
 				orderByComparator);
 
@@ -294,12 +292,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param expirationDate the expiration date
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching sync d l file version diff, or <code>null</code> if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff fetchByExpirationDate_First(
-		Date expirationDate, OrderByComparator orderByComparator)
-		throws SystemException {
+		Date expirationDate, OrderByComparator orderByComparator) {
 		List<SyncDLFileVersionDiff> list = findByExpirationDate(expirationDate,
 				0, 1, orderByComparator);
 
@@ -317,12 +313,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching sync d l file version diff
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff findByExpirationDate_Last(
 		Date expirationDate, OrderByComparator orderByComparator)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = fetchByExpirationDate_Last(expirationDate,
 				orderByComparator);
 
@@ -348,12 +343,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param expirationDate the expiration date
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching sync d l file version diff, or <code>null</code> if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff fetchByExpirationDate_Last(
-		Date expirationDate, OrderByComparator orderByComparator)
-		throws SystemException {
+		Date expirationDate, OrderByComparator orderByComparator) {
 		int count = countByExpirationDate(expirationDate);
 
 		if (count == 0) {
@@ -378,13 +371,12 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next sync d l file version diff
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff[] findByExpirationDate_PrevAndNext(
 		long syncDLFileVersionDiffId, Date expirationDate,
 		OrderByComparator orderByComparator)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = findByPrimaryKey(syncDLFileVersionDiffId);
 
 		Session session = null;
@@ -535,11 +527,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * Removes all the sync d l file version diffs where expirationDate &lt; &#63; from the database.
 	 *
 	 * @param expirationDate the expiration date
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByExpirationDate(Date expirationDate)
-		throws SystemException {
+	public void removeByExpirationDate(Date expirationDate) {
 		for (SyncDLFileVersionDiff syncDLFileVersionDiff : findByExpirationDate(
 				expirationDate, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(syncDLFileVersionDiff);
@@ -551,11 +541,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 *
 	 * @param expirationDate the expiration date
 	 * @return the number of matching sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByExpirationDate(Date expirationDate)
-		throws SystemException {
+	public int countByExpirationDate(Date expirationDate) {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_EXPIRATIONDATE;
 
 		Object[] finderArgs = new Object[] { expirationDate };
@@ -638,12 +626,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param targetFileVersionId the target file version ID
 	 * @return the matching sync d l file version diff
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff findByF_S_T(long fileEntryId,
 		long sourceFileVersionId, long targetFileVersionId)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = fetchByF_S_T(fileEntryId,
 				sourceFileVersionId, targetFileVersionId);
 
@@ -680,12 +667,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param sourceFileVersionId the source file version ID
 	 * @param targetFileVersionId the target file version ID
 	 * @return the matching sync d l file version diff, or <code>null</code> if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff fetchByF_S_T(long fileEntryId,
-		long sourceFileVersionId, long targetFileVersionId)
-		throws SystemException {
+		long sourceFileVersionId, long targetFileVersionId) {
 		return fetchByF_S_T(fileEntryId, sourceFileVersionId,
 			targetFileVersionId, true);
 	}
@@ -698,12 +683,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param targetFileVersionId the target file version ID
 	 * @param retrieveFromCache whether to use the finder cache
 	 * @return the matching sync d l file version diff, or <code>null</code> if a matching sync d l file version diff could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff fetchByF_S_T(long fileEntryId,
 		long sourceFileVersionId, long targetFileVersionId,
-		boolean retrieveFromCache) throws SystemException {
+		boolean retrieveFromCache) {
 		Object[] finderArgs = new Object[] {
 				fileEntryId, sourceFileVersionId, targetFileVersionId
 			};
@@ -800,12 +784,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param sourceFileVersionId the source file version ID
 	 * @param targetFileVersionId the target file version ID
 	 * @return the sync d l file version diff that was removed
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff removeByF_S_T(long fileEntryId,
 		long sourceFileVersionId, long targetFileVersionId)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = findByF_S_T(fileEntryId,
 				sourceFileVersionId, targetFileVersionId);
 
@@ -819,11 +802,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param sourceFileVersionId the source file version ID
 	 * @param targetFileVersionId the target file version ID
 	 * @return the number of matching sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByF_S_T(long fileEntryId, long sourceFileVersionId,
-		long targetFileVersionId) throws SystemException {
+		long targetFileVersionId) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_F_S_T;
 
 		Object[] finderArgs = new Object[] {
@@ -1061,11 +1043,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param syncDLFileVersionDiffId the primary key of the sync d l file version diff
 	 * @return the sync d l file version diff that was removed
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff remove(long syncDLFileVersionDiffId)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		return remove((Serializable)syncDLFileVersionDiffId);
 	}
 
@@ -1075,11 +1056,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param primaryKey the primary key of the sync d l file version diff
 	 * @return the sync d l file version diff that was removed
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff remove(Serializable primaryKey)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		Session session = null;
 
 		try {
@@ -1112,7 +1092,7 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 
 	@Override
 	protected SyncDLFileVersionDiff removeImpl(
-		SyncDLFileVersionDiff syncDLFileVersionDiff) throws SystemException {
+		SyncDLFileVersionDiff syncDLFileVersionDiff) {
 		syncDLFileVersionDiff = toUnwrappedModel(syncDLFileVersionDiff);
 
 		Session session = null;
@@ -1145,8 +1125,7 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 
 	@Override
 	public SyncDLFileVersionDiff updateImpl(
-		com.liferay.sync.model.SyncDLFileVersionDiff syncDLFileVersionDiff)
-		throws SystemException {
+		com.liferay.sync.model.SyncDLFileVersionDiff syncDLFileVersionDiff) {
 		syncDLFileVersionDiff = toUnwrappedModel(syncDLFileVersionDiff);
 
 		boolean isNew = syncDLFileVersionDiff.isNew();
@@ -1218,11 +1197,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param primaryKey the primary key of the sync d l file version diff
 	 * @return the sync d l file version diff
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = fetchByPrimaryKey(primaryKey);
 
 		if (syncDLFileVersionDiff == null) {
@@ -1243,11 +1221,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param syncDLFileVersionDiffId the primary key of the sync d l file version diff
 	 * @return the sync d l file version diff
 	 * @throws com.liferay.sync.NoSuchDLFileVersionDiffException if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public SyncDLFileVersionDiff findByPrimaryKey(long syncDLFileVersionDiffId)
-		throws NoSuchDLFileVersionDiffException, SystemException {
+		throws NoSuchDLFileVersionDiffException {
 		return findByPrimaryKey((Serializable)syncDLFileVersionDiffId);
 	}
 
@@ -1256,11 +1233,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 *
 	 * @param primaryKey the primary key of the sync d l file version diff
 	 * @return the sync d l file version diff, or <code>null</code> if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public SyncDLFileVersionDiff fetchByPrimaryKey(Serializable primaryKey)
-		throws SystemException {
+	public SyncDLFileVersionDiff fetchByPrimaryKey(Serializable primaryKey) {
 		SyncDLFileVersionDiff syncDLFileVersionDiff = (SyncDLFileVersionDiff)EntityCacheUtil.getResult(SyncDLFileVersionDiffModelImpl.ENTITY_CACHE_ENABLED,
 				SyncDLFileVersionDiffImpl.class, primaryKey);
 
@@ -1305,22 +1280,113 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 *
 	 * @param syncDLFileVersionDiffId the primary key of the sync d l file version diff
 	 * @return the sync d l file version diff, or <code>null</code> if a sync d l file version diff with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public SyncDLFileVersionDiff fetchByPrimaryKey(long syncDLFileVersionDiffId)
-		throws SystemException {
+	public SyncDLFileVersionDiff fetchByPrimaryKey(long syncDLFileVersionDiffId) {
 		return fetchByPrimaryKey((Serializable)syncDLFileVersionDiffId);
+	}
+
+	@Override
+	public Map<Serializable, SyncDLFileVersionDiff> fetchByPrimaryKeys(
+		Set<Serializable> primaryKeys) {
+		if (primaryKeys.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<Serializable, SyncDLFileVersionDiff> map = new HashMap<Serializable, SyncDLFileVersionDiff>();
+
+		if (primaryKeys.size() == 1) {
+			Iterator<Serializable> iterator = primaryKeys.iterator();
+
+			Serializable primaryKey = iterator.next();
+
+			SyncDLFileVersionDiff syncDLFileVersionDiff = fetchByPrimaryKey(primaryKey);
+
+			if (syncDLFileVersionDiff != null) {
+				map.put(primaryKey, syncDLFileVersionDiff);
+			}
+
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		for (Serializable primaryKey : primaryKeys) {
+			SyncDLFileVersionDiff syncDLFileVersionDiff = (SyncDLFileVersionDiff)EntityCacheUtil.getResult(SyncDLFileVersionDiffModelImpl.ENTITY_CACHE_ENABLED,
+					SyncDLFileVersionDiffImpl.class, primaryKey);
+
+			if (syncDLFileVersionDiff == null) {
+				if (uncachedPrimaryKeys == null) {
+					uncachedPrimaryKeys = new HashSet<Serializable>();
+				}
+
+				uncachedPrimaryKeys.add(primaryKey);
+			}
+			else {
+				map.put(primaryKey, syncDLFileVersionDiff);
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
+			return map;
+		}
+
+		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 2) +
+				1);
+
+		query.append(_SQL_SELECT_SYNCDLFILEVERSIONDIFF_WHERE_PKS_IN);
+
+		for (Serializable primaryKey : uncachedPrimaryKeys) {
+			query.append(String.valueOf(primaryKey));
+
+			query.append(StringPool.COMMA);
+		}
+
+		query.setIndex(query.index() - 1);
+
+		query.append(StringPool.CLOSE_PARENTHESIS);
+
+		String sql = query.toString();
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			Query q = session.createQuery(sql);
+
+			for (SyncDLFileVersionDiff syncDLFileVersionDiff : (List<SyncDLFileVersionDiff>)q.list()) {
+				map.put(syncDLFileVersionDiff.getPrimaryKeyObj(),
+					syncDLFileVersionDiff);
+
+				cacheResult(syncDLFileVersionDiff);
+
+				uncachedPrimaryKeys.remove(syncDLFileVersionDiff.getPrimaryKeyObj());
+			}
+
+			for (Serializable primaryKey : uncachedPrimaryKeys) {
+				EntityCacheUtil.putResult(SyncDLFileVersionDiffModelImpl.ENTITY_CACHE_ENABLED,
+					SyncDLFileVersionDiffImpl.class, primaryKey,
+					_nullSyncDLFileVersionDiff);
+			}
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return map;
 	}
 
 	/**
 	 * Returns all the sync d l file version diffs.
 	 *
 	 * @return the sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<SyncDLFileVersionDiff> findAll() throws SystemException {
+	public List<SyncDLFileVersionDiff> findAll() {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
@@ -1334,11 +1400,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param start the lower bound of the range of sync d l file version diffs
 	 * @param end the upper bound of the range of sync d l file version diffs (not inclusive)
 	 * @return the range of sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<SyncDLFileVersionDiff> findAll(int start, int end)
-		throws SystemException {
+	public List<SyncDLFileVersionDiff> findAll(int start, int end) {
 		return findAll(start, end, null);
 	}
 
@@ -1353,11 +1417,10 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * @param end the upper bound of the range of sync d l file version diffs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<SyncDLFileVersionDiff> findAll(int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1439,10 +1502,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	/**
 	 * Removes all the sync d l file version diffs from the database.
 	 *
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeAll() throws SystemException {
+	public void removeAll() {
 		for (SyncDLFileVersionDiff syncDLFileVersionDiff : findAll()) {
 			remove(syncDLFileVersionDiff);
 		}
@@ -1452,10 +1514,9 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 * Returns the number of sync d l file version diffs.
 	 *
 	 * @return the number of sync d l file version diffs
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countAll() throws SystemException {
+	public int countAll() {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
@@ -1524,6 +1585,7 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	}
 
 	private static final String _SQL_SELECT_SYNCDLFILEVERSIONDIFF = "SELECT syncDLFileVersionDiff FROM SyncDLFileVersionDiff syncDLFileVersionDiff";
+	private static final String _SQL_SELECT_SYNCDLFILEVERSIONDIFF_WHERE_PKS_IN = "SELECT syncDLFileVersionDiff FROM SyncDLFileVersionDiff syncDLFileVersionDiff WHERE syncDLFileVersionDiffId IN (";
 	private static final String _SQL_SELECT_SYNCDLFILEVERSIONDIFF_WHERE = "SELECT syncDLFileVersionDiff FROM SyncDLFileVersionDiff syncDLFileVersionDiff WHERE ";
 	private static final String _SQL_COUNT_SYNCDLFILEVERSIONDIFF = "SELECT COUNT(syncDLFileVersionDiff) FROM SyncDLFileVersionDiff syncDLFileVersionDiff";
 	private static final String _SQL_COUNT_SYNCDLFILEVERSIONDIFF_WHERE = "SELECT COUNT(syncDLFileVersionDiff) FROM SyncDLFileVersionDiff syncDLFileVersionDiff WHERE ";

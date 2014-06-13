@@ -29,7 +29,6 @@ import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -54,7 +53,11 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -115,10 +118,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param uuid the uuid
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByUuid(String uuid) throws SystemException {
+	public List<KBArticle> findByUuid(String uuid) {
 		return findByUuid(uuid, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
@@ -133,11 +135,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByUuid(String uuid, int start, int end)
-		throws SystemException {
+	public List<KBArticle> findByUuid(String uuid, int start, int end) {
 		return findByUuid(uuid, start, end, null);
 	}
 
@@ -153,11 +153,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByUuid(String uuid, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -274,12 +273,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByUuid_First(String uuid,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByUuid_First(uuid, orderByComparator);
 
 		if (kbArticle != null) {
@@ -304,11 +301,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByUuid_First(String uuid,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByUuid(uuid, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
@@ -325,12 +321,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByUuid_Last(String uuid,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByUuid_Last(uuid, orderByComparator);
 
 		if (kbArticle != null) {
@@ -355,11 +349,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByUuid_Last(String uuid,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByUuid(uuid);
 
 		if (count == 0) {
@@ -384,12 +377,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByUuid_PrevAndNext(long kbArticleId, String uuid,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -540,10 +531,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * Removes all the k b articles where uuid = &#63; from the database.
 	 *
 	 * @param uuid the uuid
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByUuid(String uuid) throws SystemException {
+	public void removeByUuid(String uuid) {
 		for (KBArticle kbArticle : findByUuid(uuid, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -555,10 +545,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param uuid the uuid
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByUuid(String uuid) throws SystemException {
+	public int countByUuid(String uuid) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -638,11 +627,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @return the matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByUUID_G(String uuid, long groupId)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByUUID_G(uuid, groupId);
 
 		if (kbArticle == null) {
@@ -674,11 +662,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param groupId the group ID
 	 * @return the matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public KBArticle fetchByUUID_G(String uuid, long groupId)
-		throws SystemException {
+	public KBArticle fetchByUUID_G(String uuid, long groupId) {
 		return fetchByUUID_G(uuid, groupId, true);
 	}
 
@@ -689,11 +675,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param retrieveFromCache whether to use the finder cache
 	 * @return the matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByUUID_G(String uuid, long groupId,
-		boolean retrieveFromCache) throws SystemException {
+		boolean retrieveFromCache) {
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -796,11 +781,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param groupId the group ID
 	 * @return the k b article that was removed
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle removeByUUID_G(String uuid, long groupId)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByUUID_G(uuid, groupId);
 
 		return remove(kbArticle);
@@ -812,11 +796,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param groupId the group ID
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByUUID_G(String uuid, long groupId)
-		throws SystemException {
+	public int countByUUID_G(String uuid, long groupId) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -911,11 +893,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param companyId the company ID
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByUuid_C(String uuid, long companyId)
-		throws SystemException {
+	public List<KBArticle> findByUuid_C(String uuid, long companyId) {
 		return findByUuid_C(uuid, companyId, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -932,11 +912,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByUuid_C(String uuid, long companyId, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByUuid_C(uuid, companyId, start, end, null);
 	}
 
@@ -953,11 +932,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByUuid_C(String uuid, long companyId, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1084,12 +1062,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByUuid_C_First(String uuid, long companyId,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByUuid_C_First(uuid, companyId,
 				orderByComparator);
 
@@ -1119,11 +1095,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByUuid_C_First(String uuid, long companyId,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByUuid_C(uuid, companyId, 0, 1,
 				orderByComparator);
 
@@ -1142,12 +1117,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByUuid_C_Last(String uuid, long companyId,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByUuid_C_Last(uuid, companyId,
 				orderByComparator);
 
@@ -1177,11 +1150,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByUuid_C_Last(String uuid, long companyId,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByUuid_C(uuid, companyId);
 
 		if (count == 0) {
@@ -1207,12 +1179,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByUuid_C_PrevAndNext(long kbArticleId, String uuid,
 		long companyId, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -1368,11 +1339,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param uuid the uuid
 	 * @param companyId the company ID
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByUuid_C(String uuid, long companyId)
-		throws SystemException {
+	public void removeByUuid_C(String uuid, long companyId) {
 		for (KBArticle kbArticle : findByUuid_C(uuid, companyId,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -1385,11 +1354,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param uuid the uuid
 	 * @param companyId the company ID
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByUuid_C(String uuid, long companyId)
-		throws SystemException {
+	public int countByUuid_C(String uuid, long companyId) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1483,11 +1450,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param resourcePrimKey the resource prim key
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByResourcePrimKey(long resourcePrimKey)
-		throws SystemException {
+	public List<KBArticle> findByResourcePrimKey(long resourcePrimKey) {
 		return findByResourcePrimKey(resourcePrimKey, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -1503,11 +1468,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByResourcePrimKey(long resourcePrimKey,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByResourcePrimKey(resourcePrimKey, start, end, null);
 	}
 
@@ -1523,12 +1487,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByResourcePrimKey(long resourcePrimKey,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1635,12 +1597,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByResourcePrimKey_First(long resourcePrimKey,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByResourcePrimKey_First(resourcePrimKey,
 				orderByComparator);
 
@@ -1666,11 +1626,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByResourcePrimKey_First(long resourcePrimKey,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByResourcePrimKey(resourcePrimKey, 0, 1,
 				orderByComparator);
 
@@ -1688,12 +1647,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByResourcePrimKey_Last(long resourcePrimKey,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByResourcePrimKey_Last(resourcePrimKey,
 				orderByComparator);
 
@@ -1719,11 +1676,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByResourcePrimKey_Last(long resourcePrimKey,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByResourcePrimKey(resourcePrimKey);
 
 		if (count == 0) {
@@ -1748,12 +1704,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByResourcePrimKey_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -1890,11 +1845,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * Removes all the k b articles where resourcePrimKey = &#63; from the database.
 	 *
 	 * @param resourcePrimKey the resource prim key
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByResourcePrimKey(long resourcePrimKey)
-		throws SystemException {
+	public void removeByResourcePrimKey(long resourcePrimKey) {
 		for (KBArticle kbArticle : findByResourcePrimKey(resourcePrimKey,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -1906,11 +1859,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param resourcePrimKey the resource prim key
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByResourcePrimKey(long resourcePrimKey)
-		throws SystemException {
+	public int countByResourcePrimKey(long resourcePrimKey) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_RESOURCEPRIMKEY;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey };
@@ -1984,11 +1935,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_G(long resourcePrimKey, long groupId)
-		throws SystemException {
+	public List<KBArticle> findByR_G(long resourcePrimKey, long groupId) {
 		return findByR_G(resourcePrimKey, groupId, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -2005,11 +1954,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G(long resourcePrimKey, long groupId,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_G(resourcePrimKey, groupId, start, end, null);
 	}
 
@@ -2026,12 +1974,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G(long resourcePrimKey, long groupId,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2144,12 +2090,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_First(long resourcePrimKey, long groupId,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_First(resourcePrimKey, groupId,
 				orderByComparator);
 
@@ -2179,11 +2123,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_First(long resourcePrimKey, long groupId,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_G(resourcePrimKey, groupId, 0, 1,
 				orderByComparator);
 
@@ -2202,12 +2145,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_Last(long resourcePrimKey, long groupId,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_Last(resourcePrimKey, groupId,
 				orderByComparator);
 
@@ -2237,11 +2178,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_Last(long resourcePrimKey, long groupId,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByR_G(resourcePrimKey, groupId);
 
 		if (count == 0) {
@@ -2267,12 +2207,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_G_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -2415,11 +2354,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> filterFindByR_G(long resourcePrimKey, long groupId)
-		throws SystemException {
+	public List<KBArticle> filterFindByR_G(long resourcePrimKey, long groupId) {
 		return filterFindByR_G(resourcePrimKey, groupId, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -2436,11 +2373,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G(long resourcePrimKey, long groupId,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return filterFindByR_G(resourcePrimKey, groupId, start, end, null);
 	}
 
@@ -2457,12 +2393,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G(long resourcePrimKey, long groupId,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G(resourcePrimKey, groupId, start, end,
 				orderByComparator);
@@ -2555,12 +2489,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByR_G_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_PrevAndNext(kbArticleId, resourcePrimKey, groupId,
 				orderByComparator);
@@ -2742,11 +2675,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_G(long resourcePrimKey, long groupId)
-		throws SystemException {
+	public void removeByR_G(long resourcePrimKey, long groupId) {
 		for (KBArticle kbArticle : findByR_G(resourcePrimKey, groupId,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -2759,11 +2690,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_G(long resourcePrimKey, long groupId)
-		throws SystemException {
+	public int countByR_G(long resourcePrimKey, long groupId) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_G;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, groupId };
@@ -2818,11 +2747,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByR_G(long resourcePrimKey, long groupId)
-		throws SystemException {
+	public int filterCountByR_G(long resourcePrimKey, long groupId) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G(resourcePrimKey, groupId);
 		}
@@ -2887,11 +2814,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param version the version
 	 * @return the matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_V(long resourcePrimKey, int version)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_V(resourcePrimKey, version);
 
 		if (kbArticle == null) {
@@ -2923,11 +2849,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param version the version
 	 * @return the matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public KBArticle fetchByR_V(long resourcePrimKey, int version)
-		throws SystemException {
+	public KBArticle fetchByR_V(long resourcePrimKey, int version) {
 		return fetchByR_V(resourcePrimKey, version, true);
 	}
 
@@ -2938,11 +2862,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param version the version
 	 * @param retrieveFromCache whether to use the finder cache
 	 * @return the matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_V(long resourcePrimKey, int version,
-		boolean retrieveFromCache) throws SystemException {
+		boolean retrieveFromCache) {
 		Object[] finderArgs = new Object[] { resourcePrimKey, version };
 
 		Object result = null;
@@ -3030,11 +2953,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param version the version
 	 * @return the k b article that was removed
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle removeByR_V(long resourcePrimKey, int version)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByR_V(resourcePrimKey, version);
 
 		return remove(kbArticle);
@@ -3046,11 +2968,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param version the version
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_V(long resourcePrimKey, int version)
-		throws SystemException {
+	public int countByR_V(long resourcePrimKey, int version) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_V;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, version };
@@ -3132,11 +3052,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_L(long resourcePrimKey, boolean latest)
-		throws SystemException {
+	public List<KBArticle> findByR_L(long resourcePrimKey, boolean latest) {
 		return findByR_L(resourcePrimKey, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -3153,11 +3071,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_L(long resourcePrimKey, boolean latest,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_L(resourcePrimKey, latest, start, end, null);
 	}
 
@@ -3174,12 +3091,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_L(long resourcePrimKey, boolean latest,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3292,12 +3207,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_L_First(long resourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_L_First(resourcePrimKey, latest,
 				orderByComparator);
 
@@ -3327,11 +3240,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_L_First(long resourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_L(resourcePrimKey, latest, 0, 1,
 				orderByComparator);
 
@@ -3350,12 +3262,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_L_Last(long resourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_L_Last(resourcePrimKey, latest,
 				orderByComparator);
 
@@ -3385,11 +3295,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_L_Last(long resourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByR_L(resourcePrimKey, latest);
 
 		if (count == 0) {
@@ -3415,13 +3324,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_L_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -3568,11 +3475,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKeies the resource prim keies
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_L(long[] resourcePrimKeies, boolean latest)
-		throws SystemException {
+	public List<KBArticle> findByR_L(long[] resourcePrimKeies, boolean latest) {
 		return findByR_L(resourcePrimKeies, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -3589,11 +3494,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_L(long[] resourcePrimKeies, boolean latest,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_L(resourcePrimKeies, latest, start, end, null);
 	}
 
@@ -3610,12 +3514,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_L(long[] resourcePrimKeies, boolean latest,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -3744,11 +3646,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param resourcePrimKey the resource prim key
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_L(long resourcePrimKey, boolean latest)
-		throws SystemException {
+	public void removeByR_L(long resourcePrimKey, boolean latest) {
 		for (KBArticle kbArticle : findByR_L(resourcePrimKey, latest,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -3761,11 +3661,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_L(long resourcePrimKey, boolean latest)
-		throws SystemException {
+	public int countByR_L(long resourcePrimKey, boolean latest) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_L;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, latest };
@@ -3820,11 +3718,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKeies the resource prim keies
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_L(long[] resourcePrimKeies, boolean latest)
-		throws SystemException {
+	public int countByR_L(long[] resourcePrimKeies, boolean latest) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -3929,11 +3825,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_M(long resourcePrimKey, boolean main)
-		throws SystemException {
+	public List<KBArticle> findByR_M(long resourcePrimKey, boolean main) {
 		return findByR_M(resourcePrimKey, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -3950,11 +3844,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_M(long resourcePrimKey, boolean main,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_M(resourcePrimKey, main, start, end, null);
 	}
 
@@ -3971,12 +3864,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_M(long resourcePrimKey, boolean main,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -4089,12 +3980,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_M_First(long resourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_M_First(resourcePrimKey, main,
 				orderByComparator);
 
@@ -4124,11 +4013,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_M_First(long resourcePrimKey, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_M(resourcePrimKey, main, 0, 1,
 				orderByComparator);
 
@@ -4147,12 +4035,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_M_Last(long resourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_M_Last(resourcePrimKey, main,
 				orderByComparator);
 
@@ -4182,11 +4068,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_M_Last(long resourcePrimKey, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByR_M(resourcePrimKey, main);
 
 		if (count == 0) {
@@ -4212,12 +4097,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_M_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -4364,11 +4248,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKeies the resource prim keies
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_M(long[] resourcePrimKeies, boolean main)
-		throws SystemException {
+	public List<KBArticle> findByR_M(long[] resourcePrimKeies, boolean main) {
 		return findByR_M(resourcePrimKeies, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -4385,11 +4267,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_M(long[] resourcePrimKeies, boolean main,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_M(resourcePrimKeies, main, start, end, null);
 	}
 
@@ -4406,12 +4287,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_M(long[] resourcePrimKeies, boolean main,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -4538,11 +4417,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param resourcePrimKey the resource prim key
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_M(long resourcePrimKey, boolean main)
-		throws SystemException {
+	public void removeByR_M(long resourcePrimKey, boolean main) {
 		for (KBArticle kbArticle : findByR_M(resourcePrimKey, main,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -4555,11 +4432,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_M(long resourcePrimKey, boolean main)
-		throws SystemException {
+	public int countByR_M(long resourcePrimKey, boolean main) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_M;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, main };
@@ -4614,11 +4489,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKeies the resource prim keies
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_M(long[] resourcePrimKeies, boolean main)
-		throws SystemException {
+	public int countByR_M(long[] resourcePrimKeies, boolean main) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -4723,11 +4596,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_S(long resourcePrimKey, int status)
-		throws SystemException {
+	public List<KBArticle> findByR_S(long resourcePrimKey, int status) {
 		return findByR_S(resourcePrimKey, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -4744,11 +4615,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_S(long resourcePrimKey, int status,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_S(resourcePrimKey, status, start, end, null);
 	}
 
@@ -4765,12 +4635,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_S(long resourcePrimKey, int status,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -4883,12 +4751,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_S_First(long resourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_S_First(resourcePrimKey, status,
 				orderByComparator);
 
@@ -4918,11 +4784,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_S_First(long resourcePrimKey, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_S(resourcePrimKey, status, 0, 1,
 				orderByComparator);
 
@@ -4941,12 +4806,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_S_Last(long resourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_S_Last(resourcePrimKey, status,
 				orderByComparator);
 
@@ -4976,11 +4839,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_S_Last(long resourcePrimKey, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByR_S(resourcePrimKey, status);
 
 		if (count == 0) {
@@ -5006,12 +4868,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_S_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -5158,11 +5019,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKeies the resource prim keies
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByR_S(long[] resourcePrimKeies, int status)
-		throws SystemException {
+	public List<KBArticle> findByR_S(long[] resourcePrimKeies, int status) {
 		return findByR_S(resourcePrimKeies, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -5179,11 +5038,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_S(long[] resourcePrimKeies, int status,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByR_S(resourcePrimKeies, status, start, end, null);
 	}
 
@@ -5200,12 +5058,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_S(long[] resourcePrimKeies, int status,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -5334,11 +5190,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param resourcePrimKey the resource prim key
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_S(long resourcePrimKey, int status)
-		throws SystemException {
+	public void removeByR_S(long resourcePrimKey, int status) {
 		for (KBArticle kbArticle : findByR_S(resourcePrimKey, status,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -5351,11 +5205,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_S(long resourcePrimKey, int status)
-		throws SystemException {
+	public int countByR_S(long resourcePrimKey, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_S;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, status };
@@ -5410,11 +5262,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKeies the resource prim keies
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_S(long[] resourcePrimKeies, int status)
-		throws SystemException {
+	public int countByR_S(long[] resourcePrimKeies, int status) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -5515,11 +5365,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param urlTitle the url title
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByG_UT(long groupId, String urlTitle)
-		throws SystemException {
+	public List<KBArticle> findByG_UT(long groupId, String urlTitle) {
 		return findByG_UT(groupId, urlTitle, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -5536,11 +5384,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_UT(long groupId, String urlTitle, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_UT(groupId, urlTitle, start, end, null);
 	}
 
@@ -5557,11 +5404,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_UT(long groupId, String urlTitle, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -5688,12 +5534,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_UT_First(long groupId, String urlTitle,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_UT_First(groupId, urlTitle,
 				orderByComparator);
 
@@ -5723,11 +5567,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param urlTitle the url title
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_UT_First(long groupId, String urlTitle,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_UT(groupId, urlTitle, 0, 1,
 				orderByComparator);
 
@@ -5746,12 +5589,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_UT_Last(long groupId, String urlTitle,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_UT_Last(groupId, urlTitle,
 				orderByComparator);
 
@@ -5781,11 +5622,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param urlTitle the url title
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_UT_Last(long groupId, String urlTitle,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_UT(groupId, urlTitle);
 
 		if (count == 0) {
@@ -5811,12 +5651,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_UT_PrevAndNext(long kbArticleId, long groupId,
 		String urlTitle, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -5973,11 +5812,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param urlTitle the url title
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> filterFindByG_UT(long groupId, String urlTitle)
-		throws SystemException {
+	public List<KBArticle> filterFindByG_UT(long groupId, String urlTitle) {
 		return filterFindByG_UT(groupId, urlTitle, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -5994,11 +5831,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_UT(long groupId, String urlTitle,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return filterFindByG_UT(groupId, urlTitle, start, end, null);
 	}
 
@@ -6015,12 +5851,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_UT(long groupId, String urlTitle,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_UT(groupId, urlTitle, start, end, orderByComparator);
 		}
@@ -6126,12 +5960,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_UT_PrevAndNext(long kbArticleId,
 		long groupId, String urlTitle, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_UT_PrevAndNext(kbArticleId, groupId, urlTitle,
 				orderByComparator);
@@ -6327,11 +6160,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param groupId the group ID
 	 * @param urlTitle the url title
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByG_UT(long groupId, String urlTitle)
-		throws SystemException {
+	public void removeByG_UT(long groupId, String urlTitle) {
 		for (KBArticle kbArticle : findByG_UT(groupId, urlTitle,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -6344,11 +6175,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param urlTitle the url title
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByG_UT(long groupId, String urlTitle)
-		throws SystemException {
+	public int countByG_UT(long groupId, String urlTitle) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_UT;
 
 		Object[] finderArgs = new Object[] { groupId, urlTitle };
@@ -6417,11 +6246,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param urlTitle the url title
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByG_UT(long groupId, String urlTitle)
-		throws SystemException {
+	public int filterCountByG_UT(long groupId, String urlTitle) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_UT(groupId, urlTitle);
 		}
@@ -6511,11 +6338,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByG_L(long groupId, boolean latest)
-		throws SystemException {
+	public List<KBArticle> findByG_L(long groupId, boolean latest) {
 		return findByG_L(groupId, latest, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			null);
 	}
@@ -6532,11 +6357,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_L(long groupId, boolean latest, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_L(groupId, latest, start, end, null);
 	}
 
@@ -6553,11 +6377,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_L(long groupId, boolean latest, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -6670,12 +6493,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_L_First(long groupId, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_L_First(groupId, latest,
 				orderByComparator);
 
@@ -6705,11 +6526,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_L_First(long groupId, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_L(groupId, latest, 0, 1,
 				orderByComparator);
 
@@ -6728,12 +6548,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_L_Last(long groupId, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_L_Last(groupId, latest, orderByComparator);
 
 		if (kbArticle != null) {
@@ -6762,11 +6580,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_L_Last(long groupId, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_L(groupId, latest);
 
 		if (count == 0) {
@@ -6792,12 +6609,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_L_PrevAndNext(long kbArticleId, long groupId,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -6940,11 +6756,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> filterFindByG_L(long groupId, boolean latest)
-		throws SystemException {
+	public List<KBArticle> filterFindByG_L(long groupId, boolean latest) {
 		return filterFindByG_L(groupId, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -6961,11 +6775,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_L(long groupId, boolean latest,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return filterFindByG_L(groupId, latest, start, end, null);
 	}
 
@@ -6982,12 +6795,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_L(long groupId, boolean latest,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_L(groupId, latest, start, end, orderByComparator);
 		}
@@ -7079,12 +6890,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_L_PrevAndNext(long kbArticleId,
 		long groupId, boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_L_PrevAndNext(kbArticleId, groupId, latest,
 				orderByComparator);
@@ -7266,11 +7076,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param groupId the group ID
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByG_L(long groupId, boolean latest)
-		throws SystemException {
+	public void removeByG_L(long groupId, boolean latest) {
 		for (KBArticle kbArticle : findByG_L(groupId, latest,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -7283,11 +7091,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByG_L(long groupId, boolean latest)
-		throws SystemException {
+	public int countByG_L(long groupId, boolean latest) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_L;
 
 		Object[] finderArgs = new Object[] { groupId, latest };
@@ -7342,11 +7148,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByG_L(long groupId, boolean latest)
-		throws SystemException {
+	public int filterCountByG_L(long groupId, boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_L(groupId, latest);
 		}
@@ -7420,11 +7224,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByG_M(long groupId, boolean main)
-		throws SystemException {
+	public List<KBArticle> findByG_M(long groupId, boolean main) {
 		return findByG_M(groupId, main, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			null);
 	}
@@ -7441,11 +7243,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_M(long groupId, boolean main, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_M(groupId, main, start, end, null);
 	}
 
@@ -7462,11 +7263,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_M(long groupId, boolean main, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -7579,12 +7379,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_M_First(long groupId, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_M_First(groupId, main, orderByComparator);
 
 		if (kbArticle != null) {
@@ -7613,11 +7411,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_M_First(long groupId, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_M(groupId, main, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
@@ -7635,12 +7432,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_M_Last(long groupId, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_M_Last(groupId, main, orderByComparator);
 
 		if (kbArticle != null) {
@@ -7669,11 +7464,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_M_Last(long groupId, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_M(groupId, main);
 
 		if (count == 0) {
@@ -7699,12 +7493,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_M_PrevAndNext(long kbArticleId, long groupId,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -7847,11 +7640,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> filterFindByG_M(long groupId, boolean main)
-		throws SystemException {
+	public List<KBArticle> filterFindByG_M(long groupId, boolean main) {
 		return filterFindByG_M(groupId, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -7868,11 +7659,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_M(long groupId, boolean main,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return filterFindByG_M(groupId, main, start, end, null);
 	}
 
@@ -7889,12 +7679,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_M(long groupId, boolean main,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_M(groupId, main, start, end, orderByComparator);
 		}
@@ -7986,12 +7774,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_M_PrevAndNext(long kbArticleId,
 		long groupId, boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_M_PrevAndNext(kbArticleId, groupId, main,
 				orderByComparator);
@@ -8173,11 +7960,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param groupId the group ID
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByG_M(long groupId, boolean main)
-		throws SystemException {
+	public void removeByG_M(long groupId, boolean main) {
 		for (KBArticle kbArticle : findByG_M(groupId, main, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -8190,10 +7975,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByG_M(long groupId, boolean main) throws SystemException {
+	public int countByG_M(long groupId, boolean main) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_M;
 
 		Object[] finderArgs = new Object[] { groupId, main };
@@ -8248,11 +8032,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByG_M(long groupId, boolean main)
-		throws SystemException {
+	public int filterCountByG_M(long groupId, boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_M(groupId, main);
 		}
@@ -8326,11 +8108,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByG_S(long groupId, int status)
-		throws SystemException {
+	public List<KBArticle> findByG_S(long groupId, int status) {
 		return findByG_S(groupId, status, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			null);
 	}
@@ -8347,11 +8127,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_S(long groupId, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_S(groupId, status, start, end, null);
 	}
 
@@ -8368,11 +8147,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_S(long groupId, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -8485,12 +8263,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_S_First(long groupId, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_S_First(groupId, status,
 				orderByComparator);
 
@@ -8520,11 +8296,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_S_First(long groupId, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_S(groupId, status, 0, 1,
 				orderByComparator);
 
@@ -8543,12 +8318,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_S_Last(long groupId, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_S_Last(groupId, status, orderByComparator);
 
 		if (kbArticle != null) {
@@ -8577,11 +8350,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_S_Last(long groupId, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_S(groupId, status);
 
 		if (count == 0) {
@@ -8607,12 +8379,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_S_PrevAndNext(long kbArticleId, long groupId,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -8755,11 +8526,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> filterFindByG_S(long groupId, int status)
-		throws SystemException {
+	public List<KBArticle> filterFindByG_S(long groupId, int status) {
 		return filterFindByG_S(groupId, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -8776,11 +8545,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_S(long groupId, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return filterFindByG_S(groupId, status, start, end, null);
 	}
 
@@ -8797,11 +8565,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_S(long groupId, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_S(groupId, status, start, end, orderByComparator);
 		}
@@ -8893,12 +8660,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_S_PrevAndNext(long kbArticleId,
 		long groupId, int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_S_PrevAndNext(kbArticleId, groupId, status,
 				orderByComparator);
@@ -9080,10 +8846,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param groupId the group ID
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByG_S(long groupId, int status) throws SystemException {
+	public void removeByG_S(long groupId, int status) {
 		for (KBArticle kbArticle : findByG_S(groupId, status,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -9096,10 +8861,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByG_S(long groupId, int status) throws SystemException {
+	public int countByG_S(long groupId, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_S;
 
 		Object[] finderArgs = new Object[] { groupId, status };
@@ -9154,11 +8918,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByG_S(long groupId, int status)
-		throws SystemException {
+	public int filterCountByG_S(long groupId, int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_S(groupId, status);
 		}
@@ -9232,11 +8994,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByC_L(long companyId, boolean latest)
-		throws SystemException {
+	public List<KBArticle> findByC_L(long companyId, boolean latest) {
 		return findByC_L(companyId, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -9253,11 +9013,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByC_L(long companyId, boolean latest, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByC_L(companyId, latest, start, end, null);
 	}
 
@@ -9274,11 +9033,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByC_L(long companyId, boolean latest, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -9391,12 +9149,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByC_L_First(long companyId, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByC_L_First(companyId, latest,
 				orderByComparator);
 
@@ -9426,11 +9182,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByC_L_First(long companyId, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByC_L(companyId, latest, 0, 1,
 				orderByComparator);
 
@@ -9449,12 +9204,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByC_L_Last(long companyId, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByC_L_Last(companyId, latest,
 				orderByComparator);
 
@@ -9484,11 +9237,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByC_L_Last(long companyId, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByC_L(companyId, latest);
 
 		if (count == 0) {
@@ -9514,12 +9266,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByC_L_PrevAndNext(long kbArticleId, long companyId,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -9661,11 +9412,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param companyId the company ID
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByC_L(long companyId, boolean latest)
-		throws SystemException {
+	public void removeByC_L(long companyId, boolean latest) {
 		for (KBArticle kbArticle : findByC_L(companyId, latest,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -9678,11 +9427,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByC_L(long companyId, boolean latest)
-		throws SystemException {
+	public int countByC_L(long companyId, boolean latest) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_L;
 
 		Object[] finderArgs = new Object[] { companyId, latest };
@@ -9760,11 +9507,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByC_M(long companyId, boolean main)
-		throws SystemException {
+	public List<KBArticle> findByC_M(long companyId, boolean main) {
 		return findByC_M(companyId, main, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			null);
 	}
@@ -9781,11 +9526,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByC_M(long companyId, boolean main, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByC_M(companyId, main, start, end, null);
 	}
 
@@ -9802,11 +9546,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByC_M(long companyId, boolean main, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -9919,12 +9662,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByC_M_First(long companyId, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByC_M_First(companyId, main,
 				orderByComparator);
 
@@ -9954,11 +9695,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByC_M_First(long companyId, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByC_M(companyId, main, 0, 1,
 				orderByComparator);
 
@@ -9977,12 +9717,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByC_M_Last(long companyId, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByC_M_Last(companyId, main, orderByComparator);
 
 		if (kbArticle != null) {
@@ -10011,11 +9749,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByC_M_Last(long companyId, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByC_M(companyId, main);
 
 		if (count == 0) {
@@ -10041,12 +9778,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByC_M_PrevAndNext(long kbArticleId, long companyId,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -10188,11 +9924,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param companyId the company ID
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByC_M(long companyId, boolean main)
-		throws SystemException {
+	public void removeByC_M(long companyId, boolean main) {
 		for (KBArticle kbArticle : findByC_M(companyId, main,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -10205,11 +9939,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByC_M(long companyId, boolean main)
-		throws SystemException {
+	public int countByC_M(long companyId, boolean main) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_M;
 
 		Object[] finderArgs = new Object[] { companyId, main };
@@ -10287,11 +10019,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByC_S(long companyId, int status)
-		throws SystemException {
+	public List<KBArticle> findByC_S(long companyId, int status) {
 		return findByC_S(companyId, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -10308,11 +10038,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByC_S(long companyId, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByC_S(companyId, status, start, end, null);
 	}
 
@@ -10329,11 +10058,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByC_S(long companyId, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -10446,12 +10174,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByC_S_First(long companyId, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByC_S_First(companyId, status,
 				orderByComparator);
 
@@ -10481,11 +10207,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByC_S_First(long companyId, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByC_S(companyId, status, 0, 1,
 				orderByComparator);
 
@@ -10504,12 +10229,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByC_S_Last(long companyId, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByC_S_Last(companyId, status,
 				orderByComparator);
 
@@ -10539,11 +10262,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByC_S_Last(long companyId, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByC_S(companyId, status);
 
 		if (count == 0) {
@@ -10569,12 +10291,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByC_S_PrevAndNext(long kbArticleId, long companyId,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -10716,11 +10437,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param companyId the company ID
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByC_S(long companyId, int status)
-		throws SystemException {
+	public void removeByC_S(long companyId, int status) {
 		for (KBArticle kbArticle : findByC_S(companyId, status,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -10733,10 +10452,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param companyId the company ID
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByC_S(long companyId, int status) throws SystemException {
+	public int countByC_S(long companyId, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_S;
 
 		Object[] finderArgs = new Object[] { companyId, status };
@@ -10818,11 +10536,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByP_L(long parentResourcePrimKey, boolean latest)
-		throws SystemException {
+	public List<KBArticle> findByP_L(long parentResourcePrimKey, boolean latest) {
 		return findByP_L(parentResourcePrimKey, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -10839,11 +10555,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_L(long parentResourcePrimKey,
-		boolean latest, int start, int end) throws SystemException {
+		boolean latest, int start, int end) {
 		return findByP_L(parentResourcePrimKey, latest, start, end, null);
 	}
 
@@ -10860,12 +10575,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_L(long parentResourcePrimKey,
-		boolean latest, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -10978,12 +10691,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByP_L_First(long parentResourcePrimKey,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByP_L_First(parentResourcePrimKey, latest,
 				orderByComparator);
 
@@ -11013,12 +10725,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByP_L_First(long parentResourcePrimKey,
-		boolean latest, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByP_L(parentResourcePrimKey, latest, 0, 1,
 				orderByComparator);
 
@@ -11037,12 +10747,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByP_L_Last(long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByP_L_Last(parentResourcePrimKey, latest,
 				orderByComparator);
 
@@ -11072,12 +10780,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByP_L_Last(long parentResourcePrimKey,
-		boolean latest, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, OrderByComparator orderByComparator) {
 		int count = countByP_L(parentResourcePrimKey, latest);
 
 		if (count == 0) {
@@ -11103,13 +10809,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByP_L_PrevAndNext(long kbArticleId,
 		long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -11256,11 +10960,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_L(long[] parentResourcePrimKeies,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		return findByP_L(parentResourcePrimKeies, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -11277,11 +10980,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_L(long[] parentResourcePrimKeies,
-		boolean latest, int start, int end) throws SystemException {
+		boolean latest, int start, int end) {
 		return findByP_L(parentResourcePrimKeies, latest, start, end, null);
 	}
 
@@ -11298,12 +11000,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_L(long[] parentResourcePrimKeies,
-		boolean latest, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, int start, int end, OrderByComparator orderByComparator) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -11432,11 +11132,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByP_L(long parentResourcePrimKey, boolean latest)
-		throws SystemException {
+	public void removeByP_L(long parentResourcePrimKey, boolean latest) {
 		for (KBArticle kbArticle : findByP_L(parentResourcePrimKey, latest,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -11449,11 +11147,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByP_L(long parentResourcePrimKey, boolean latest)
-		throws SystemException {
+	public int countByP_L(long parentResourcePrimKey, boolean latest) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_L;
 
 		Object[] finderArgs = new Object[] { parentResourcePrimKey, latest };
@@ -11508,11 +11204,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByP_L(long[] parentResourcePrimKeies, boolean latest)
-		throws SystemException {
+	public int countByP_L(long[] parentResourcePrimKeies, boolean latest) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -11617,11 +11311,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByP_M(long parentResourcePrimKey, boolean main)
-		throws SystemException {
+	public List<KBArticle> findByP_M(long parentResourcePrimKey, boolean main) {
 		return findByP_M(parentResourcePrimKey, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -11638,11 +11330,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_M(long parentResourcePrimKey, boolean main,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByP_M(parentResourcePrimKey, main, start, end, null);
 	}
 
@@ -11659,12 +11350,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_M(long parentResourcePrimKey, boolean main,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -11777,12 +11466,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByP_M_First(long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByP_M_First(parentResourcePrimKey, main,
 				orderByComparator);
 
@@ -11812,11 +11499,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByP_M_First(long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByP_M(parentResourcePrimKey, main, 0, 1,
 				orderByComparator);
 
@@ -11835,12 +11521,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByP_M_Last(long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByP_M_Last(parentResourcePrimKey, main,
 				orderByComparator);
 
@@ -11870,11 +11554,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByP_M_Last(long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByP_M(parentResourcePrimKey, main);
 
 		if (count == 0) {
@@ -11900,13 +11583,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByP_M_PrevAndNext(long kbArticleId,
 		long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -12053,11 +11734,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_M(long[] parentResourcePrimKeies,
-		boolean main) throws SystemException {
+		boolean main) {
 		return findByP_M(parentResourcePrimKeies, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -12074,11 +11754,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_M(long[] parentResourcePrimKeies,
-		boolean main, int start, int end) throws SystemException {
+		boolean main, int start, int end) {
 		return findByP_M(parentResourcePrimKeies, main, start, end, null);
 	}
 
@@ -12095,12 +11774,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_M(long[] parentResourcePrimKeies,
-		boolean main, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean main, int start, int end, OrderByComparator orderByComparator) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -12229,11 +11906,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByP_M(long parentResourcePrimKey, boolean main)
-		throws SystemException {
+	public void removeByP_M(long parentResourcePrimKey, boolean main) {
 		for (KBArticle kbArticle : findByP_M(parentResourcePrimKey, main,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -12246,11 +11921,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByP_M(long parentResourcePrimKey, boolean main)
-		throws SystemException {
+	public int countByP_M(long parentResourcePrimKey, boolean main) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_M;
 
 		Object[] finderArgs = new Object[] { parentResourcePrimKey, main };
@@ -12305,11 +11978,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByP_M(long[] parentResourcePrimKeies, boolean main)
-		throws SystemException {
+	public int countByP_M(long[] parentResourcePrimKeies, boolean main) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -12414,11 +12085,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByP_S(long parentResourcePrimKey, int status)
-		throws SystemException {
+	public List<KBArticle> findByP_S(long parentResourcePrimKey, int status) {
 		return findByP_S(parentResourcePrimKey, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -12435,11 +12104,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_S(long parentResourcePrimKey, int status,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByP_S(parentResourcePrimKey, status, start, end, null);
 	}
 
@@ -12456,12 +12124,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_S(long parentResourcePrimKey, int status,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -12574,12 +12240,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByP_S_First(long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByP_S_First(parentResourcePrimKey, status,
 				orderByComparator);
 
@@ -12609,11 +12273,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByP_S_First(long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByP_S(parentResourcePrimKey, status, 0, 1,
 				orderByComparator);
 
@@ -12632,12 +12295,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByP_S_Last(long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByP_S_Last(parentResourcePrimKey, status,
 				orderByComparator);
 
@@ -12667,11 +12328,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByP_S_Last(long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByP_S(parentResourcePrimKey, status);
 
 		if (count == 0) {
@@ -12697,13 +12357,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByP_S_PrevAndNext(long kbArticleId,
 		long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -12850,11 +12508,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findByP_S(long[] parentResourcePrimKeies, int status)
-		throws SystemException {
+	public List<KBArticle> findByP_S(long[] parentResourcePrimKeies, int status) {
 		return findByP_S(parentResourcePrimKeies, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -12871,11 +12527,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_S(long[] parentResourcePrimKeies,
-		int status, int start, int end) throws SystemException {
+		int status, int start, int end) {
 		return findByP_S(parentResourcePrimKeies, status, start, end, null);
 	}
 
@@ -12892,12 +12547,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByP_S(long[] parentResourcePrimKeies,
-		int status, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, int start, int end, OrderByComparator orderByComparator) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -13026,11 +12679,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByP_S(long parentResourcePrimKey, int status)
-		throws SystemException {
+	public void removeByP_S(long parentResourcePrimKey, int status) {
 		for (KBArticle kbArticle : findByP_S(parentResourcePrimKey, status,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -13043,11 +12694,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByP_S(long parentResourcePrimKey, int status)
-		throws SystemException {
+	public int countByP_S(long parentResourcePrimKey, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_S;
 
 		Object[] finderArgs = new Object[] { parentResourcePrimKey, status };
@@ -13102,11 +12751,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByP_S(long[] parentResourcePrimKeies, int status)
-		throws SystemException {
+	public int countByP_S(long[] parentResourcePrimKeies, int status) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -13223,11 +12870,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_L(long resourcePrimKey, long groupId,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		return findByR_G_L(resourcePrimKey, groupId, latest, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -13245,11 +12891,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_L(long resourcePrimKey, long groupId,
-		boolean latest, int start, int end) throws SystemException {
+		boolean latest, int start, int end) {
 		return findByR_G_L(resourcePrimKey, groupId, latest, start, end, null);
 	}
 
@@ -13267,12 +12912,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_L(long resourcePrimKey, long groupId,
-		boolean latest, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -13391,12 +13034,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_L_First(long resourcePrimKey, long groupId,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_L_First(resourcePrimKey, groupId,
 				latest, orderByComparator);
 
@@ -13430,12 +13072,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_L_First(long resourcePrimKey, long groupId,
-		boolean latest, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_G_L(resourcePrimKey, groupId, latest, 0,
 				1, orderByComparator);
 
@@ -13455,12 +13095,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_L_Last(long resourcePrimKey, long groupId,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_L_Last(resourcePrimKey, groupId,
 				latest, orderByComparator);
 
@@ -13494,12 +13133,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_L_Last(long resourcePrimKey, long groupId,
-		boolean latest, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, OrderByComparator orderByComparator) {
 		int count = countByR_G_L(resourcePrimKey, groupId, latest);
 
 		if (count == 0) {
@@ -13526,13 +13163,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_G_L_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -13680,11 +13315,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_L(long resourcePrimKey,
-		long groupId, boolean latest) throws SystemException {
+		long groupId, boolean latest) {
 		return filterFindByR_G_L(resourcePrimKey, groupId, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -13702,12 +13336,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_L(long resourcePrimKey,
-		long groupId, boolean latest, int start, int end)
-		throws SystemException {
+		long groupId, boolean latest, int start, int end) {
 		return filterFindByR_G_L(resourcePrimKey, groupId, latest, start, end,
 			null);
 	}
@@ -13726,12 +13358,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_L(long resourcePrimKey,
 		long groupId, boolean latest, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_L(resourcePrimKey, groupId, latest, start, end,
 				orderByComparator);
@@ -13829,13 +13460,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByR_G_L_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_L_PrevAndNext(kbArticleId, resourcePrimKey,
 				groupId, latest, orderByComparator);
@@ -14023,11 +13652,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_L(long[] resourcePrimKeies,
-		long groupId, boolean latest) throws SystemException {
+		long groupId, boolean latest) {
 		return filterFindByR_G_L(resourcePrimKeies, groupId, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -14045,12 +13673,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_L(long[] resourcePrimKeies,
-		long groupId, boolean latest, int start, int end)
-		throws SystemException {
+		long groupId, boolean latest, int start, int end) {
 		return filterFindByR_G_L(resourcePrimKeies, groupId, latest, start,
 			end, null);
 	}
@@ -14069,12 +13695,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_L(long[] resourcePrimKeies,
 		long groupId, boolean latest, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_L(resourcePrimKeies, groupId, latest, start, end,
 				orderByComparator);
@@ -14185,11 +13810,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_L(long[] resourcePrimKeies, long groupId,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		return findByR_G_L(resourcePrimKeies, groupId, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -14207,11 +13831,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_L(long[] resourcePrimKeies, long groupId,
-		boolean latest, int start, int end) throws SystemException {
+		boolean latest, int start, int end) {
 		return findByR_G_L(resourcePrimKeies, groupId, latest, start, end, null);
 	}
 
@@ -14229,12 +13852,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_L(long[] resourcePrimKeies, long groupId,
-		boolean latest, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean latest, int start, int end, OrderByComparator orderByComparator) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -14369,11 +13990,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_G_L(long resourcePrimKey, long groupId, boolean latest)
-		throws SystemException {
+	public void removeByR_G_L(long resourcePrimKey, long groupId, boolean latest) {
 		for (KBArticle kbArticle : findByR_G_L(resourcePrimKey, groupId,
 				latest, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -14387,11 +14006,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_G_L(long resourcePrimKey, long groupId, boolean latest)
-		throws SystemException {
+	public int countByR_G_L(long resourcePrimKey, long groupId, boolean latest) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_G_L;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, groupId, latest };
@@ -14451,11 +14068,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByR_G_L(long[] resourcePrimKeies, long groupId,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -14537,11 +14153,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByR_G_L(long resourcePrimKey, long groupId,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G_L(resourcePrimKey, groupId, latest);
 		}
@@ -14597,11 +14212,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByR_G_L(long[] resourcePrimKeies, long groupId,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G_L(resourcePrimKeies, groupId, latest);
 		}
@@ -14717,11 +14331,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_M(long resourcePrimKey, long groupId,
-		boolean main) throws SystemException {
+		boolean main) {
 		return findByR_G_M(resourcePrimKey, groupId, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -14739,11 +14352,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_M(long resourcePrimKey, long groupId,
-		boolean main, int start, int end) throws SystemException {
+		boolean main, int start, int end) {
 		return findByR_G_M(resourcePrimKey, groupId, main, start, end, null);
 	}
 
@@ -14761,12 +14373,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_M(long resourcePrimKey, long groupId,
-		boolean main, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean main, int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -14885,12 +14495,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_M_First(long resourcePrimKey, long groupId,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_M_First(resourcePrimKey, groupId,
 				main, orderByComparator);
 
@@ -14924,12 +14533,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_M_First(long resourcePrimKey, long groupId,
-		boolean main, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean main, OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_G_M(resourcePrimKey, groupId, main, 0,
 				1, orderByComparator);
 
@@ -14949,12 +14556,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_M_Last(long resourcePrimKey, long groupId,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_M_Last(resourcePrimKey, groupId, main,
 				orderByComparator);
 
@@ -14988,12 +14594,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_M_Last(long resourcePrimKey, long groupId,
-		boolean main, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean main, OrderByComparator orderByComparator) {
 		int count = countByR_G_M(resourcePrimKey, groupId, main);
 
 		if (count == 0) {
@@ -15020,13 +14624,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_G_M_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -15174,11 +14776,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_M(long resourcePrimKey,
-		long groupId, boolean main) throws SystemException {
+		long groupId, boolean main) {
 		return filterFindByR_G_M(resourcePrimKey, groupId, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -15196,12 +14797,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_M(long resourcePrimKey,
-		long groupId, boolean main, int start, int end)
-		throws SystemException {
+		long groupId, boolean main, int start, int end) {
 		return filterFindByR_G_M(resourcePrimKey, groupId, main, start, end,
 			null);
 	}
@@ -15220,12 +14819,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_M(long resourcePrimKey,
 		long groupId, boolean main, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_M(resourcePrimKey, groupId, main, start, end,
 				orderByComparator);
@@ -15323,13 +14921,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByR_G_M_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_M_PrevAndNext(kbArticleId, resourcePrimKey,
 				groupId, main, orderByComparator);
@@ -15517,11 +15113,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_M(long[] resourcePrimKeies,
-		long groupId, boolean main) throws SystemException {
+		long groupId, boolean main) {
 		return filterFindByR_G_M(resourcePrimKeies, groupId, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -15539,12 +15134,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_M(long[] resourcePrimKeies,
-		long groupId, boolean main, int start, int end)
-		throws SystemException {
+		long groupId, boolean main, int start, int end) {
 		return filterFindByR_G_M(resourcePrimKeies, groupId, main, start, end,
 			null);
 	}
@@ -15563,12 +15156,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_M(long[] resourcePrimKeies,
 		long groupId, boolean main, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_M(resourcePrimKeies, groupId, main, start, end,
 				orderByComparator);
@@ -15679,11 +15271,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_M(long[] resourcePrimKeies, long groupId,
-		boolean main) throws SystemException {
+		boolean main) {
 		return findByR_G_M(resourcePrimKeies, groupId, main, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -15701,11 +15292,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_M(long[] resourcePrimKeies, long groupId,
-		boolean main, int start, int end) throws SystemException {
+		boolean main, int start, int end) {
 		return findByR_G_M(resourcePrimKeies, groupId, main, start, end, null);
 	}
 
@@ -15723,12 +15313,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_M(long[] resourcePrimKeies, long groupId,
-		boolean main, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		boolean main, int start, int end, OrderByComparator orderByComparator) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -15863,11 +15451,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_G_M(long resourcePrimKey, long groupId, boolean main)
-		throws SystemException {
+	public void removeByR_G_M(long resourcePrimKey, long groupId, boolean main) {
 		for (KBArticle kbArticle : findByR_G_M(resourcePrimKey, groupId, main,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -15881,11 +15467,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_G_M(long resourcePrimKey, long groupId, boolean main)
-		throws SystemException {
+	public int countByR_G_M(long resourcePrimKey, long groupId, boolean main) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_G_M;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, groupId, main };
@@ -15945,11 +15529,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_G_M(long[] resourcePrimKeies, long groupId, boolean main)
-		throws SystemException {
+	public int countByR_G_M(long[] resourcePrimKeies, long groupId, boolean main) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -16031,11 +15613,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByR_G_M(long resourcePrimKey, long groupId,
-		boolean main) throws SystemException {
+		boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G_M(resourcePrimKey, groupId, main);
 		}
@@ -16091,11 +15672,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByR_G_M(long[] resourcePrimKeies, long groupId,
-		boolean main) throws SystemException {
+		boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G_M(resourcePrimKeies, groupId, main);
 		}
@@ -16211,11 +15791,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_S(long resourcePrimKey, long groupId,
-		int status) throws SystemException {
+		int status) {
 		return findByR_G_S(resourcePrimKey, groupId, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -16233,11 +15812,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_S(long resourcePrimKey, long groupId,
-		int status, int start, int end) throws SystemException {
+		int status, int start, int end) {
 		return findByR_G_S(resourcePrimKey, groupId, status, start, end, null);
 	}
 
@@ -16255,12 +15833,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_S(long resourcePrimKey, long groupId,
-		int status, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -16379,12 +15955,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_S_First(long resourcePrimKey, long groupId,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_S_First(resourcePrimKey, groupId,
 				status, orderByComparator);
 
@@ -16418,12 +15993,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_S_First(long resourcePrimKey, long groupId,
-		int status, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByR_G_S(resourcePrimKey, groupId, status, 0,
 				1, orderByComparator);
 
@@ -16443,12 +16016,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByR_G_S_Last(long resourcePrimKey, long groupId,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByR_G_S_Last(resourcePrimKey, groupId,
 				status, orderByComparator);
 
@@ -16482,12 +16054,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByR_G_S_Last(long resourcePrimKey, long groupId,
-		int status, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, OrderByComparator orderByComparator) {
 		int count = countByR_G_S(resourcePrimKey, groupId, status);
 
 		if (count == 0) {
@@ -16514,13 +16084,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByR_G_S_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -16668,11 +16236,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_S(long resourcePrimKey,
-		long groupId, int status) throws SystemException {
+		long groupId, int status) {
 		return filterFindByR_G_S(resourcePrimKey, groupId, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -16690,11 +16257,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_S(long resourcePrimKey,
-		long groupId, int status, int start, int end) throws SystemException {
+		long groupId, int status, int start, int end) {
 		return filterFindByR_G_S(resourcePrimKey, groupId, status, start, end,
 			null);
 	}
@@ -16713,12 +16279,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_S(long resourcePrimKey,
 		long groupId, int status, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_S(resourcePrimKey, groupId, status, start, end,
 				orderByComparator);
@@ -16816,13 +16381,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByR_G_S_PrevAndNext(long kbArticleId,
 		long resourcePrimKey, long groupId, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_S_PrevAndNext(kbArticleId, resourcePrimKey,
 				groupId, status, orderByComparator);
@@ -17010,11 +16573,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_S(long[] resourcePrimKeies,
-		long groupId, int status) throws SystemException {
+		long groupId, int status) {
 		return filterFindByR_G_S(resourcePrimKeies, groupId, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -17032,11 +16594,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_S(long[] resourcePrimKeies,
-		long groupId, int status, int start, int end) throws SystemException {
+		long groupId, int status, int start, int end) {
 		return filterFindByR_G_S(resourcePrimKeies, groupId, status, start,
 			end, null);
 	}
@@ -17055,12 +16616,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByR_G_S(long[] resourcePrimKeies,
 		long groupId, int status, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByR_G_S(resourcePrimKeies, groupId, status, start, end,
 				orderByComparator);
@@ -17171,11 +16731,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_S(long[] resourcePrimKeies, long groupId,
-		int status) throws SystemException {
+		int status) {
 		return findByR_G_S(resourcePrimKeies, groupId, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -17193,11 +16752,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_S(long[] resourcePrimKeies, long groupId,
-		int status, int start, int end) throws SystemException {
+		int status, int start, int end) {
 		return findByR_G_S(resourcePrimKeies, groupId, status, start, end, null);
 	}
 
@@ -17215,12 +16773,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByR_G_S(long[] resourcePrimKeies, long groupId,
-		int status, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, int start, int end, OrderByComparator orderByComparator) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -17355,11 +16911,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param resourcePrimKey the resource prim key
 	 * @param groupId the group ID
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByR_G_S(long resourcePrimKey, long groupId, int status)
-		throws SystemException {
+	public void removeByR_G_S(long resourcePrimKey, long groupId, int status) {
 		for (KBArticle kbArticle : findByR_G_S(resourcePrimKey, groupId,
 				status, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -17373,11 +16927,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_G_S(long resourcePrimKey, long groupId, int status)
-		throws SystemException {
+	public int countByR_G_S(long resourcePrimKey, long groupId, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_G_S;
 
 		Object[] finderArgs = new Object[] { resourcePrimKey, groupId, status };
@@ -17437,11 +16989,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByR_G_S(long[] resourcePrimKeies, long groupId, int status)
-		throws SystemException {
+	public int countByR_G_S(long[] resourcePrimKeies, long groupId, int status) {
 		if (resourcePrimKeies == null) {
 			resourcePrimKeies = new long[0];
 		}
@@ -17523,11 +17073,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByR_G_S(long resourcePrimKey, long groupId, int status)
-		throws SystemException {
+	public int filterCountByR_G_S(long resourcePrimKey, long groupId, int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G_S(resourcePrimKey, groupId, status);
 		}
@@ -17583,11 +17131,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByR_G_S(long[] resourcePrimKeies, long groupId,
-		int status) throws SystemException {
+		int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByR_G_S(resourcePrimKeies, groupId, status);
 		}
@@ -17703,11 +17250,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_L(long groupId,
-		long parentResourcePrimKey, boolean latest) throws SystemException {
+		long parentResourcePrimKey, boolean latest) {
 		return findByG_P_L(groupId, parentResourcePrimKey, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -17725,12 +17271,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_L(long groupId,
-		long parentResourcePrimKey, boolean latest, int start, int end)
-		throws SystemException {
+		long parentResourcePrimKey, boolean latest, int start, int end) {
 		return findByG_P_L(groupId, parentResourcePrimKey, latest, start, end,
 			null);
 	}
@@ -17749,12 +17293,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_L(long groupId,
 		long parentResourcePrimKey, boolean latest, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -17873,13 +17416,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_L_First(long groupId,
 		long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_L_First(groupId,
 				parentResourcePrimKey, latest, orderByComparator);
 
@@ -17913,12 +17454,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_L_First(long groupId,
 		long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_P_L(groupId, parentResourcePrimKey,
 				latest, 0, 1, orderByComparator);
 
@@ -17938,12 +17478,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_L_Last(long groupId, long parentResourcePrimKey,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_L_Last(groupId, parentResourcePrimKey,
 				latest, orderByComparator);
 
@@ -17977,12 +17516,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_L_Last(long groupId,
 		long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_P_L(groupId, parentResourcePrimKey, latest);
 
 		if (count == 0) {
@@ -18009,13 +17547,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_P_L_PrevAndNext(long kbArticleId, long groupId,
 		long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -18163,11 +17699,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_L(long groupId,
-		long parentResourcePrimKey, boolean latest) throws SystemException {
+		long parentResourcePrimKey, boolean latest) {
 		return filterFindByG_P_L(groupId, parentResourcePrimKey, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -18185,12 +17720,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_L(long groupId,
-		long parentResourcePrimKey, boolean latest, int start, int end)
-		throws SystemException {
+		long parentResourcePrimKey, boolean latest, int start, int end) {
 		return filterFindByG_P_L(groupId, parentResourcePrimKey, latest, start,
 			end, null);
 	}
@@ -18209,12 +17742,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_L(long groupId,
 		long parentResourcePrimKey, boolean latest, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_L(groupId, parentResourcePrimKey, latest, start,
 				end, orderByComparator);
@@ -18312,13 +17844,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_P_L_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_L_PrevAndNext(kbArticleId, groupId,
 				parentResourcePrimKey, latest, orderByComparator);
@@ -18508,12 +18038,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_L(long groupId,
-		long[] parentResourcePrimKeies, boolean latest)
-		throws SystemException {
+		long[] parentResourcePrimKeies, boolean latest) {
 		return filterFindByG_P_L(groupId, parentResourcePrimKeies, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -18531,12 +18059,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_L(long groupId,
-		long[] parentResourcePrimKeies, boolean latest, int start, int end)
-		throws SystemException {
+		long[] parentResourcePrimKeies, boolean latest, int start, int end) {
 		return filterFindByG_P_L(groupId, parentResourcePrimKeies, latest,
 			start, end, null);
 	}
@@ -18555,12 +18081,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_L(long groupId,
 		long[] parentResourcePrimKeies, boolean latest, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_L(groupId, parentResourcePrimKeies, latest, start,
 				end, orderByComparator);
@@ -18671,12 +18196,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_L(long groupId,
-		long[] parentResourcePrimKeies, boolean latest)
-		throws SystemException {
+		long[] parentResourcePrimKeies, boolean latest) {
 		return findByG_P_L(groupId, parentResourcePrimKeies, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -18694,12 +18217,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_L(long groupId,
-		long[] parentResourcePrimKeies, boolean latest, int start, int end)
-		throws SystemException {
+		long[] parentResourcePrimKeies, boolean latest, int start, int end) {
 		return findByG_P_L(groupId, parentResourcePrimKeies, latest, start,
 			end, null);
 	}
@@ -18718,12 +18239,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_L(long groupId,
 		long[] parentResourcePrimKeies, boolean latest, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -18858,11 +18378,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByG_P_L(long groupId, long parentResourcePrimKey,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		for (KBArticle kbArticle : findByG_P_L(groupId, parentResourcePrimKey,
 				latest, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -18876,11 +18395,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_L(long groupId, long parentResourcePrimKey,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_P_L;
 
 		Object[] finderArgs = new Object[] {
@@ -18942,11 +18460,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_L(long groupId, long[] parentResourcePrimKeies,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -19028,11 +18545,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_L(long groupId, long parentResourcePrimKey,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_L(groupId, parentResourcePrimKey, latest);
 		}
@@ -19088,11 +18604,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_L(long groupId, long[] parentResourcePrimKeies,
-		boolean latest) throws SystemException {
+		boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_L(groupId, parentResourcePrimKeies, latest);
 		}
@@ -19208,11 +18723,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_M(long groupId,
-		long parentResourcePrimKey, boolean main) throws SystemException {
+		long parentResourcePrimKey, boolean main) {
 		return findByG_P_M(groupId, parentResourcePrimKey, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -19230,12 +18744,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_M(long groupId,
-		long parentResourcePrimKey, boolean main, int start, int end)
-		throws SystemException {
+		long parentResourcePrimKey, boolean main, int start, int end) {
 		return findByG_P_M(groupId, parentResourcePrimKey, main, start, end,
 			null);
 	}
@@ -19254,12 +18766,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_M(long groupId,
 		long parentResourcePrimKey, boolean main, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -19378,13 +18889,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_M_First(long groupId,
 		long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_M_First(groupId,
 				parentResourcePrimKey, main, orderByComparator);
 
@@ -19418,12 +18927,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_M_First(long groupId,
 		long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_P_M(groupId, parentResourcePrimKey,
 				main, 0, 1, orderByComparator);
 
@@ -19443,12 +18951,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_M_Last(long groupId, long parentResourcePrimKey,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_M_Last(groupId, parentResourcePrimKey,
 				main, orderByComparator);
 
@@ -19482,12 +18989,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_M_Last(long groupId,
 		long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_P_M(groupId, parentResourcePrimKey, main);
 
 		if (count == 0) {
@@ -19514,13 +19020,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_P_M_PrevAndNext(long kbArticleId, long groupId,
 		long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -19668,11 +19172,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_M(long groupId,
-		long parentResourcePrimKey, boolean main) throws SystemException {
+		long parentResourcePrimKey, boolean main) {
 		return filterFindByG_P_M(groupId, parentResourcePrimKey, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -19690,12 +19193,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_M(long groupId,
-		long parentResourcePrimKey, boolean main, int start, int end)
-		throws SystemException {
+		long parentResourcePrimKey, boolean main, int start, int end) {
 		return filterFindByG_P_M(groupId, parentResourcePrimKey, main, start,
 			end, null);
 	}
@@ -19714,12 +19215,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_M(long groupId,
 		long parentResourcePrimKey, boolean main, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_M(groupId, parentResourcePrimKey, main, start,
 				end, orderByComparator);
@@ -19817,13 +19317,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_P_M_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_M_PrevAndNext(kbArticleId, groupId,
 				parentResourcePrimKey, main, orderByComparator);
@@ -20013,11 +19511,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_M(long groupId,
-		long[] parentResourcePrimKeies, boolean main) throws SystemException {
+		long[] parentResourcePrimKeies, boolean main) {
 		return filterFindByG_P_M(groupId, parentResourcePrimKeies, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -20035,12 +19532,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_M(long groupId,
-		long[] parentResourcePrimKeies, boolean main, int start, int end)
-		throws SystemException {
+		long[] parentResourcePrimKeies, boolean main, int start, int end) {
 		return filterFindByG_P_M(groupId, parentResourcePrimKeies, main, start,
 			end, null);
 	}
@@ -20059,12 +19554,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_M(long groupId,
 		long[] parentResourcePrimKeies, boolean main, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_M(groupId, parentResourcePrimKeies, main, start,
 				end, orderByComparator);
@@ -20175,11 +19669,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_M(long groupId,
-		long[] parentResourcePrimKeies, boolean main) throws SystemException {
+		long[] parentResourcePrimKeies, boolean main) {
 		return findByG_P_M(groupId, parentResourcePrimKeies, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -20197,12 +19690,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_M(long groupId,
-		long[] parentResourcePrimKeies, boolean main, int start, int end)
-		throws SystemException {
+		long[] parentResourcePrimKeies, boolean main, int start, int end) {
 		return findByG_P_M(groupId, parentResourcePrimKeies, main, start, end,
 			null);
 	}
@@ -20221,12 +19712,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_M(long groupId,
 		long[] parentResourcePrimKeies, boolean main, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -20361,11 +19851,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByG_P_M(long groupId, long parentResourcePrimKey,
-		boolean main) throws SystemException {
+		boolean main) {
 		for (KBArticle kbArticle : findByG_P_M(groupId, parentResourcePrimKey,
 				main, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -20379,11 +19868,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_M(long groupId, long parentResourcePrimKey,
-		boolean main) throws SystemException {
+		boolean main) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_P_M;
 
 		Object[] finderArgs = new Object[] { groupId, parentResourcePrimKey, main };
@@ -20443,11 +19931,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_M(long groupId, long[] parentResourcePrimKeies,
-		boolean main) throws SystemException {
+		boolean main) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -20529,11 +20016,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_M(long groupId, long parentResourcePrimKey,
-		boolean main) throws SystemException {
+		boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_M(groupId, parentResourcePrimKey, main);
 		}
@@ -20589,11 +20075,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_M(long groupId, long[] parentResourcePrimKeies,
-		boolean main) throws SystemException {
+		boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_M(groupId, parentResourcePrimKeies, main);
 		}
@@ -20709,11 +20194,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S(long groupId,
-		long parentResourcePrimKey, int status) throws SystemException {
+		long parentResourcePrimKey, int status) {
 		return findByG_P_S(groupId, parentResourcePrimKey, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -20731,12 +20215,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S(long groupId,
-		long parentResourcePrimKey, int status, int start, int end)
-		throws SystemException {
+		long parentResourcePrimKey, int status, int start, int end) {
 		return findByG_P_S(groupId, parentResourcePrimKey, status, start, end,
 			null);
 	}
@@ -20755,12 +20237,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S(long groupId,
 		long parentResourcePrimKey, int status, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -20879,13 +20360,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_First(long groupId,
 		long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_First(groupId,
 				parentResourcePrimKey, status, orderByComparator);
 
@@ -20919,12 +20398,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_First(long groupId,
 		long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_P_S(groupId, parentResourcePrimKey,
 				status, 0, 1, orderByComparator);
 
@@ -20944,12 +20422,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_Last(long groupId, long parentResourcePrimKey,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_Last(groupId, parentResourcePrimKey,
 				status, orderByComparator);
 
@@ -20983,12 +20460,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_Last(long groupId,
 		long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_P_S(groupId, parentResourcePrimKey, status);
 
 		if (count == 0) {
@@ -21015,13 +20491,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_P_S_PrevAndNext(long kbArticleId, long groupId,
 		long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -21169,11 +20643,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S(long groupId,
-		long parentResourcePrimKey, int status) throws SystemException {
+		long parentResourcePrimKey, int status) {
 		return filterFindByG_P_S(groupId, parentResourcePrimKey, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -21191,12 +20664,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S(long groupId,
-		long parentResourcePrimKey, int status, int start, int end)
-		throws SystemException {
+		long parentResourcePrimKey, int status, int start, int end) {
 		return filterFindByG_P_S(groupId, parentResourcePrimKey, status, start,
 			end, null);
 	}
@@ -21215,12 +20686,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S(long groupId,
 		long parentResourcePrimKey, int status, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S(groupId, parentResourcePrimKey, status, start,
 				end, orderByComparator);
@@ -21318,13 +20788,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_P_S_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_PrevAndNext(kbArticleId, groupId,
 				parentResourcePrimKey, status, orderByComparator);
@@ -21514,11 +20982,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S(long groupId,
-		long[] parentResourcePrimKeies, int status) throws SystemException {
+		long[] parentResourcePrimKeies, int status) {
 		return filterFindByG_P_S(groupId, parentResourcePrimKeies, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -21536,12 +21003,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S(long groupId,
-		long[] parentResourcePrimKeies, int status, int start, int end)
-		throws SystemException {
+		long[] parentResourcePrimKeies, int status, int start, int end) {
 		return filterFindByG_P_S(groupId, parentResourcePrimKeies, status,
 			start, end, null);
 	}
@@ -21560,12 +21025,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S(long groupId,
 		long[] parentResourcePrimKeies, int status, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S(groupId, parentResourcePrimKeies, status, start,
 				end, orderByComparator);
@@ -21676,11 +21140,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S(long groupId,
-		long[] parentResourcePrimKeies, int status) throws SystemException {
+		long[] parentResourcePrimKeies, int status) {
 		return findByG_P_S(groupId, parentResourcePrimKeies, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -21698,12 +21161,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S(long groupId,
-		long[] parentResourcePrimKeies, int status, int start, int end)
-		throws SystemException {
+		long[] parentResourcePrimKeies, int status, int start, int end) {
 		return findByG_P_S(groupId, parentResourcePrimKeies, status, start,
 			end, null);
 	}
@@ -21722,12 +21183,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S(long groupId,
 		long[] parentResourcePrimKeies, int status, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -21862,11 +21322,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByG_P_S(long groupId, long parentResourcePrimKey,
-		int status) throws SystemException {
+		int status) {
 		for (KBArticle kbArticle : findByG_P_S(groupId, parentResourcePrimKey,
 				status, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -21880,11 +21339,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByG_P_S(long groupId, long parentResourcePrimKey, int status)
-		throws SystemException {
+	public int countByG_P_S(long groupId, long parentResourcePrimKey, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_P_S;
 
 		Object[] finderArgs = new Object[] {
@@ -21946,11 +21403,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S(long groupId, long[] parentResourcePrimKeies,
-		int status) throws SystemException {
+		int status) {
 		if (parentResourcePrimKeies == null) {
 			parentResourcePrimKeies = new long[0];
 		}
@@ -22032,11 +21488,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S(long groupId, long parentResourcePrimKey,
-		int status) throws SystemException {
+		int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S(groupId, parentResourcePrimKey, status);
 		}
@@ -22092,11 +21547,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKeies the parent resource prim keies
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S(long groupId, long[] parentResourcePrimKeies,
-		int status) throws SystemException {
+		int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S(groupId, parentResourcePrimKeies, status);
 		}
@@ -22206,11 +21660,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param urlTitle the url title
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_UT_ST(long groupId, String urlTitle,
-		int status) throws SystemException {
+		int status) {
 		return findByG_UT_ST(groupId, urlTitle, status, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
@@ -22228,11 +21681,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_UT_ST(long groupId, String urlTitle,
-		int status, int start, int end) throws SystemException {
+		int status, int start, int end) {
 		return findByG_UT_ST(groupId, urlTitle, status, start, end, null);
 	}
 
@@ -22250,12 +21702,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_UT_ST(long groupId, String urlTitle,
-		int status, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, int start, int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -22388,12 +21838,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_UT_ST_First(long groupId, String urlTitle,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_UT_ST_First(groupId, urlTitle, status,
 				orderByComparator);
 
@@ -22427,12 +21876,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_UT_ST_First(long groupId, String urlTitle,
-		int status, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_UT_ST(groupId, urlTitle, status, 0, 1,
 				orderByComparator);
 
@@ -22452,12 +21899,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_UT_ST_Last(long groupId, String urlTitle,
 		int status, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_UT_ST_Last(groupId, urlTitle, status,
 				orderByComparator);
 
@@ -22491,12 +21937,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_UT_ST_Last(long groupId, String urlTitle,
-		int status, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, OrderByComparator orderByComparator) {
 		int count = countByG_UT_ST(groupId, urlTitle, status);
 
 		if (count == 0) {
@@ -22523,13 +21967,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_UT_ST_PrevAndNext(long kbArticleId,
 		long groupId, String urlTitle, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -22691,11 +22133,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param urlTitle the url title
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_UT_ST(long groupId, String urlTitle,
-		int status) throws SystemException {
+		int status) {
 		return filterFindByG_UT_ST(groupId, urlTitle, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -22713,11 +22154,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_UT_ST(long groupId, String urlTitle,
-		int status, int start, int end) throws SystemException {
+		int status, int start, int end) {
 		return filterFindByG_UT_ST(groupId, urlTitle, status, start, end, null);
 	}
 
@@ -22735,12 +22175,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_UT_ST(long groupId, String urlTitle,
-		int status, int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int status, int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_UT_ST(groupId, urlTitle, status, start, end,
 				orderByComparator);
@@ -22852,13 +22290,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_UT_ST_PrevAndNext(long kbArticleId,
 		long groupId, String urlTitle, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_UT_ST_PrevAndNext(kbArticleId, groupId, urlTitle,
 				status, orderByComparator);
@@ -23059,11 +22495,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param groupId the group ID
 	 * @param urlTitle the url title
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeByG_UT_ST(long groupId, String urlTitle, int status)
-		throws SystemException {
+	public void removeByG_UT_ST(long groupId, String urlTitle, int status) {
 		for (KBArticle kbArticle : findByG_UT_ST(groupId, urlTitle, status,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 			remove(kbArticle);
@@ -23077,11 +22511,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param urlTitle the url title
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countByG_UT_ST(long groupId, String urlTitle, int status)
-		throws SystemException {
+	public int countByG_UT_ST(long groupId, String urlTitle, int status) {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_UT_ST;
 
 		Object[] finderArgs = new Object[] { groupId, urlTitle, status };
@@ -23155,11 +22587,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param urlTitle the url title
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int filterCountByG_UT_ST(long groupId, String urlTitle, int status)
-		throws SystemException {
+	public int filterCountByG_UT_ST(long groupId, String urlTitle, int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_UT_ST(groupId, urlTitle, status);
 		}
@@ -23253,12 +22683,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_L(long groupId,
-		long parentResourcePrimKey, String sections, boolean latest)
-		throws SystemException {
+		long parentResourcePrimKey, String sections, boolean latest) {
 		return findByG_P_S_L(groupId, parentResourcePrimKey, sections, latest,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -23277,12 +22705,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_P_S_L(groupId, parentResourcePrimKey, sections, latest,
 			start, end, null);
 	}
@@ -23302,12 +22729,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -23440,13 +22866,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_L_First(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_L_First(groupId,
 				parentResourcePrimKey, sections, latest, orderByComparator);
 
@@ -23484,12 +22908,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_L_First(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_P_S_L(groupId, parentResourcePrimKey,
 				sections, latest, 0, 1, orderByComparator);
 
@@ -23510,13 +22933,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_L_Last(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_L_Last(groupId,
 				parentResourcePrimKey, sections, latest, orderByComparator);
 
@@ -23554,12 +22975,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param latest the latest
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_L_Last(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_P_S_L(groupId, parentResourcePrimKey, sections,
 				latest);
 
@@ -23588,13 +23008,12 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_P_S_L_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, String sections,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -23764,12 +23183,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_L(long groupId,
-		long parentResourcePrimKey, String sections, boolean latest)
-		throws SystemException {
+		long parentResourcePrimKey, String sections, boolean latest) {
 		return filterFindByG_P_S_L(groupId, parentResourcePrimKey, sections,
 			latest, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -23788,12 +23205,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest, int start,
-		int end) throws SystemException {
+		int end) {
 		return filterFindByG_P_S_L(groupId, parentResourcePrimKey, sections,
 			latest, start, end, null);
 	}
@@ -23813,12 +23229,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String sections, boolean latest, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_L(groupId, parentResourcePrimKey, sections,
 				latest, start, end, orderByComparator);
@@ -23935,13 +23350,12 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_P_S_L_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, String sections,
 		boolean latest, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_L_PrevAndNext(kbArticleId, groupId,
 				parentResourcePrimKey, sections, latest, orderByComparator);
@@ -24151,12 +23565,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param latest the latest
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_L(long groupId,
-		long parentResourcePrimKey, String[] sectionses, boolean latest)
-		throws SystemException {
+		long parentResourcePrimKey, String[] sectionses, boolean latest) {
 		return filterFindByG_P_S_L(groupId, parentResourcePrimKey, sectionses,
 			latest, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -24175,12 +23587,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean latest,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return filterFindByG_P_S_L(groupId, parentResourcePrimKey, sectionses,
 			latest, start, end, null);
 	}
@@ -24200,13 +23611,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean latest,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_L(groupId, parentResourcePrimKey, sectionses,
 				latest, start, end, orderByComparator);
@@ -24341,12 +23750,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param latest the latest
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_L(long groupId,
-		long parentResourcePrimKey, String[] sectionses, boolean latest)
-		throws SystemException {
+		long parentResourcePrimKey, String[] sectionses, boolean latest) {
 		return findByG_P_S_L(groupId, parentResourcePrimKey, sectionses,
 			latest, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -24365,12 +23772,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean latest,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByG_P_S_L(groupId, parentResourcePrimKey, sectionses,
 			latest, start, end, null);
 	}
@@ -24390,13 +23796,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_L(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean latest,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (sectionses == null) {
 			sectionses = new String[0];
 		}
@@ -24557,11 +23961,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param sections the sections
 	 * @param latest the latest
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByG_P_S_L(long groupId, long parentResourcePrimKey,
-		String sections, boolean latest) throws SystemException {
+		String sections, boolean latest) {
 		for (KBArticle kbArticle : findByG_P_S_L(groupId,
 				parentResourcePrimKey, sections, latest, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
@@ -24577,11 +23980,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S_L(long groupId, long parentResourcePrimKey,
-		String sections, boolean latest) throws SystemException {
+		String sections, boolean latest) {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_G_P_S_L;
 
 		Object[] finderArgs = new Object[] {
@@ -24662,11 +24064,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param latest the latest
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S_L(long groupId, long parentResourcePrimKey,
-		String[] sectionses, boolean latest) throws SystemException {
+		String[] sectionses, boolean latest) {
 		if (sectionses == null) {
 			sectionses = new String[0];
 		}
@@ -24773,11 +24174,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S_L(long groupId, long parentResourcePrimKey,
-		String sections, boolean latest) throws SystemException {
+		String sections, boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S_L(groupId, parentResourcePrimKey, sections,
 				latest);
@@ -24853,11 +24253,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param latest the latest
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S_L(long groupId, long parentResourcePrimKey,
-		String[] sectionses, boolean latest) throws SystemException {
+		String[] sectionses, boolean latest) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S_L(groupId, parentResourcePrimKey, sectionses,
 				latest);
@@ -24988,12 +24387,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_M(long groupId,
-		long parentResourcePrimKey, String sections, boolean main)
-		throws SystemException {
+		long parentResourcePrimKey, String sections, boolean main) {
 		return findByG_P_S_M(groupId, parentResourcePrimKey, sections, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -25012,12 +24409,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String sections, boolean main, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_P_S_M(groupId, parentResourcePrimKey, sections, main,
 			start, end, null);
 	}
@@ -25037,12 +24433,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String sections, boolean main, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -25175,13 +24570,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_M_First(long groupId,
 		long parentResourcePrimKey, String sections, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_M_First(groupId,
 				parentResourcePrimKey, sections, main, orderByComparator);
 
@@ -25219,12 +24612,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_M_First(long groupId,
 		long parentResourcePrimKey, String sections, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_P_S_M(groupId, parentResourcePrimKey,
 				sections, main, 0, 1, orderByComparator);
 
@@ -25245,13 +24637,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_M_Last(long groupId,
 		long parentResourcePrimKey, String sections, boolean main,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_M_Last(groupId,
 				parentResourcePrimKey, sections, main, orderByComparator);
 
@@ -25289,12 +24679,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param main the main
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_M_Last(long groupId,
 		long parentResourcePrimKey, String sections, boolean main,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_P_S_M(groupId, parentResourcePrimKey, sections,
 				main);
 
@@ -25323,13 +24712,12 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_P_S_M_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, String sections,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -25499,12 +24887,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_M(long groupId,
-		long parentResourcePrimKey, String sections, boolean main)
-		throws SystemException {
+		long parentResourcePrimKey, String sections, boolean main) {
 		return filterFindByG_P_S_M(groupId, parentResourcePrimKey, sections,
 			main, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -25523,12 +24909,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String sections, boolean main, int start,
-		int end) throws SystemException {
+		int end) {
 		return filterFindByG_P_S_M(groupId, parentResourcePrimKey, sections,
 			main, start, end, null);
 	}
@@ -25548,12 +24933,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String sections, boolean main, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_M(groupId, parentResourcePrimKey, sections,
 				main, start, end, orderByComparator);
@@ -25670,13 +25054,12 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_P_S_M_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, String sections,
 		boolean main, OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_M_PrevAndNext(kbArticleId, groupId,
 				parentResourcePrimKey, sections, main, orderByComparator);
@@ -25886,12 +25269,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param main the main
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_M(long groupId,
-		long parentResourcePrimKey, String[] sectionses, boolean main)
-		throws SystemException {
+		long parentResourcePrimKey, String[] sectionses, boolean main) {
 		return filterFindByG_P_S_M(groupId, parentResourcePrimKey, sectionses,
 			main, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -25910,12 +25291,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean main,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return filterFindByG_P_S_M(groupId, parentResourcePrimKey, sectionses,
 			main, start, end, null);
 	}
@@ -25935,13 +25315,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean main,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_M(groupId, parentResourcePrimKey, sectionses,
 				main, start, end, orderByComparator);
@@ -26076,12 +25454,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param main the main
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_M(long groupId,
-		long parentResourcePrimKey, String[] sectionses, boolean main)
-		throws SystemException {
+		long parentResourcePrimKey, String[] sectionses, boolean main) {
 		return findByG_P_S_M(groupId, parentResourcePrimKey, sectionses, main,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -26100,12 +25476,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean main,
-		int start, int end) throws SystemException {
+		int start, int end) {
 		return findByG_P_S_M(groupId, parentResourcePrimKey, sectionses, main,
 			start, end, null);
 	}
@@ -26125,13 +25500,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_M(long groupId,
 		long parentResourcePrimKey, String[] sectionses, boolean main,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
+		int start, int end, OrderByComparator orderByComparator) {
 		if (sectionses == null) {
 			sectionses = new String[0];
 		}
@@ -26292,11 +25665,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param sections the sections
 	 * @param main the main
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByG_P_S_M(long groupId, long parentResourcePrimKey,
-		String sections, boolean main) throws SystemException {
+		String sections, boolean main) {
 		for (KBArticle kbArticle : findByG_P_S_M(groupId,
 				parentResourcePrimKey, sections, main, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
@@ -26312,11 +25684,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S_M(long groupId, long parentResourcePrimKey,
-		String sections, boolean main) throws SystemException {
+		String sections, boolean main) {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_G_P_S_M;
 
 		Object[] finderArgs = new Object[] {
@@ -26397,11 +25768,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param main the main
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S_M(long groupId, long parentResourcePrimKey,
-		String[] sectionses, boolean main) throws SystemException {
+		String[] sectionses, boolean main) {
 		if (sectionses == null) {
 			sectionses = new String[0];
 		}
@@ -26508,11 +25878,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S_M(long groupId, long parentResourcePrimKey,
-		String sections, boolean main) throws SystemException {
+		String sections, boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S_M(groupId, parentResourcePrimKey, sections, main);
 		}
@@ -26587,11 +25956,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param main the main
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S_M(long groupId, long parentResourcePrimKey,
-		String[] sectionses, boolean main) throws SystemException {
+		String[] sectionses, boolean main) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S_M(groupId, parentResourcePrimKey, sectionses,
 				main);
@@ -26722,12 +26090,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_S(long groupId,
-		long parentResourcePrimKey, String sections, int status)
-		throws SystemException {
+		long parentResourcePrimKey, String sections, int status) {
 		return findByG_P_S_S(groupId, parentResourcePrimKey, sections, status,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -26746,12 +26112,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String sections, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_P_S_S(groupId, parentResourcePrimKey, sections, status,
 			start, end, null);
 	}
@@ -26771,12 +26136,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String sections, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -26909,13 +26273,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_S_First(long groupId,
 		long parentResourcePrimKey, String sections, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_S_First(groupId,
 				parentResourcePrimKey, sections, status, orderByComparator);
 
@@ -26953,12 +26315,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_S_First(long groupId,
 		long parentResourcePrimKey, String sections, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		List<KBArticle> list = findByG_P_S_S(groupId, parentResourcePrimKey,
 				sections, status, 0, 1, orderByComparator);
 
@@ -26979,13 +26340,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByG_P_S_S_Last(long groupId,
 		long parentResourcePrimKey, String sections, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByG_P_S_S_Last(groupId,
 				parentResourcePrimKey, sections, status, orderByComparator);
 
@@ -27023,12 +26382,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching k b article, or <code>null</code> if a matching k b article could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle fetchByG_P_S_S_Last(long groupId,
 		long parentResourcePrimKey, String sections, int status,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		int count = countByG_P_S_S(groupId, parentResourcePrimKey, sections,
 				status);
 
@@ -27057,13 +26415,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] findByG_P_S_S_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, String sections, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		KBArticle kbArticle = findByPrimaryKey(kbArticleId);
 
 		Session session = null;
@@ -27233,12 +26589,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_S(long groupId,
-		long parentResourcePrimKey, String sections, int status)
-		throws SystemException {
+		long parentResourcePrimKey, String sections, int status) {
 		return filterFindByG_P_S_S(groupId, parentResourcePrimKey, sections,
 			status, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -27257,12 +26611,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String sections, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return filterFindByG_P_S_S(groupId, parentResourcePrimKey, sections,
 			status, start, end, null);
 	}
@@ -27282,12 +26635,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String sections, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_S(groupId, parentResourcePrimKey, sections,
 				status, start, end, orderByComparator);
@@ -27404,13 +26756,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle[] filterFindByG_P_S_S_PrevAndNext(long kbArticleId,
 		long groupId, long parentResourcePrimKey, String sections, int status,
-		OrderByComparator orderByComparator)
-		throws NoSuchArticleException, SystemException {
+		OrderByComparator orderByComparator) throws NoSuchArticleException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_S_PrevAndNext(kbArticleId, groupId,
 				parentResourcePrimKey, sections, status, orderByComparator);
@@ -27620,12 +26970,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param status the status
 	 * @return the matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_S(long groupId,
-		long parentResourcePrimKey, String[] sectionses, int status)
-		throws SystemException {
+		long parentResourcePrimKey, String[] sectionses, int status) {
 		return filterFindByG_P_S_S(groupId, parentResourcePrimKey, sectionses,
 			status, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -27644,12 +26992,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String[] sectionses, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return filterFindByG_P_S_S(groupId, parentResourcePrimKey, sectionses,
 			status, start, end, null);
 	}
@@ -27669,12 +27016,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> filterFindByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String[] sectionses, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return findByG_P_S_S(groupId, parentResourcePrimKey, sectionses,
 				status, start, end, orderByComparator);
@@ -27809,12 +27155,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param status the status
 	 * @return the matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_S(long groupId,
-		long parentResourcePrimKey, String[] sectionses, int status)
-		throws SystemException {
+		long parentResourcePrimKey, String[] sectionses, int status) {
 		return findByG_P_S_S(groupId, parentResourcePrimKey, sectionses,
 			status, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -27833,12 +27177,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String[] sectionses, int status, int start,
-		int end) throws SystemException {
+		int end) {
 		return findByG_P_S_S(groupId, parentResourcePrimKey, sectionses,
 			status, start, end, null);
 	}
@@ -27858,12 +27201,11 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findByG_P_S_S(long groupId,
 		long parentResourcePrimKey, String[] sectionses, int status, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
+		int end, OrderByComparator orderByComparator) {
 		if (sectionses == null) {
 			sectionses = new String[0];
 		}
@@ -28024,11 +27366,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param parentResourcePrimKey the parent resource prim key
 	 * @param sections the sections
 	 * @param status the status
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public void removeByG_P_S_S(long groupId, long parentResourcePrimKey,
-		String sections, int status) throws SystemException {
+		String sections, int status) {
 		for (KBArticle kbArticle : findByG_P_S_S(groupId,
 				parentResourcePrimKey, sections, status, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
@@ -28044,11 +27385,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S_S(long groupId, long parentResourcePrimKey,
-		String sections, int status) throws SystemException {
+		String sections, int status) {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_G_P_S_S;
 
 		Object[] finderArgs = new Object[] {
@@ -28129,11 +27469,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param status the status
 	 * @return the number of matching k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int countByG_P_S_S(long groupId, long parentResourcePrimKey,
-		String[] sectionses, int status) throws SystemException {
+		String[] sectionses, int status) {
 		if (sectionses == null) {
 			sectionses = new String[0];
 		}
@@ -28240,11 +27579,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sections the sections
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S_S(long groupId, long parentResourcePrimKey,
-		String sections, int status) throws SystemException {
+		String sections, int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S_S(groupId, parentResourcePrimKey, sections,
 				status);
@@ -28320,11 +27658,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param sectionses the sectionses
 	 * @param status the status
 	 * @return the number of matching k b articles that the user has permission to view
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public int filterCountByG_P_S_S(long groupId, long parentResourcePrimKey,
-		String[] sectionses, int status) throws SystemException {
+		String[] sectionses, int status) {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByG_P_S_S(groupId, parentResourcePrimKey, sectionses,
 				status);
@@ -28637,11 +27974,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param kbArticleId the primary key of the k b article
 	 * @return the k b article that was removed
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public KBArticle remove(long kbArticleId)
-		throws NoSuchArticleException, SystemException {
+	public KBArticle remove(long kbArticleId) throws NoSuchArticleException {
 		return remove((Serializable)kbArticleId);
 	}
 
@@ -28651,11 +27986,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param primaryKey the primary key of the k b article
 	 * @return the k b article that was removed
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle remove(Serializable primaryKey)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		Session session = null;
 
 		try {
@@ -28687,8 +28021,7 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	}
 
 	@Override
-	protected KBArticle removeImpl(KBArticle kbArticle)
-		throws SystemException {
+	protected KBArticle removeImpl(KBArticle kbArticle) {
 		kbArticle = toUnwrappedModel(kbArticle);
 
 		Session session = null;
@@ -28721,8 +28054,7 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 
 	@Override
 	public KBArticle updateImpl(
-		com.liferay.knowledgebase.model.KBArticle kbArticle)
-		throws SystemException {
+		com.liferay.knowledgebase.model.KBArticle kbArticle) {
 		kbArticle = toUnwrappedModel(kbArticle);
 
 		boolean isNew = kbArticle.isNew();
@@ -29332,11 +28664,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param primaryKey the primary key of the k b article
 	 * @return the k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		KBArticle kbArticle = fetchByPrimaryKey(primaryKey);
 
 		if (kbArticle == null) {
@@ -29357,11 +28688,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param kbArticleId the primary key of the k b article
 	 * @return the k b article
 	 * @throws com.liferay.knowledgebase.NoSuchArticleException if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public KBArticle findByPrimaryKey(long kbArticleId)
-		throws NoSuchArticleException, SystemException {
+		throws NoSuchArticleException {
 		return findByPrimaryKey((Serializable)kbArticleId);
 	}
 
@@ -29370,11 +28700,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param primaryKey the primary key of the k b article
 	 * @return the k b article, or <code>null</code> if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public KBArticle fetchByPrimaryKey(Serializable primaryKey)
-		throws SystemException {
+	public KBArticle fetchByPrimaryKey(Serializable primaryKey) {
 		KBArticle kbArticle = (KBArticle)EntityCacheUtil.getResult(KBArticleModelImpl.ENTITY_CACHE_ENABLED,
 				KBArticleImpl.class, primaryKey);
 
@@ -29418,22 +28746,111 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 *
 	 * @param kbArticleId the primary key of the k b article
 	 * @return the k b article, or <code>null</code> if a k b article with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public KBArticle fetchByPrimaryKey(long kbArticleId)
-		throws SystemException {
+	public KBArticle fetchByPrimaryKey(long kbArticleId) {
 		return fetchByPrimaryKey((Serializable)kbArticleId);
+	}
+
+	@Override
+	public Map<Serializable, KBArticle> fetchByPrimaryKeys(
+		Set<Serializable> primaryKeys) {
+		if (primaryKeys.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<Serializable, KBArticle> map = new HashMap<Serializable, KBArticle>();
+
+		if (primaryKeys.size() == 1) {
+			Iterator<Serializable> iterator = primaryKeys.iterator();
+
+			Serializable primaryKey = iterator.next();
+
+			KBArticle kbArticle = fetchByPrimaryKey(primaryKey);
+
+			if (kbArticle != null) {
+				map.put(primaryKey, kbArticle);
+			}
+
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		for (Serializable primaryKey : primaryKeys) {
+			KBArticle kbArticle = (KBArticle)EntityCacheUtil.getResult(KBArticleModelImpl.ENTITY_CACHE_ENABLED,
+					KBArticleImpl.class, primaryKey);
+
+			if (kbArticle == null) {
+				if (uncachedPrimaryKeys == null) {
+					uncachedPrimaryKeys = new HashSet<Serializable>();
+				}
+
+				uncachedPrimaryKeys.add(primaryKey);
+			}
+			else {
+				map.put(primaryKey, kbArticle);
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
+			return map;
+		}
+
+		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 2) +
+				1);
+
+		query.append(_SQL_SELECT_KBARTICLE_WHERE_PKS_IN);
+
+		for (Serializable primaryKey : uncachedPrimaryKeys) {
+			query.append(String.valueOf(primaryKey));
+
+			query.append(StringPool.COMMA);
+		}
+
+		query.setIndex(query.index() - 1);
+
+		query.append(StringPool.CLOSE_PARENTHESIS);
+
+		String sql = query.toString();
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			Query q = session.createQuery(sql);
+
+			for (KBArticle kbArticle : (List<KBArticle>)q.list()) {
+				map.put(kbArticle.getPrimaryKeyObj(), kbArticle);
+
+				cacheResult(kbArticle);
+
+				uncachedPrimaryKeys.remove(kbArticle.getPrimaryKeyObj());
+			}
+
+			for (Serializable primaryKey : uncachedPrimaryKeys) {
+				EntityCacheUtil.putResult(KBArticleModelImpl.ENTITY_CACHE_ENABLED,
+					KBArticleImpl.class, primaryKey, _nullKBArticle);
+			}
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return map;
 	}
 
 	/**
 	 * Returns all the k b articles.
 	 *
 	 * @return the k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findAll() throws SystemException {
+	public List<KBArticle> findAll() {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
@@ -29447,11 +28864,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param start the lower bound of the range of k b articles
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @return the range of k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public List<KBArticle> findAll(int start, int end)
-		throws SystemException {
+	public List<KBArticle> findAll(int start, int end) {
 		return findAll(start, end, null);
 	}
 
@@ -29466,11 +28881,10 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * @param end the upper bound of the range of k b articles (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public List<KBArticle> findAll(int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
+		OrderByComparator orderByComparator) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -29552,10 +28966,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	/**
 	 * Removes all the k b articles from the database.
 	 *
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public void removeAll() throws SystemException {
+	public void removeAll() {
 		for (KBArticle kbArticle : findAll()) {
 			remove(kbArticle);
 		}
@@ -29565,10 +28978,9 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	 * Returns the number of k b articles.
 	 *
 	 * @return the number of k b articles
-	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public int countAll() throws SystemException {
+	public int countAll() {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
@@ -29637,6 +29049,7 @@ public class KBArticlePersistenceImpl extends BasePersistenceImpl<KBArticle>
 	}
 
 	private static final String _SQL_SELECT_KBARTICLE = "SELECT kbArticle FROM KBArticle kbArticle";
+	private static final String _SQL_SELECT_KBARTICLE_WHERE_PKS_IN = "SELECT kbArticle FROM KBArticle kbArticle WHERE kbArticleId IN (";
 	private static final String _SQL_SELECT_KBARTICLE_WHERE = "SELECT kbArticle FROM KBArticle kbArticle WHERE ";
 	private static final String _SQL_COUNT_KBARTICLE = "SELECT COUNT(kbArticle) FROM KBArticle kbArticle";
 	private static final String _SQL_COUNT_KBARTICLE_WHERE = "SELECT COUNT(kbArticle) FROM KBArticle kbArticle WHERE ";

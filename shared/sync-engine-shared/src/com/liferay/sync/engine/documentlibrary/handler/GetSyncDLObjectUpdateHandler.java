@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * @author Shinn Lok
  */
-public class GetSyncDLObjectUpdateHandler extends GetSyncDLObjectHandler {
+public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 
 	public GetSyncDLObjectUpdateHandler(Event event) {
 		super(event);
@@ -54,16 +54,11 @@ public class GetSyncDLObjectUpdateHandler extends GetSyncDLObjectHandler {
 
 		Path filePath = Paths.get(filePathName);
 
-		if (Files.exists(filePath)) {
-			if (syncFile.isFolder()) {
-				return;
-			}
+		if (Files.exists(filePath) &&
+			(syncFile.isFolder() ||
+			 !FileUtil.hasFileChanged(syncFile, filePath))) {
 
-			String checksum = FileUtil.getChecksum(filePath);
-
-			if (checksum.equals(syncFile.getChecksum())) {
-				return;
-			}
+			return;
 		}
 
 		syncFile.setFilePathName(filePathName);
@@ -276,12 +271,8 @@ public class GetSyncDLObjectUpdateHandler extends GetSyncDLObjectHandler {
 
 		SyncFileService.update(sourceSyncFile);
 
-		if (Files.exists(sourceFilePath) && !targetSyncFile.isFolder()) {
-			String checksum = FileUtil.getChecksum(sourceFilePath);
-
-			if (checksum.equals(targetSyncFile.getChecksum())) {
-				return;
-			}
+		if (Files.exists(sourceFilePath) && !targetSyncFile.isFolder() &&
+			FileUtil.hasFileChanged(targetSyncFile, sourceFilePath)) {
 
 			downloadFile(
 				sourceSyncFile, sourceVersion,

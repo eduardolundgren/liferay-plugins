@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
 public class SyncSystemTest {
 
 	@BeforeClass
-	public static void setUp() throws Exception {
+	public static void setUpClass() throws Exception {
 		PropsUtil.set(PropsKeys.SYNC_DATABASE_NAME, "sync-test");
 		PropsUtil.set(
 			PropsKeys.SYNC_LOGGER_CONFIGURATION_FILE, "sync-test-log4j.xml");
@@ -83,7 +83,7 @@ public class SyncSystemTest {
 	}
 
 	@AfterClass
-	public static void tearDown() throws Exception {
+	public static void tearDownClass() throws Exception {
 		if (_liferayStarted) {
 			cleanUp(10);
 
@@ -119,8 +119,10 @@ public class SyncSystemTest {
 			System.getProperty("user.home") + "/liferay-sync-test");
 
 		_syncAccount = SyncAccountService.addSyncAccount(
-			_rootFilePathName + "/test", "test@liferay.com", "test", "test",
-			null, false, "http://localhost:8080");
+			_rootFilePathName + "/test", "test@liferay.com", Integer.MAX_VALUE,
+			"test", "test", 5, null, false, "http://localhost:8080");
+
+		SyncAccountService.update(_syncAccount);
 
 		long guestGroupId = SyncSystemTestUtil.getGuestGroupId(
 			_syncAccount.getSyncAccountId());
@@ -253,8 +255,8 @@ public class SyncSystemTest {
 			System.getProperty("user.home") + "/liferay-sync-test/" + name);
 
 		SyncAccount syncAccount = SyncAccountService.addSyncAccount(
-			filePathName, name + "@liferay.com", name, "test", null, false,
-			"http://localhost:8080");
+			filePathName, name + "@liferay.com", 1, name, "test", 5, null,
+			false, "http://localhost:8080");
 
 		SyncAccountService.activateSyncAccount(
 			syncAccount.getSyncAccountId(), false);
@@ -553,7 +555,8 @@ public class SyncSystemTest {
 	private static SyncAccount _syncAccount;
 	private static Map<String, Long> _syncAccountIds =
 		new HashMap<String, Long>();
-	private static Map<String, Long> _syncSiteIds = new HashMap<String, Long>();
-	private static Path _testFilePath;
+
+	private Map<String, Long> _syncSiteIds = new HashMap<String, Long>();
+	private Path _testFilePath;
 
 }
