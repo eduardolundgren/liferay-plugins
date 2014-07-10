@@ -1127,6 +1127,8 @@
 		function(A) {
 			Liferay.CalendarMessageUtil = {
 
+				closeEventHandle: null,
+
 				confirm: function(message, yesButtonLabel, noButtonLabel, yesFn, noFn) {
 					var instance = this;
 
@@ -1168,15 +1170,25 @@
 				},
 
 				showAlert: function(container, message) {
-					new A.Alert(
-						{
-							animated: true,
-							bodyContent: message,
-							closeable: true,
-							cssClass: 'alert-success',
-							destroyOnHide: true,
-							duration: 1
-						}).render(container);
+					var instance = this;
+
+					var containerNode = A.one(container);
+
+					var messageNode = containerNode.one('.message-placeholder');
+
+					var closeNode = containerNode.one('.close');
+
+					if (!instance.closeEventHandle) {
+						instance.closeEventHandle = closeNode.on(
+							'click',
+							function() {
+								containerNode.hide();
+							}
+						);
+					}
+
+					messageNode.set('text', message);
+					containerNode.show();
 				}
 			};
 		},
