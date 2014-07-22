@@ -20,16 +20,14 @@ import com.liferay.sync.engine.filesystem.SyncWatchEventProcessor;
 import com.liferay.sync.engine.filesystem.WatchEventListener;
 import com.liferay.sync.engine.filesystem.Watcher;
 import com.liferay.sync.engine.model.SyncAccount;
-import com.liferay.sync.engine.model.SyncAccountModelListener;
-import com.liferay.sync.engine.model.SyncFileModelListener;
 import com.liferay.sync.engine.model.SyncSite;
-import com.liferay.sync.engine.model.SyncSiteModelListener;
 import com.liferay.sync.engine.service.SyncAccountService;
-import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.service.SyncPropService;
 import com.liferay.sync.engine.service.SyncSiteService;
 import com.liferay.sync.engine.upgrade.util.UpgradeUtil;
 import com.liferay.sync.engine.util.LoggerUtil;
 import com.liferay.sync.engine.util.PropsValues;
+import com.liferay.sync.engine.util.SyncClientUpdater;
 import com.liferay.sync.engine.util.SyncEngineUtil;
 
 import java.nio.file.Path;
@@ -205,17 +203,8 @@ public class SyncEngine {
 
 		UpgradeUtil.upgrade();
 
-		_syncAccountModelListener = new SyncAccountModelListener();
-
-		SyncAccountService.registerModelListener(_syncAccountModelListener);
-
-		_syncFileModelListener = new SyncFileModelListener();
-
-		SyncFileService.registerModelListener(_syncFileModelListener);
-
-		_syncSiteModelListener = new SyncSiteModelListener();
-
-		SyncSiteService.registerModelListener(_syncSiteModelListener);
+		SyncClientUpdater.scheduleAutoUpdateChecker(
+			SyncPropService.getInteger("updateCheckInterval", 1440));
 
 		SyncWatchEventProcessor syncWatchEventProcessor =
 			new SyncWatchEventProcessor();
@@ -255,9 +244,7 @@ public class SyncEngine {
 
 		_syncWatchEventProcessorExecutorService.shutdown();
 
-		SyncAccountService.unregisterModelListener(_syncAccountModelListener);
-		SyncFileService.unregisterModelListener(_syncFileModelListener);
-		SyncSiteService.unregisterModelListener(_syncSiteModelListener);
+		SyncClientUpdater.cancelAutoUpdateChecker();
 
 		SyncEngineUtil.fireSyncEngineStateChanged(
 			SyncEngineUtil.SYNC_ENGINE_STATE_STOPPED);
@@ -272,11 +259,8 @@ public class SyncEngine {
 	private static ExecutorService _executorService =
 		Executors.newCachedThreadPool();
 	private static boolean _running;
-	private static SyncAccountModelListener _syncAccountModelListener;
 	private static Map<Long, Object[]> _syncAccountTasks =
 		new HashMap<Long, Object[]>();
-	private static SyncFileModelListener _syncFileModelListener;
-	private static SyncSiteModelListener _syncSiteModelListener;
 	private static ScheduledExecutorService
 		_syncWatchEventProcessorExecutorService;
 
