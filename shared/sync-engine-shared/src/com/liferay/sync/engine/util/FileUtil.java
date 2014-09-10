@@ -16,6 +16,7 @@ package com.liferay.sync.engine.util;
 
 import com.liferay.sync.engine.model.SyncFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -120,10 +121,14 @@ public class FileUtil {
 		return getFileKey(filePath);
 	}
 
-	public static String getFilePathName(String first, String... more) {
+	public static Path getFilePath(String first, String... more) {
 		FileSystem fileSystem = FileSystems.getDefault();
 
-		Path filePath = fileSystem.getPath(first, more);
+		return fileSystem.getPath(first, more);
+	}
+
+	public static String getFilePathName(String first, String... more) {
+		Path filePath = getFilePath(first, more);
 
 		return filePath.toString();
 	}
@@ -220,6 +225,12 @@ public class FileUtil {
 	public static void writeFileKey(Path filePath, String fileKey) {
 		if (!OSDetector.isWindows()) {
 			return;
+		}
+
+		File file = filePath.toFile();
+
+		if (!file.canWrite()) {
+			file.setWritable(true);
 		}
 
 		UserDefinedFileAttributeView userDefinedFileAttributeView =

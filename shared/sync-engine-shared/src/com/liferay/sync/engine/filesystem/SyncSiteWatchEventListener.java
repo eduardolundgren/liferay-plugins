@@ -57,6 +57,12 @@ public class SyncSiteWatchEventListener extends BaseWatchEventListener {
 			SyncAccount syncAccount = SyncAccountService.fetchSyncAccount(
 				getSyncAccountId());
 
+			if (isDuplicateEvent(
+					eventType, filePath.toString(), getSyncAccountId())) {
+
+				return;
+			}
+
 			if (filePathName.equals(syncAccount.getFilePathName()) ||
 				parentFilePathName.equals(syncAccount.getFilePathName())) {
 
@@ -91,7 +97,7 @@ public class SyncSiteWatchEventListener extends BaseWatchEventListener {
 	protected String getFileType(String eventType, Path filePath) {
 		if (eventType.equals(SyncWatchEvent.EVENT_TYPE_DELETE)) {
 			SyncFile syncFile = SyncFileService.fetchSyncFile(
-				filePath.toString(), getSyncAccountId());
+				filePath.toString());
 
 			if (syncFile != null) {
 				return syncFile.getType();
@@ -114,12 +120,28 @@ public class SyncSiteWatchEventListener extends BaseWatchEventListener {
 			}
 
 			SyncFile syncFile = SyncFileService.fetchSyncFile(
-				filePath.toString(), getSyncAccountId());
+				filePath.toString());
 
 			if (syncFile != null) {
 				return syncFile.getRepositoryId();
 			}
 		}
+	}
+
+	protected boolean isDuplicateEvent(
+		String eventType, String filePathName, long syncAccountId) {
+
+		SyncWatchEvent lastSyncWatchEvent =
+			SyncWatchEventService.fetchLastSyncWatchEvent(syncAccountId);
+
+		if ((lastSyncWatchEvent == null) ||
+			!eventType.equals(lastSyncWatchEvent.getEventType()) ||
+			!filePathName.equals(lastSyncWatchEvent.getFilePathName())) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static Logger _logger = LoggerFactory.getLogger(

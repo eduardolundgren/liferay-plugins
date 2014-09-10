@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Shinn Lok
  */
@@ -45,6 +47,22 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 		return where.countOf();
 	}
 
+	public SyncFile fetchByFilePathName(String filePathName)
+		throws SQLException {
+
+		Map<String, Object> fieldValues = new HashMap<String, Object>();
+
+		fieldValues.put("filePathName", filePathName);
+
+		List<SyncFile> syncFiles = queryForFieldValuesArgs(fieldValues);
+
+		if ((syncFiles == null) || syncFiles.isEmpty()) {
+			return null;
+		}
+
+		return syncFiles.get(0);
+	}
+
 	public SyncFile fetchByFK_S(String fileKey, long syncAccountId)
 		throws SQLException {
 
@@ -54,23 +72,6 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 		fieldValues.put("syncAccountId", syncAccountId);
 
 		List<SyncFile> syncFiles = queryForFieldValues(fieldValues);
-
-		if ((syncFiles == null) || syncFiles.isEmpty()) {
-			return null;
-		}
-
-		return syncFiles.get(0);
-	}
-
-	public SyncFile fetchByFPN_S(String filePathName, long syncAccountId)
-		throws SQLException {
-
-		Map<String, Object> fieldValues = new HashMap<String, Object>();
-
-		fieldValues.put("filePathName", filePathName);
-		fieldValues.put("syncAccountId", syncAccountId);
-
-		List<SyncFile> syncFiles = queryForFieldValuesArgs(fieldValues);
 
 		if ((syncFiles == null) || syncFiles.isEmpty()) {
 			return null;
@@ -98,44 +99,20 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 		return syncFiles.get(0);
 	}
 
-	public List<SyncFile> findByC_S(String checksum, long syncAccountId)
-		throws SQLException {
-
-		Map<String, Object> fieldValues = new HashMap<String, Object>();
-
-		fieldValues.put("checksum", checksum);
-		fieldValues.put("syncAccountId", syncAccountId);
-
-		return queryForFieldValues(fieldValues);
-	}
-
-	public List<SyncFile> findByFilePathName(String filePathName)
-		throws SQLException {
-
-		Map<String, Object> fieldValues = new HashMap<String, Object>();
-
-		fieldValues.put("filePathName", filePathName);
-
-		return queryForFieldValuesArgs(fieldValues);
-	}
-
-	public List<SyncFile> findByF_L_S(
-			String filePathName, long localSyncTime, long syncAccountId)
+	public List<SyncFile> findByF_L(String filePathName, long localSyncTime)
 		throws SQLException {
 
 		QueryBuilder<SyncFile, Long> queryBuilder = queryBuilder();
 
 		Where<SyncFile, Long> where = queryBuilder.where();
 
+		filePathName = StringUtils.replace(filePathName, "\\", "\\\\");
+
 		where.like("filePathName", new SelectArg(filePathName + "%"));
 
 		where.and();
 
 		where.lt("localSyncTime", localSyncTime);
-
-		where.and();
-
-		where.eq("syncAccountId", syncAccountId);
 
 		where.and();
 

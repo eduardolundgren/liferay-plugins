@@ -19,6 +19,8 @@ import com.liferay.sync.engine.model.SyncAccount;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncAccountService;
 import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.session.Session;
+import com.liferay.sync.engine.session.SessionManager;
 import com.liferay.sync.engine.util.IODeltaUtil;
 import com.liferay.sync.engine.util.StreamUtil;
 
@@ -30,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -85,6 +88,14 @@ public class DownloadFileHandler extends BaseHandler {
 	protected void doHandleResponse(HttpResponse httpResponse)
 		throws Exception {
 
+		Header header = httpResponse.getFirstHeader("Sync-JWT");
+
+		if (header != null) {
+			Session session = SessionManager.getSession(getSyncAccountId());
+
+			session.setToken(header.getValue());
+		}
+
 		InputStream inputStream = null;
 
 		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
@@ -131,16 +142,14 @@ public class DownloadFileHandler extends BaseHandler {
 
 			SyncFileService.updateFileKeySyncFile(syncFile);
 		}
-		catch (Exception e) {
-			if (e instanceof FileSystemException) {
-				String message = e.getMessage();
+		catch (FileSystemException fse) {
+			String message = fse.getMessage();
 
-				if (message.contains("File name too long")) {
-					syncFile.setState(SyncFile.STATE_ERROR);
-					syncFile.setUiEvent(SyncFile.UI_EVENT_FILE_NAME_TOO_LONG);
+			if (message.contains("File name too long")) {
+				syncFile.setState(SyncFile.STATE_ERROR);
+				syncFile.setUiEvent(SyncFile.UI_EVENT_FILE_NAME_TOO_LONG);
 
-					SyncFileService.update(syncFile);
-				}
+				SyncFileService.update(syncFile);
 			}
 		}
 		finally {

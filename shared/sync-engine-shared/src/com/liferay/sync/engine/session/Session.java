@@ -61,8 +61,6 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.http.MediaType;
-
 /**
  * @author Shinn Lok
  * @author Dennis Ju
@@ -117,19 +115,21 @@ public class Session {
 	}
 
 	public HttpResponse execute(HttpRequest httpRequest) throws Exception {
-		return execute(httpRequest, _getBasicHttpContext());
+		return execute(httpRequest, getBasicHttpContext());
 	}
 
 	public <T> T execute(HttpRequest httpRequest, Handler<? extends T> handler)
 		throws Exception {
 
-		return execute(httpRequest, handler, _getBasicHttpContext());
+		return execute(httpRequest, handler, getBasicHttpContext());
 	}
 
 	public <T> T execute(
 			HttpRequest httpRequest, Handler<? extends T> handler,
 			HttpContext httpContext)
 		throws Exception {
+
+		httpRequest.setHeader("Sync-JWT", _token);
 
 		return _httpClient.execute(
 			_httpHost, httpRequest, handler, httpContext);
@@ -138,6 +138,8 @@ public class Session {
 	public HttpResponse execute(
 			HttpRequest httpRequest, HttpContext httpContext)
 		throws Exception {
+
+		httpRequest.setHeader("Sync-JWT", _token);
 
 		return _httpClient.execute(_httpHost, httpRequest, httpContext);
 	}
@@ -188,7 +190,9 @@ public class Session {
 	public HttpResponse executeGet(String urlPath) throws Exception {
 		HttpGet httpGet = new HttpGet(urlPath);
 
-		return _httpClient.execute(_httpHost, httpGet, _getBasicHttpContext());
+		httpGet.setHeader("Sync-JWT", _token);
+
+		return _httpClient.execute(_httpHost, httpGet, getBasicHttpContext());
 	}
 
 	public <T> T executeGet(String urlPath, Handler<? extends T> handler)
@@ -196,8 +200,10 @@ public class Session {
 
 		HttpGet httpGet = new HttpGet(urlPath);
 
+		httpGet.setHeader("Sync-JWT", _token);
+
 		return _httpClient.execute(
-			_httpHost, httpGet, handler, _getBasicHttpContext());
+			_httpHost, httpGet, handler, getBasicHttpContext());
 	}
 
 	public HttpResponse executePost(
@@ -206,9 +212,11 @@ public class Session {
 
 		HttpPost httpPost = new HttpPost(urlPath);
 
+		httpPost.setHeader("Sync-JWT", _token);
+
 		_buildHttpPostBody(httpPost, parameters);
 
-		return _httpClient.execute(_httpHost, httpPost, _getBasicHttpContext());
+		return _httpClient.execute(_httpHost, httpPost, getBasicHttpContext());
 	}
 
 	public <T> T executePost(
@@ -218,10 +226,29 @@ public class Session {
 
 		HttpPost httpPost = new HttpPost(urlPath);
 
+		httpPost.setHeader("Sync-JWT", _token);
+
 		_buildHttpPostBody(httpPost, parameters);
 
 		return _httpClient.execute(
-			_httpHost, httpPost, handler, _getBasicHttpContext());
+			_httpHost, httpPost, handler, getBasicHttpContext());
+	}
+
+	public BasicHttpContext getBasicHttpContext() {
+		if (_basicHttpContext != null) {
+			return _basicHttpContext;
+		}
+
+		_basicHttpContext = new BasicHttpContext();
+
+		_basicHttpContext.setAttribute(
+			HttpClientContext.AUTH_CACHE, _getBasicAuthCache());
+
+		return _basicHttpContext;
+	}
+
+	public void setToken(String token) {
+		_token = token;
 	}
 
 	private void _buildHttpPostBody(
@@ -260,15 +287,6 @@ public class Session {
 		basicAuthCache.put(_httpHost, basicScheme);
 
 		return basicAuthCache;
-	}
-
-	private BasicHttpContext _getBasicHttpContext() {
-		BasicHttpContext basicHttpContext = new BasicHttpContext();
-
-		basicHttpContext.setAttribute(
-			HttpClientContext.AUTH_CACHE, _getBasicAuthCache());
-
-		return basicHttpContext;
 	}
 
 	private ContentBody _getFileBody(
@@ -319,13 +337,16 @@ public class Session {
 		return new StringBody(
 			String.valueOf(value),
 			ContentType.create(
-				MediaType.TEXT_PLAIN_VALUE, Charset.defaultCharset()));
+				ContentType.TEXT_PLAIN.getMimeType(),
+				Charset.defaultCharset()));
 	}
 
 	private static Logger _logger = LoggerFactory.getLogger(Session.class);
 
 	private static HttpRoutePlanner _httpRoutePlanner;
+	private static String _token;
 
+	private BasicHttpContext _basicHttpContext;
 	private ExecutorService _executorService;
 	private HttpClient _httpClient;
 	private HttpHost _httpHost;

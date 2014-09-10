@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liferay.sync.engine.documentlibrary.event.DownloadFileEvent;
 import com.liferay.sync.engine.documentlibrary.event.Event;
 import com.liferay.sync.engine.documentlibrary.model.SyncDLObjectUpdate;
+import com.liferay.sync.engine.filesystem.Watcher;
+import com.liferay.sync.engine.filesystem.WatcherRegistry;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.model.SyncSite;
 import com.liferay.sync.engine.service.SyncFileService;
@@ -108,6 +110,8 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			return;
 		}
 
+		final Watcher watcher = WatcherRegistry.getWatcher(getSyncAccountId());
+
 		Files.walkFileTree(
 			sourceFilePath,
 			new SimpleFileVisitor<Path>() {
@@ -120,6 +124,17 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 					Files.deleteIfExists(filePath);
 
 					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult preVisitDirectory(
+						Path filePath, BasicFileAttributes basicFileAttributes)
+					throws IOException {
+
+					watcher.unregisterFilePath(filePath);
+
+					return super.preVisitDirectory(
+						filePath, basicFileAttributes);
 				}
 
 				@Override
@@ -173,33 +188,24 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 		}
 
 		Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
+		Path targetFilePath = Paths.get(targetFilePathName);
+
+		sourceSyncFile = SyncFileService.updateSyncFile(
+			targetFilePath, targetSyncFile.getParentFolderId(), sourceSyncFile);
 
 		if (Files.exists(sourceFilePath)) {
-			Path targetFilePath = Paths.get(targetFilePathName);
-
 			Files.move(sourceFilePath, targetFilePath);
+		}
+		else if (targetSyncFile.isFolder()) {
+			Files.createDirectories(targetFilePath);
 
-			sourceSyncFile.setFilePathName(targetFilePathName);
+			SyncFileService.updateFileKeySyncFile(sourceSyncFile);
 		}
 		else {
-			sourceSyncFile.setFilePathName(targetFilePathName);
-
-			if (targetSyncFile.isFolder()) {
-				Path targetFilePath = Paths.get(targetFilePathName);
-
-				Files.createDirectories(targetFilePath);
-
-				SyncFileService.update(sourceSyncFile);
-
-				SyncFileService.updateFileKeySyncFile(sourceSyncFile);
-			}
-			else {
-				downloadFile(sourceSyncFile, null, false);
-			}
+			downloadFile(sourceSyncFile, null, false);
 		}
 
 		sourceSyncFile.setModifiedTime(targetSyncFile.getModifiedTime());
-		sourceSyncFile.setParentFolderId(targetSyncFile.getParentFolderId());
 		sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_MOVED_REMOTE);
 
 		SyncFileService.update(sourceSyncFile);
@@ -256,6 +262,8 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 				}
 			}
 			catch (Exception e) {
+				_logger.error(e.getMessage(), e);
+
 				if (e instanceof FileSystemException) {
 					String message = e.getMessage();
 
@@ -328,7 +336,9 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 				downloadFile(sourceSyncFile, null, false);
 			}
 		}
-		else if (FileUtil.hasFileChanged(targetSyncFile, sourceFilePath)) {
+		else if (targetSyncFile.isFile() &&
+				 FileUtil.hasFileChanged(targetSyncFile, sourceFilePath)) {
+
 			downloadFile(
 				sourceSyncFile, sourceVersion,
 				!IODeltaUtil.isIgnoredFilePatchingExtension(targetSyncFile));

@@ -135,10 +135,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 			}
 		}
 
-		if (permissioned &&
-			!AlloyPermission.contains(
-				themeDisplay, controllerPath, actionPath)) {
-
+		if (!hasPermission()) {
 			renderError(
 				"you-do-not-have-permission-to-access-the-requested-resource");
 
@@ -174,6 +171,11 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		}
 		else if (lifecycle.equals(PortletRequest.RESOURCE_PHASE)) {
 			executeResource(method);
+		}
+
+		if (alloyNotificationEventHelper != null) {
+			alloyNotificationEventHelper.addUserNotificationEvents(
+				request, controllerPath, actionPath);
 		}
 	}
 
@@ -471,6 +473,17 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		}
 
 		return attributesMap;
+	}
+
+	protected boolean hasPermission() {
+		if (permissioned &&
+			!AlloyPermission.contains(
+				themeDisplay, controllerPath, actionPath)) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	protected long increment(String name) throws Exception {
@@ -805,6 +818,18 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 			Map<String, Serializable> attributes, String keywords, Sort[] sorts)
 		throws Exception {
 
+		return search(
+			indexer, alloyServiceInvoker, request, portletRequest,
+			searchContainer, attributes, keywords, sorts);
+	}
+
+	protected AlloySearchResult search(
+			Indexer indexer, AlloyServiceInvoker alloyServiceInvoker,
+			HttpServletRequest request, PortletRequest portletRequest,
+			SearchContainer<? extends BaseModel<?>> searchContainer,
+			Map<String, Serializable> attributes, String keywords, Sort[] sorts)
+		throws Exception {
+
 		if (indexer == null) {
 			throw new Exception("No indexer found for " + controllerPath);
 		}
@@ -830,7 +855,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 
 		searchContext.setEnd(searchContainer.getEnd());
 
-		Class<?> indexerClass = Class.forName(indexerClassName);
+		Class<?> indexerClass = Class.forName(indexer.getClassNames()[0]);
 
 		if (!GroupedModel.class.isAssignableFrom(indexerClass)) {
 			searchContext.setGroupIds(null);
@@ -892,6 +917,12 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		throws Exception {
 
 		return search(null, keywords, sorts);
+	}
+
+	protected void setAlloyNotificationEventHelper(
+		AlloyNotificationEventHelper alloyNotificationEventHelper) {
+
+		this.alloyNotificationEventHelper = alloyNotificationEventHelper;
 	}
 
 	protected void setAlloyServiceInvokerClass(Class<?> clazz) {
@@ -989,6 +1020,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	protected String actionPath;
 	protected ActionRequest actionRequest;
 	protected ActionResponse actionResponse;
+	protected AlloyNotificationEventHelper alloyNotificationEventHelper;
 	protected AlloyPortlet alloyPortlet;
 	protected AlloyServiceInvoker alloyServiceInvoker;
 	protected ClassLoader classLoader;

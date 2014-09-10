@@ -63,6 +63,7 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 	</liferay-ui:error>
 
 	<liferay-ui:error exception="<%= KBArticleContentException.class %>" message="please-enter-valid-content" />
+	<liferay-ui:error exception="<%= KBArticleSourceURLException.class %>" message="please-enter-a-valid-source-url" />
 	<liferay-ui:error exception="<%= KBArticleTitleException.class %>" message="please-enter-a-valid-title" />
 	<liferay-ui:error exception="<%= NoSuchFileException.class %>" message="the-document-could-not-be-found" />
 
@@ -95,13 +96,17 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 		<aui:input disabled="<%= kbArticle != null %>" label="friendly-url" name="urlTitle" />
 
 		<aui:field-wrapper label="content">
-			<liferay-ui:input-editor width="100%" />
+			<liferay-ui:input-editor contents="<%= content %>" width="100%" />
 
 			<aui:input name="content" type="hidden" />
 		</aui:field-wrapper>
 
 		<c:if test="<%= enableKBArticleDescription %>">
 			<aui:input name="description" />
+		</c:if>
+
+		<c:if test="<%= PortletPropsValues.KNOWLEDGE_BASE_SOURCE_URL_ENABLED %>">
+			<aui:input label="source-url" name="sourceURL" />
 		</c:if>
 
 		<c:if test="<%= ArrayUtil.isNotEmpty(PortletPropsValues.ADMIN_KB_ARTICLE_SECTIONS) && (parentResourcePrimKey == KBArticleConstants.DEFAULT_PARENT_RESOURCE_PRIM_KEY) %>">
@@ -202,10 +207,6 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 		},
 		['aui-base']
 	);
-
-	function <portlet:namespace />initEditor() {
-		return '<%= UnicodeFormatter.toString(content) %>';
-	}
 
 	function <portlet:namespace />publishKBArticle() {
 		document.<portlet:namespace />fm.<portlet:namespace />workflowAction.value = '<%= WorkflowConstants.ACTION_PUBLISH %>';

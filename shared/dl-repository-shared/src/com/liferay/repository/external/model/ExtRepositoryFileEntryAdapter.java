@@ -86,6 +86,11 @@ public class ExtRepositoryFileEntryAdapter
 	}
 
 	@Override
+	public String getFileName() {
+		return DLUtil.getSanitizedFileName(getTitle(), getExtension());
+	}
+
+	@Override
 	public FileVersion getFileVersion() {
 		try {
 			List<ExtRepositoryFileVersionAdapter>

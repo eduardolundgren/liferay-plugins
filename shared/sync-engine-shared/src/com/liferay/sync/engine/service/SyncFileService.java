@@ -70,7 +70,7 @@ public class SyncFileService {
 		String mimeType = Files.probeContentType(filePath);
 
 		SyncFile syncFile = addSyncFile(
-			"", checksum, name, filePath.toString(), mimeType, name, folderId,
+			null, checksum, null, filePath.toString(), mimeType, name, folderId,
 			repositoryId, syncAccountId, SyncFile.TYPE_FILE);
 
 		// Remote sync file
@@ -123,7 +123,7 @@ public class SyncFileService {
 		String name = String.valueOf(filePath.getFileName());
 
 		SyncFile syncFile = addSyncFile(
-			null, null, name, filePath.toString(),
+			null, null, null, filePath.toString(),
 			Files.probeContentType(filePath), name, parentFolderId,
 			repositoryId, syncAccountId, SyncFile.TYPE_FOLDER);
 
@@ -270,6 +270,10 @@ public class SyncFileService {
 
 		// Local sync file
 
+		if (Files.exists(Paths.get(syncFile.getFilePathName()))) {
+			return syncFile;
+		}
+
 		syncFile.setUiEvent(SyncFile.UI_EVENT_DELETED_LOCAL);
 
 		deleteSyncFile(syncFile);
@@ -298,6 +302,10 @@ public class SyncFileService {
 		throws Exception {
 
 		// Local sync file
+
+		if (Files.exists(Paths.get(syncFile.getFilePathName()))) {
+			return syncFile;
+		}
 
 		syncFile.setUiEvent(SyncFile.UI_EVENT_DELETED_LOCAL);
 
@@ -347,6 +355,8 @@ public class SyncFileService {
 					deleteSyncFile(childSyncFile);
 				}
 				else {
+					childSyncFile.setUiEvent(syncFile.getUiEvent());
+
 					_syncFilePersistence.delete(childSyncFile);
 				}
 			}
@@ -387,12 +397,9 @@ public class SyncFileService {
 		}
 	}
 
-	public static SyncFile fetchSyncFile(
-		String filePathName, long syncAccountId) {
-
+	public static SyncFile fetchSyncFile(String filePathName) {
 		try {
-			return _syncFilePersistence.fetchByFPN_S(
-				filePathName, syncAccountId);
+			return _syncFilePersistence.fetchByFilePathName(filePathName);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -450,40 +457,11 @@ public class SyncFileService {
 		}
 	}
 
-	public static List<SyncFile> findSyncFiles(String filePathName) {
-		try {
-			return _syncFilePersistence.findByFilePathName(filePathName);
-		}
-		catch (SQLException sqle) {
-			if (_logger.isDebugEnabled()) {
-				_logger.debug(sqle.getMessage(), sqle);
-			}
-
-			return Collections.emptyList();
-		}
-	}
-
 	public static List<SyncFile> findSyncFiles(
-		String checksum, long syncAccountId) {
+		String filePathName, long localSyncTime) {
 
 		try {
-			return _syncFilePersistence.findByC_S(checksum, syncAccountId);
-		}
-		catch (SQLException sqle) {
-			if (_logger.isDebugEnabled()) {
-				_logger.debug(sqle.getMessage(), sqle);
-			}
-
-			return Collections.emptyList();
-		}
-	}
-
-	public static List<SyncFile> findSyncFiles(
-		String filePathName, long localSyncTime, long syncAccountId) {
-
-		try {
-			return _syncFilePersistence.findByF_L_S(
-				filePathName, localSyncTime, syncAccountId);
+			return _syncFilePersistence.findByF_L(filePathName, localSyncTime);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -643,6 +621,11 @@ public class SyncFileService {
 
 		// Local sync file
 
+		if (OSDetector.isWindows()) {
+			FileUtil.writeFileKey(
+				filePath, String.valueOf(syncFile.getSyncFileId()));
+		}
+
 		Path deltaFilePath = null;
 
 		String name = String.valueOf(filePath.getFileName());
@@ -734,7 +717,7 @@ public class SyncFileService {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 
-		parameters.put("-description", null);
+		parameters.put("description", syncFile.getDescription());
 		parameters.put("folderId", syncFile.getTypePK());
 		parameters.put("name", filePath.getFileName());
 		parameters.put("syncFile", syncFile);
@@ -754,10 +737,6 @@ public class SyncFileService {
 
 			// Sync file
 
-			if (!syncFile.isFolder()) {
-				return update(syncFile);
-			}
-
 			String sourceFilePathName = syncFile.getFilePathName();
 			String targetFilePathName = filePath.toString();
 
@@ -765,6 +744,10 @@ public class SyncFileService {
 			syncFile.setLocalSyncTime(System.currentTimeMillis());
 			syncFile.setName(String.valueOf(filePath.getFileName()));
 			syncFile.setParentFolderId(parentFolderId);
+
+			if (!syncFile.isFolder()) {
+				return update(syncFile);
+			}
 
 			update(syncFile);
 

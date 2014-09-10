@@ -11,7 +11,7 @@
 	</appender>
 
 	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="${user.home}/.liferay-sync/logs/liferay-sync.log" />
+		<param name="File" value="${user.home}/.liferay-sync-2/logs/liferay-sync.log" />
 		<param name="MaxBackupIndex" value="20" />
 		<param name="MaxFileSize" value="256KB" />
 		<param name="Encoding" value="UTF-8" />
@@ -23,6 +23,10 @@
 
 	<category name="com.j256.ormlite">
 		<priority value="INFO" />
+	</category>
+
+	<category name="com.liferay.nativity">
+		<priority value="ERROR" />
 	</category>
 
 	<category name="com.liferay.sync.engine.documentlibrary.event.GetSyncContextEvent">

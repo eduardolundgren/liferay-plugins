@@ -54,6 +54,7 @@
 		<path refid="plugin-lib.classpath" />
 		<fileset dir="${app.server.lib.global.dir}" includes="*.jar" />
 		<fileset dir="${app.server.lib.portal.dir}" includes="annotations.jar,commons-logging.jar,log4j.jar,util-bridges.jar,util-java.jar,util-taglib.jar" />
+		<fileset dir="${sdk.dir}/dependencies/aQute.bnd/lib" includes="*.jar" />
 		<fileset dir="${sdk.dir}/lib" includes="activation.jar,javax.servlet-api.jar,jsp-api.jar,mail.jar" />
 	</path>
 
@@ -574,6 +575,10 @@ Error-Prone was automatically installed. Please rerun your task.
 
 			<var name="compile-import-shared.import.compat.shared" unset="true" />
 			<var name="compile-import-shared.import.shared" unset="true" />
+
+			<set-module-properties
+				module.dir="@{module.dir}"
+			/>
 		</sequential>
 	</macrodef>
 
@@ -1673,7 +1678,11 @@ Please find a solution that does not require portal-impl.jar.
 									<if>
 										<available file="${temp.deployed.plugin.dir}" />
 										<then>
-											<jar destfile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" update="true">
+											<jar destfile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" duplicate="preserve" update="true">
+												<fileset
+													dir="${app.server.portal.dir}"
+													includes="WEB-INF/tld/c.tld"
+												/>
 												<fileset
 													dir="${temp.deployed.plugin.dir}"
 													includes="WEB-INF/web.xml"
@@ -2260,34 +2269,6 @@ for (String path : paths) {
 						module.dirs="@{module.dir}"
 						target.name="jar"
 					/>
-
-					<if>
-						<available file="@{module.dir}/docroot/WEB-INF/portlet.xml" />
-						<then>
-							<tstamp>
-								<format property="tstamp.value" pattern="yyyyMMddkkmmssSSS" />
-							</tstamp>
-
-							<move file="${plugin.file}" tofile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" />
-
-							<direct-deploy-portlet-cmd
-								direct.deploy.dir="${tstamp.value}"
-								module.dir="@{module.dir}"
-							/>
-
-							<zip destfile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" update="true">
-								<zipfileset
-									dir="${tstamp.value}/${plugin.name}"
-									fullpath="WEB-INF/web.xml"
-									includes="WEB-INF/web.xml"
-								/>
-							</zip>
-
-							<move file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" tofile="${plugin.file}" />
-
-							<delete dir="${tstamp.value}" />
-						</then>
-					</if>
 				</then>
 				<else>
 					<if>

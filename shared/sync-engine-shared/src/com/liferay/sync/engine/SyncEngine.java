@@ -142,14 +142,22 @@ public class SyncEngine {
 			return;
 		}
 
-		SyncSiteService.synchronizeSyncSites(syncAccountId);
-
 		SyncWatchEventService.deleteSyncWatchEvents(syncAccountId);
 
 		SyncAccount syncAccount = SyncAccountService.synchronizeSyncAccount(
-			syncAccountId);
+			syncAccountId, 0);
+
+		if (syncAccount.getState() == SyncAccount.STATE_CONNECTED) {
+			SyncSiteService.synchronizeSyncSites(syncAccountId);
+		}
 
 		Path filePath = Paths.get(syncAccount.getFilePathName());
+
+		SyncWatchEventProcessor syncWatchEventProcessor =
+			new SyncWatchEventProcessor(syncAccountId);
+
+		_syncWatchEventProcessorExecutorService.scheduleAtFixedRate(
+			syncWatchEventProcessor, 0, 3, TimeUnit.SECONDS);
 
 		WatchEventListener watchEventListener = new SyncSiteWatchEventListener(
 			syncAccountId);
@@ -160,7 +168,8 @@ public class SyncEngine {
 
 		_executorService.execute(watcher);
 
-		scheduleGetSyncDLObjectUpdateEvent(syncAccount, watcher);
+		scheduleGetSyncDLObjectUpdateEvent(
+			syncAccount, syncWatchEventProcessor, watcher);
 	}
 
 	protected static void doStart() throws Exception {
@@ -177,15 +186,6 @@ public class SyncEngine {
 
 		SyncClientUpdater.scheduleAutoUpdateChecker(
 			SyncPropService.getInteger("updateCheckInterval", 1440));
-
-		SyncWatchEventProcessor syncWatchEventProcessor =
-			new SyncWatchEventProcessor();
-
-		_syncWatchEventProcessorExecutorService =
-			Executors.newSingleThreadScheduledExecutor();
-
-		_syncWatchEventProcessorExecutorService.scheduleAtFixedRate(
-			syncWatchEventProcessor, 0, 3, TimeUnit.SECONDS);
 
 		List<SyncAccount> syncAccounts = SyncAccountService.findAll();
 
@@ -225,8 +225,7 @@ public class SyncEngine {
 	}
 
 	protected static void fireDeleteEvents(
-			Path filePath, final long syncAccountId,
-			WatchEventListener watchEventListener)
+			Path filePath, WatchEventListener watchEventListener)
 		throws IOException {
 
 		long startTime = System.currentTimeMillis();
@@ -240,7 +239,7 @@ public class SyncEngine {
 					Path filePath, BasicFileAttributes basicFileAttributes) {
 
 					SyncFile syncFile = SyncFileService.fetchSyncFile(
-						filePath.toString(), syncAccountId);
+						filePath.toString());
 
 					if (syncFile != null) {
 						syncFile.setLocalSyncTime(System.currentTimeMillis());
@@ -256,7 +255,7 @@ public class SyncEngine {
 					Path filePath, BasicFileAttributes basicFileAttributes) {
 
 					SyncFile syncFile = SyncFileService.fetchSyncFile(
-						filePath.toString(), syncAccountId);
+						filePath.toString());
 
 					if (syncFile != null) {
 						syncFile.setLocalSyncTime(System.currentTimeMillis());
@@ -271,7 +270,7 @@ public class SyncEngine {
 		);
 
 		List<SyncFile> deletedSyncFiles = SyncFileService.findSyncFiles(
-			filePath.toString(), startTime, syncAccountId);
+			filePath.toString(), startTime);
 
 		for (SyncFile deletedSyncFile : deletedSyncFiles) {
 			if (deletedSyncFile.getUiEvent() ==
@@ -325,7 +324,9 @@ public class SyncEngine {
 	}
 
 	protected static void scheduleGetSyncDLObjectUpdateEvent(
-		final SyncAccount syncAccount, Watcher watcher) {
+		final SyncAccount syncAccount,
+		final SyncWatchEventProcessor syncWatchEventProcessor,
+		Watcher watcher) {
 
 		Runnable runnable = new Runnable() {
 
@@ -335,8 +336,9 @@ public class SyncEngine {
 					SyncAccountService.fetchSyncAccount(
 						syncAccount.getSyncAccountId());
 
-				if (updatedSyncAccount.getState() !=
-						SyncAccount.STATE_CONNECTED) {
+				if ((updatedSyncAccount.getState() !=
+						SyncAccount.STATE_CONNECTED) ||
+					syncWatchEventProcessor.isInProgress()) {
 
 					return;
 				}
@@ -379,7 +381,7 @@ public class SyncEngine {
 			WatchEventListener watchEventListener)
 		throws IOException {
 
-		fireDeleteEvents(filePath, syncAccountId, watchEventListener);
+		fireDeleteEvents(filePath, watchEventListener);
 
 		retryFileTransfers(syncAccountId);
 	}
@@ -394,6 +396,7 @@ public class SyncEngine {
 	private static Map<Long, Object[]> _syncAccountTasks =
 		new HashMap<Long, Object[]>();
 	private static ScheduledExecutorService
-		_syncWatchEventProcessorExecutorService;
+		_syncWatchEventProcessorExecutorService =
+			Executors.newScheduledThreadPool(5);
 
 }
