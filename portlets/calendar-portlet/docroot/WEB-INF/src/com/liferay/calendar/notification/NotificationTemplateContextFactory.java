@@ -151,14 +151,14 @@ public class NotificationTemplateContextFactory {
 			User user, long calendarBookingId)
 		throws PortalException {
 
-		Group group = GroupLocalServiceUtil.getGroup(
+		Group guestGroup = GroupLocalServiceUtil.getGroup(
 			user.getCompanyId(), GroupConstants.GUEST);
 
 		Layout layout = LayoutLocalServiceUtil.fetchLayout(
-			group.getDefaultPublicPlid());
+			guestGroup.getDefaultPublicPlid());
 
 		String portalURL = _getPortalURL(
-			group.getCompanyId(), group.getGroupId());
+			guestGroup.getCompanyId(), guestGroup.getGroupId());
 
 		String layoutActualURL = PortalUtil.getLayoutActualURL(layout);
 
