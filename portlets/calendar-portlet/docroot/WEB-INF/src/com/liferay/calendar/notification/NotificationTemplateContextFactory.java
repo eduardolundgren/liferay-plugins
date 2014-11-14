@@ -26,9 +26,11 @@ import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
+import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.CompanyLocalServiceUtil;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 
@@ -149,13 +151,14 @@ public class NotificationTemplateContextFactory {
 			User user, long calendarBookingId)
 		throws PortalException {
 
-		Group group = user.getGroup();
+		Group guestGroup = GroupLocalServiceUtil.getGroup(
+			user.getCompanyId(), GroupConstants.GUEST);
 
-		Layout layout = LayoutLocalServiceUtil.getLayout(
-			group.getDefaultPrivatePlid());
+		Layout layout = LayoutLocalServiceUtil.fetchLayout(
+			guestGroup.getDefaultPublicPlid());
 
 		String portalURL = _getPortalURL(
-			group.getCompanyId(), group.getGroupId());
+			guestGroup.getCompanyId(), guestGroup.getGroupId());
 
 		String layoutActualURL = PortalUtil.getLayoutActualURL(layout);
 
