@@ -545,9 +545,15 @@ AUI.add(
 
 				var url = Liferay.PortletURL.createResourceURL();
 
-				url.setParameters(parameters);
 				url.setPortletId('1_WAR_calendarportlet');
 				url.setResourceId(resourceId);
+
+				A.each(
+					parameters,
+					function(item, index, collection) {
+						url.setParameter(index, item);
+					}
+				);
 
 				A.io.request(
 					url.toString(),
