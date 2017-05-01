@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+
+<custom-sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContentFinder.findByTitle">
+		<![CDATA[
+			SELECT
+				Newsletter_NewsletterContent.*
+			FROM
+				Newsletter_NewsletterContent
+			WHERE
+				(companyId = ?) AND
+				(groupId = ?) AND
+				(title LIKE ?)
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.countByCampaign">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS COUNT_VALUE
+			FROM
+				Newsletter_NewsletterContact
+			INNER JOIN
+				Newsletter_NewsletterLog ON
+					(Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId) 
+			WHERE
+				(Newsletter_NewsletterLog.campaignId = ?)
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.countByCampaignContent">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS COUNT_VALUE
+			FROM
+				Newsletter_NewsletterContact
+			INNER JOIN
+				Newsletter_NewsletterLog ON
+					(Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId) 
+			INNER JOIN
+				Newsletter_NewsletterCampaign ON
+					(Newsletter_NewsletterCampaign.campaignId = Newsletter_NewsletterLog.campaignId) 
+			WHERE
+				(Newsletter_NewsletterCampaign.contentId = ?)
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.countBy_C_G_N_E">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS COUNT_VALUE
+			FROM
+				Newsletter_NewsletterContact
+			WHERE
+				(Newsletter_NewsletterContact.companyId = ?) AND
+				(Newsletter_NewsletterContact.groupId = ?) AND
+				(
+					(Newsletter_NewsletterContact.email LIKE ?) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterContact.name LIKE ?)
+				 )
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.countBy_C_G_C_E_N">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS COUNT_VALUE
+			FROM
+				Newsletter_NewsletterContact 
+			INNER JOIN
+				Newsletter_NewsletterLog
+			ON
+				Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId
+			WHERE
+				(Newsletter_NewsletterContact.companyId = ?) AND
+				(Newsletter_NewsletterContact.groupId = ?) AND
+				(Newsletter_NewsletterLog.campaignId = ?) AND
+				(
+					(Newsletter_NewsletterContact.email LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterContact.name LIKE ? [$AND_OR_NULL_CHECK$]) 
+				 ) 
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.countBy_C_G_C_E_N_S">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS COUNT_VALUE
+			FROM
+				Newsletter_NewsletterContact 
+			INNER JOIN
+				Newsletter_NewsletterLog
+			ON
+				Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId
+			WHERE
+				(Newsletter_NewsletterContact.companyId = ?) AND
+				(Newsletter_NewsletterContact.groupId = ?) AND
+				(Newsletter_NewsletterLog.campaignId = ?) AND
+				(
+					(Newsletter_NewsletterContact.email LIKE ?) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterContact.name LIKE ?) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterLog.sent = ?)
+				 ) 
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.findByEmail">
+		<![CDATA[
+			SELECT
+				Newsletter_NewsletterContact.*
+			FROM
+				Newsletter_NewsletterContact
+			WHERE
+				(email LIKE ?)
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.findBy_C_G_N_E">
+		<![CDATA[
+			SELECT
+				Newsletter_NewsletterContact.*
+			FROM
+				Newsletter_NewsletterContact
+			WHERE
+				(companyId = ?) AND
+				(groupId = ?) AND
+				(
+					(email LIKE ?) [$AND_OR_CONNECTOR$]
+				 	(name LIKE ?)
+				 )
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.findBy_C_G_C_E_N_S">
+		<![CDATA[
+			SELECT
+				Newsletter_NewsletterContact.*
+			FROM
+				Newsletter_NewsletterContact 
+			INNER JOIN
+				Newsletter_NewsletterLog
+			ON
+				Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId
+			WHERE
+				(Newsletter_NewsletterContact.companyId = ?) AND
+				(Newsletter_NewsletterContact.groupId = ?) AND
+				(Newsletter_NewsletterLog.campaignId = ?) AND
+				(
+					(Newsletter_NewsletterContact.email LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterContact.name LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterLog.sent = ?)
+				 ) 
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.findBy_C_G_C_E_N">
+		<![CDATA[
+			SELECT
+				Newsletter_NewsletterContact.*
+			FROM
+				Newsletter_NewsletterContact 
+			INNER JOIN
+				Newsletter_NewsletterLog
+			ON
+				Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId
+			WHERE
+				(Newsletter_NewsletterContact.companyId = ?) AND
+				(Newsletter_NewsletterContact.groupId = ?) AND
+				(Newsletter_NewsletterLog.campaignId = ?) AND
+				(
+					(Newsletter_NewsletterContact.email LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+				 	(Newsletter_NewsletterContact.name LIKE ? [$AND_OR_NULL_CHECK$]) 				 	
+				 ) 
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContactFinder.findByNameAndCampaign">
+		<![CDATA[
+			SELECT 
+				{Newsletter_NewsletterContact.*} 
+			FROM 
+				Newsletter_NewsletterContact
+			INNER JOIN 
+				Newsletter_NewsletterLog ON 
+					(Newsletter_NewsletterContact.contactId = Newsletter_NewsletterLog.contactId)
+			WHERE
+				(companyId = ?) AND
+				(groupId = ?) AND
+				(Newsletter_NewsletterContact.name LIKE ?) AND 
+				(Newsletter_NewsletterLog.campaignId = ?)
+			ORDER BY
+				Newsletter_NewsletterContact.name ASC 
+		]]>
+	</sql>
+	<sql id="com.liferay.newsletter.service.persistence.NewsletterContentFinder.findBy_T_C">
+		<![CDATA[
+			SELECT
+				Newsletter_NewsletterContent.*
+			FROM
+				Newsletter_NewsletterContent
+			WHERE
+				(companyId = ?) AND
+				(groupId = ?) AND
+				(
+					(title LIKE ?) [$AND_OR_CONNECTOR$]
+				 	(content LIKE ?)
+				 )
+		]]>
+	</sql>
+</custom-sql>
